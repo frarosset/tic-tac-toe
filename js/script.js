@@ -1,7 +1,39 @@
-// This factory function andles the gameboard functionality
-function createGameboard(){
-    // todo
+// cell values: 0: no mark, 1: player 1 mark, 2: player 2 mark
+
+// This factory function handles the gameboard functionality
+function createGameboard(size){
+    /* todo */
 }
+
+// This factory function handles the gameboard's cell functionality
+// By default, it is a binary cell, but you can allow multiple values
+// By default, it is initialized the first allowed value, but a different initialization value can be provided
+function createCell(allowedValues = [0,1], val=undefined){
+    let value = allowedValues.includes(val) ? val : allowedValues[0]; 
+
+    let getValue = function(){
+        return value;
+    }
+
+    let setValue = function(val){
+        if (!allowedValues.includes(val)){
+            console.log(`Cell:setValue. Value ${val} not allowed. Allowed values are: {${allowedValues}}`);
+            return;
+        }
+        value = val;
+    }
+
+    return {getValue, setValue};
+}
+
+// TEST
+// let cell = createCell([0,1,4,5]);
+// console.log(cell.getValue());
+// cell.setValue(4);
+// console.log(cell.getValue());
+// cell.setValue(3); // not a valid value
+// let cell2 = createCell([0,1,4,5],1);
+// console.log(cell2.getValue());
 
 // This factory function handles the player functionality
 function createPlayer(name){
