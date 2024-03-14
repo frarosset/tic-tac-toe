@@ -3,12 +3,15 @@
 // This factory function handles the gameboard functionality
 function createGameboard(size, allowedCellValues){
     let gameboard = [];
+    let emptyCell = allowedCellValues[0];
+    let currentPlayer = allowedCellValues[1];
+
 
     for (let r=0; r<size; r++){
         // Add a row
         gameboard.push([]);
         for (let c=0; c<size; c++){
-            gameboard[r].push(createCell(allowedCellValues));
+            gameboard[r].push(createCell(allowedCellValues,emptyCell));
         }
     }
 
@@ -27,15 +30,42 @@ function createGameboard(size, allowedCellValues){
             });
             str += '\n';
         });
-        console.log(str)
+        console.log(str);
     }
 
+    const isMoveAllowed = function(row,column){
+        return  0 <= row && row < size &&
+                0 <= column && column < size &&
+                gameboard[row][column].getValue() === emptyCell;
+    } 
+
+    const makeMove = function(row,column){
+        // returns true if the move is performed, false otherwise
+        if (!isMoveAllowed(row,column)){
+            console.log(`Gameboard:makeMove. Move marking cell (${row},${column}) by user ${currentPlayer} not allowed`);
+            return false;
+        }
+
+        //console.log(`Gameboard:makeMove. Marking cell (${row},${column}) by user ${currentPlayer}`);
+        gameboard[row][column].setValue(currentPlayer);
+        return true;
+    }   
 
 
-    return {printGameboard};
+    return {makeMove, printGameboard};
 }
 
 let gameboard = createGameboard(3,[' ','x','o']);
+gameboard.printGameboard();
+gameboard.makeMove(1,2);
+gameboard.printGameboard();
+gameboard.makeMove(2,2);
+gameboard.printGameboard();
+gameboard.makeMove(-1,2);
+gameboard.printGameboard();
+gameboard.makeMove(2,2);
+gameboard.printGameboard();
+gameboard.makeMove(2,3);
 gameboard.printGameboard();
 
 // This factory function handles the gameboard's cell functionality
