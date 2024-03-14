@@ -1,9 +1,42 @@
-// cell values: 0: no mark, 1: player 1 mark, 2: player 2 mark
+// cell values: 0: no mark, 1: player 1 mark, 2: player 2 mark, OR: [' ','X','O'];
 
 // This factory function handles the gameboard functionality
-function createGameboard(size){
-    /* todo */
+function createGameboard(size, allowedCellValues){
+    let gameboard = [];
+
+    for (let r=0; r<size; r++){
+        // Add a row
+        gameboard.push([]);
+        for (let c=0; c<size; c++){
+            gameboard[r].push(createCell(allowedCellValues));
+        }
+    }
+
+    const printGameboard = function(){
+        let verticalLine = ' | ';
+        let horizontalLine = '-'.repeat(size + (size-1)*verticalLine.length) + '\n';
+        let str = "";
+
+        gameboard.forEach((row,idx) => {
+            if (idx>0)
+               str += horizontalLine;
+            row.forEach((cell,idx) => {
+                if (idx>0)
+                    str += verticalLine;
+                    str += cell.getValue();
+            });
+            str += '\n';
+        });
+        console.log(str)
+    }
+
+
+
+    return {printGameboard};
 }
+
+let gameboard = createGameboard(3,[' ','x','o']);
+gameboard.printGameboard();
 
 // This factory function handles the gameboard's cell functionality
 // By default, it is a binary cell, but you can allow multiple values
@@ -34,6 +67,8 @@ function createCell(allowedValues = [0,1], val=undefined){
 // cell.setValue(3); // not a valid value
 // let cell2 = createCell([0,1,4,5],1);
 // console.log(cell2.getValue());
+// let cell3 = createCell([0,1,4,5],3);
+// console.log(cell3.getValue());
 
 // This factory function handles the player functionality
 function createPlayer(name){
