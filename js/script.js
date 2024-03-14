@@ -1,3 +1,36 @@
+// This factory function andles the gameboard functionality
+function createGameboard(){
+    // todo
+}
+
+// This factory function handles the player functionality
+function createPlayer(name){
+    // todo
+}
+
+// This factory function handles the flow of the game
+function gameController() {
+    // todo
+}
+
+// This factory function handles the display of the game in the DOM --> IIFE (module pattern), as we need a single instance
+const dispalyController = (function() {
+    // todo
+})();
+
+
+
+
+
+
+
+
+
+
+
+
+/* Other temporary functions that might be useful: possibly put them in modules */
+
 function randomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
