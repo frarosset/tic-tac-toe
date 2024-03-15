@@ -200,7 +200,10 @@ function createCell(row, column, id, allowedValues = [0,1], initialValue=undefin
 }
 
 // This factory function handles the player functionality
-function createPlayer(id, name, symbol){    
+function createPlayer(id, name, symbol){  
+    let score = 0;
+    
+    /* Get info */
     const getId = function(){
         return id;
     };
@@ -213,14 +216,31 @@ function createPlayer(id, name, symbol){
         return symbol;
     };
 
-    return {getId, getName, getSymbol};
+    /* Edit score */
+    const getScore = function(){
+        return score;
+    };
+    const resetScore = function(){
+        score = 0;
+    };
+    const incrementScoreBy = function(amount=1){
+        score += amount;
+    };
+
+    return {getId, getName, getSymbol, getScore, resetScore, incrementScoreBy};
 }
 
 let player1 = createPlayer(0,'Alice','x');
 let player2 = createPlayer(1,'Bob','o');
 console.log(player1.getName());
 console.log(player1.getSymbol());
-console.log(player2.getId());
+console.log(player1.getScore());
+player1.incrementScoreBy();
+console.log(player1.getScore());
+player1.incrementScoreBy(3);
+console.log(player1.getScore());
+player1.resetScore();
+console.log(player1.getScore());
 
 // This factory function handles the flow of the game
 function gameController() {
