@@ -12,7 +12,7 @@ function createGameboard(size, allowedCellValues){
         gameboard.push([]);
         for (let c=0; c<size; c++){
             // Add cells to row
-            gameboard[r].push(createCell(allowedCellValues,emptyCellValue));
+            gameboard[r].push(createCell(r,c,r*size+c,allowedCellValues,emptyCellValue));
         }
     }
 
@@ -139,16 +139,16 @@ gameboard.printGameboard();
 gameboard.makeMove(2,1);
 gameboard.makeMove(2,0);
 gameboard.printGameboard();
-gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getValue()));});
+gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
 gameboard.makeMove(1,1);
 gameboard.makeMove(0,2);
 gameboard.printGameboard();
-gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getValue()));});
+gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
 
 // This factory function handles the gameboard's cell functionality
 // By default, it is a binary cell, but you can allow multiple values
 // By default, it is initialized the first allowed value, but a different initialization value can be provided
-function createCell(allowedValues = [0,1], val=undefined){
+function createCell(row, column, id, allowedValues = [0,1], val=undefined){
     let value = allowedValues.includes(val) ? val : allowedValues[0]; 
 
     let getValue = function(){
@@ -163,7 +163,19 @@ function createCell(allowedValues = [0,1], val=undefined){
         value = val;
     }
 
-    return {getValue, setValue};
+    let getRow = function(){
+        return row;
+    }
+
+    let getColumn = function(){
+        return column;
+    }
+
+    let getId = function(){
+        return id;
+    }
+
+    return {getValue, setValue, getRow, getColumn, getId};
 }
 
 // This factory function handles the player functionality
