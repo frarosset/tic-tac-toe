@@ -203,36 +203,43 @@ function createPlayer(id, name, value){
     return {getId, getName, getValue, getScore, resetScore, incrementScoreBy};
 }
 
-let players = [createPlayer(0,'Alice','x'), createPlayer(0,'Bob','o')]
-let currentPlayer = players[0].getValue();
-let gameboard = createGameboard(3,players.map(player => player.getValue()),' ');
-gameboard.printGameboard();
-gameboard.makeMove(1,2,currentPlayer);
-gameboard.printGameboard();
-gameboard.makeMove(2,2,currentPlayer);
-gameboard.printGameboard();
-gameboard.makeMove(-1,2,currentPlayer);
-gameboard.printGameboard();
-gameboard.makeMove(2,2,currentPlayer);
-gameboard.printGameboard();
-gameboard.makeMove(2,2,currentPlayer);
-gameboard.printGameboard();
-gameboard.makeMove(2,1,currentPlayer);
-gameboard.makeMove(2,0,currentPlayer);
-gameboard.printGameboard();
-gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
-gameboard.makeMove(1,1,currentPlayer);
-gameboard.makeMove(0,2,currentPlayer);
-gameboard.printGameboard();
-gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
-gameboard.resetGameboard();
-gameboard.printGameboard();
-gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
+
+
+// gameboard.makeMove(0,2,currentPlayer);
+// gameboard.printGameboard();
+// gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
 
 // This factory function handles the flow of the game
-function gameController() {
-    // todo
+function gameController(size,player1Name='Player 1', player2Name='Player 2') {
+
+    const emptyCellValue = " ";
+
+    // Create players
+    const players = [createPlayer(0,player1Name,'x'), createPlayer(1,player2Name,'o')];
+    let currentPlayerIdx = 0;
+
+    const gameboard = createGameboard(size,players.map(player => player.getValue()),emptyCellValue);
+
+    // Player functions
+    const getCurrentPlayer = function(){
+        return players[currentPlayerIdx];
+    }
+    const changeCurrentPlayer = function(){
+        currentPlayerIdx = (currentPlayerIdx+1) % players.length;
+    }  
+    
+    return {getCurrentPlayer, changeCurrentPlayer};
+
 }
+
+let game = gameController(3);
+console.log(game.getCurrentPlayer().getName());
+game.changeCurrentPlayer();
+console.log(game.getCurrentPlayer().getName());
+game.changeCurrentPlayer();
+console.log(game.getCurrentPlayer().getName());
+game.changeCurrentPlayer();
+console.log(game.getCurrentPlayer().getName());
 
 // This factory function handles the display of the game in the DOM --> IIFE (module pattern), as we need a single instance
 const dispalyController = (function() {
