@@ -5,6 +5,7 @@ function createGameboard(size, allowedCellValues){
     let gameboard = [];
     const emptyCellValue = allowedCellValues[0];
     let currentPlayer = allowedCellValues[1];
+    let numberOfEmptyCells = size*size;
 
     // Create the empty gameboard
     for (let r=0; r<size; r++){
@@ -17,6 +18,7 @@ function createGameboard(size, allowedCellValues){
     }
 
     const resetGameboard = function(){
+        numberOfEmptyCells = size*size;
         gameboard.forEach(row => {row.map(cell => cell.resetValue());});
     };
 
@@ -71,10 +73,12 @@ function createGameboard(size, allowedCellValues){
 
         //console.log(`Gameboard:makeMove. Marking cell (${row},${column}) by user ${currentPlayer}`);
         gameboard[row][column].setValue(currentPlayer);
+        numberOfEmptyCells--;
+        console.log(numberOfEmptyCells)
         return true;
     };
 
-    /* Winner methods */
+    /* Game finished methods */
     const _checkEqualValidCellsInLine = function(array){
         let firstValue = array[0].getValue();
         return firstValue != emptyCellValue
@@ -125,7 +129,11 @@ function createGameboard(size, allowedCellValues){
         return linesOfEqualCells;
     };
 
-    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells};
+    const isGameboardFull = function(){
+        return numberOfEmptyCells==0;
+    }
+
+    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,isGameboardFull};
 }
 
 let gameboard = createGameboard(3,[' ','x','o']);
@@ -150,6 +158,7 @@ gameboard.printGameboard();
 gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
 gameboard.resetGameboard();
 gameboard.printGameboard();
+console.log(gameboard.isGameboardFull());
 gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
 
 // This factory function handles the gameboard's cell functionality
