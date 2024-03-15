@@ -3,15 +3,16 @@
 // This factory function handles the gameboard functionality
 function createGameboard(size, allowedCellValues){
     let gameboard = [];
-    let emptyCell = allowedCellValues[0];
+    const emptyCellValue = allowedCellValues[0];
     let currentPlayer = allowedCellValues[1];
 
-
+    // Create the empty gameboard
     for (let r=0; r<size; r++){
         // Add a row
         gameboard.push([]);
         for (let c=0; c<size; c++){
-            gameboard[r].push(createCell(allowedCellValues,emptyCell));
+            // Add cells to row
+            gameboard[r].push(createCell(allowedCellValues,emptyCellValue));
         }
     }
 
@@ -33,10 +34,28 @@ function createGameboard(size, allowedCellValues){
         console.log(str);
     }
 
+    /* Extract info */
+    const _getRowCells = function(row){
+        return gameboard[row];
+    }
+
+    const _getColumnCells = function(column){
+        return gameboard.map((itm,idx) => itm[column]);
+    }
+
+    const _getMainDiagonalCells = function(){
+        return gameboard.map((itm,idx) => itm[idx]);
+    }
+
+    const _getAntiDiagonalCells = function(){
+        return gameboard.map((itm,idx) => itm[size-idx-1]);
+    }
+
+    /* Move methods */
     const isMoveAllowed = function(row,column){
         return  0 <= row && row < size &&
                 0 <= column && column < size &&
-                gameboard[row][column].getValue() === emptyCell;
+                gameboard[row][column].getValue() === emptyCellValue;
     } 
 
     const makeMove = function(row,column){
@@ -49,10 +68,60 @@ function createGameboard(size, allowedCellValues){
         //console.log(`Gameboard:makeMove. Marking cell (${row},${column}) by user ${currentPlayer}`);
         gameboard[row][column].setValue(currentPlayer);
         return true;
-    }   
+    }
 
+    /* Winner methods */
+    const _checkEqualValidCellsInLine = function(array){
+        let firstValue = array[0].getValue();
+        return firstValue != emptyCellValue
+               && array.every(itm => itm.getValue()===firstValue);
+    }
 
-    return {makeMove, printGameboard};
+    const getArrayOfLinesOfEqualCells = function(){
+        let linesOfEqualCells = [];
+               
+        // Check a winner in the rows: only one can be winning!
+        for (let row=0; row<size; row++){
+            let rowArray = _getRowCells(row);
+            if (_checkEqualValidCellsInLine(rowArray)){
+                console.log('R'+row);
+                linesOfEqualCells.push(rowArray);
+                break;
+            }
+        }
+
+        // Check a winner in the columns: only one can be winning!
+        for (let column=0; column<size; column++){        
+            let colArray = _getColumnCells(column);
+            if (_checkEqualValidCellsInLine(colArray)){
+                console.log('C'+column);
+                linesOfEqualCells.push(colArray);
+                break;
+            }
+        }
+
+        // Check a winner in the main diagonal
+        {    
+            let mainDiagArray = _getMainDiagonalCells();
+            if (_checkEqualValidCellsInLine(mainDiagArray)){
+                console.log('D');
+                linesOfEqualCells.push(mainDiagArray);
+            }
+        }
+
+        // Check a winner in the anti diagonal
+        {    
+            let antiDiagArray = _getAntiDiagonalCells();
+            if (_checkEqualValidCellsInLine(antiDiagArray)){
+                console.log('AD');
+                linesOfEqualCells.push(antiDiagArray);
+            }
+        }
+
+        return linesOfEqualCells;
+    }
+
+    return {makeMove, printGameboard,getArrayOfLinesOfEqualCells};
 }
 
 let gameboard = createGameboard(3,[' ','x','o']);
@@ -65,8 +134,16 @@ gameboard.makeMove(-1,2);
 gameboard.printGameboard();
 gameboard.makeMove(2,2);
 gameboard.printGameboard();
-gameboard.makeMove(2,3);
+gameboard.makeMove(2,2);
 gameboard.printGameboard();
+gameboard.makeMove(2,1);
+gameboard.makeMove(2,0);
+gameboard.printGameboard();
+gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getValue()));});
+gameboard.makeMove(1,1);
+gameboard.makeMove(0,2);
+gameboard.printGameboard();
+gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getValue()));});
 
 // This factory function handles the gameboard's cell functionality
 // By default, it is a binary cell, but you can allow multiple values
@@ -88,17 +165,6 @@ function createCell(allowedValues = [0,1], val=undefined){
 
     return {getValue, setValue};
 }
-
-// TEST
-// let cell = createCell([0,1,4,5]);
-// console.log(cell.getValue());
-// cell.setValue(4);
-// console.log(cell.getValue());
-// cell.setValue(3); // not a valid value
-// let cell2 = createCell([0,1,4,5],1);
-// console.log(cell2.getValue());
-// let cell3 = createCell([0,1,4,5],3);
-// console.log(cell3.getValue());
 
 // This factory function handles the player functionality
 function createPlayer(name){
