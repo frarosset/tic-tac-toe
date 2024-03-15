@@ -16,6 +16,10 @@ function createGameboard(size, allowedCellValues){
         }
     }
 
+    const resetGameboard = function(){
+        gameboard.forEach(row => {row.map(cell => cell.resetValue());});
+    };
+
     const printGameboard = function(){
         let verticalLine = ' | ';
         let horizontalLine = '-'.repeat(size + (size-1)*verticalLine.length) + '\n';
@@ -32,20 +36,20 @@ function createGameboard(size, allowedCellValues){
             str += '\n';
         });
         console.log(str);
-    }
+    };
 
     /* Extract info */
     const _getRowCells = function(row){
         return gameboard[row];
-    }
+    };
 
     const _getColumnCells = function(column){
         return gameboard.map((itm,idx) => itm[column]);
-    }
+    };
 
     const _getMainDiagonalCells = function(){
         return gameboard.map((itm,idx) => itm[idx]);
-    }
+    };
 
     const _getAntiDiagonalCells = function(){
         return gameboard.map((itm,idx) => itm[size-idx-1]);
@@ -56,7 +60,7 @@ function createGameboard(size, allowedCellValues){
         return  0 <= row && row < size &&
                 0 <= column && column < size &&
                 gameboard[row][column].getValue() === emptyCellValue;
-    } 
+    }; 
 
     const makeMove = function(row,column){
         // returns true if the move is performed, false otherwise
@@ -68,14 +72,14 @@ function createGameboard(size, allowedCellValues){
         //console.log(`Gameboard:makeMove. Marking cell (${row},${column}) by user ${currentPlayer}`);
         gameboard[row][column].setValue(currentPlayer);
         return true;
-    }
+    };
 
     /* Winner methods */
     const _checkEqualValidCellsInLine = function(array){
         let firstValue = array[0].getValue();
         return firstValue != emptyCellValue
                && array.every(itm => itm.getValue()===firstValue);
-    }
+    };
 
     const getArrayOfLinesOfEqualCells = function(){
         let linesOfEqualCells = [];
@@ -119,9 +123,9 @@ function createGameboard(size, allowedCellValues){
         }
 
         return linesOfEqualCells;
-    }
+    };
 
-    return {makeMove, printGameboard,getArrayOfLinesOfEqualCells};
+    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells};
 }
 
 let gameboard = createGameboard(3,[' ','x','o']);
@@ -144,6 +148,9 @@ gameboard.makeMove(1,1);
 gameboard.makeMove(0,2);
 gameboard.printGameboard();
 gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
+gameboard.resetGameboard();
+gameboard.printGameboard();
+gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
 
 // This factory function handles the gameboard's cell functionality
 // By default, it is a binary cell, but you can allow multiple values
@@ -154,7 +161,7 @@ function createCell(row, column, id, allowedValues = [0,1], initialValue=undefin
 
     const getValue = function(){
         return value;
-    }
+    };
 
     const setValue = function(val){
         if (!allowedValues.includes(val)){
@@ -162,23 +169,23 @@ function createCell(row, column, id, allowedValues = [0,1], initialValue=undefin
             return;
         }
         value = val;
-    }
+    };
 
     const resetValue = function(val){
         value = initialValue;
-    }
+    };
 
     const getRow = function(){
         return row;
-    }
+    };
 
     const getColumn = function(){
         return column;
-    }
+    };
 
     const getId = function(){
         return id;
-    }
+    };
 
     return {getValue, setValue, resetValue, getRow, getColumn, getId};
 }
