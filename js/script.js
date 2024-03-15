@@ -129,11 +129,11 @@ function createGameboard(size, allowedCellValues){
         return linesOfEqualCells;
     };
 
-    const isGameboardFull = function(){
+    const noEmptyCells = function(){
         return numberOfEmptyCells==0;
     }
 
-    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,isGameboardFull};
+    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells};
 }
 
 let gameboard = createGameboard(3,[' ','x','o']);
@@ -158,7 +158,7 @@ gameboard.printGameboard();
 gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
 gameboard.resetGameboard();
 gameboard.printGameboard();
-console.log(gameboard.isGameboardFull());
+console.log(gameboard.noEmptyCells());
 gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
 
 // This factory function handles the gameboard's cell functionality
@@ -200,9 +200,27 @@ function createCell(row, column, id, allowedValues = [0,1], initialValue=undefin
 }
 
 // This factory function handles the player functionality
-function createPlayer(name){
-    // todo
+function createPlayer(id, name, symbol){    
+    const getId = function(){
+        return id;
+    };
+
+    const getName = function(){
+        return name;
+    };
+
+    const getSymbol = function(){
+        return symbol;
+    };
+
+    return {getId, getName, getSymbol};
 }
+
+let player1 = createPlayer(0,'Alice','x');
+let player2 = createPlayer(1,'Bob','o');
+console.log(player1.getName());
+console.log(player1.getSymbol());
+console.log(player2.getId());
 
 // This factory function handles the flow of the game
 function gameController() {
