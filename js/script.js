@@ -1,10 +1,8 @@
 // cell values: 0: no mark, 1: player 1 mark, 2: player 2 mark, OR: [' ','X','O'];
 
 // This factory function handles the gameboard functionality
-function createGameboard(size, allowedCellValues){
+function createGameboard(size, playersValues,emptyCellValue=''){
     let gameboard = [];
-    const emptyCellValue = allowedCellValues[0];
-    let currentPlayer = allowedCellValues[1];
     let numberOfEmptyCells = size*size;
 
     // Create the empty gameboard
@@ -13,7 +11,7 @@ function createGameboard(size, allowedCellValues){
         gameboard.push([]);
         for (let c=0; c<size; c++){
             // Add cells to row
-            gameboard[r].push(createCell(r,c,r*size+c,allowedCellValues,emptyCellValue));
+            gameboard[r].push(createCell(r,c,r*size+c, [emptyCellValue,...playersValues],emptyCellValue));
         }
     }
 
@@ -58,15 +56,15 @@ function createGameboard(size, allowedCellValues){
     }
 
     /* Move methods */
-    const isMoveAllowed = function(row,column){
+    const _isMoveAllowed = function(row,column){
         return  0 <= row && row < size &&
                 0 <= column && column < size &&
                 gameboard[row][column].getValue() === emptyCellValue;
     }; 
 
-    const makeMove = function(row,column){
+    const makeMove = function(row,column,currentPlayer){
         // returns true if the move is performed, false otherwise
-        if (!isMoveAllowed(row,column)){
+        if (!_isMoveAllowed(row,column)){
             console.log(`Gameboard:makeMove. Move marking cell (${row},${column}) by user ${currentPlayer} not allowed`);
             return false;
         }
@@ -74,7 +72,7 @@ function createGameboard(size, allowedCellValues){
         //console.log(`Gameboard:makeMove. Marking cell (${row},${column}) by user ${currentPlayer}`);
         gameboard[row][column].setValue(currentPlayer);
         numberOfEmptyCells--;
-        console.log(numberOfEmptyCells)
+
         return true;
     };
 
@@ -136,31 +134,6 @@ function createGameboard(size, allowedCellValues){
     return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells};
 }
 
-let gameboard = createGameboard(3,[' ','x','o']);
-gameboard.printGameboard();
-gameboard.makeMove(1,2);
-gameboard.printGameboard();
-gameboard.makeMove(2,2);
-gameboard.printGameboard();
-gameboard.makeMove(-1,2);
-gameboard.printGameboard();
-gameboard.makeMove(2,2);
-gameboard.printGameboard();
-gameboard.makeMove(2,2);
-gameboard.printGameboard();
-gameboard.makeMove(2,1);
-gameboard.makeMove(2,0);
-gameboard.printGameboard();
-gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
-gameboard.makeMove(1,1);
-gameboard.makeMove(0,2);
-gameboard.printGameboard();
-gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
-gameboard.resetGameboard();
-gameboard.printGameboard();
-console.log(gameboard.noEmptyCells());
-gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
-
 // This factory function handles the gameboard's cell functionality
 // By default, it is a binary cell, but you can allow multiple values
 // By default, it is initialized the first allowed value, but a different initialization value can be provided
@@ -200,7 +173,7 @@ function createCell(row, column, id, allowedValues = [0,1], initialValue=undefin
 }
 
 // This factory function handles the player functionality
-function createPlayer(id, name, symbol){  
+function createPlayer(id, name, value){  
     let score = 0;
     
     /* Get info */
@@ -212,8 +185,8 @@ function createPlayer(id, name, symbol){
         return name;
     };
 
-    const getSymbol = function(){
-        return symbol;
+    const getValue = function(){
+        return value;
     };
 
     /* Edit score */
@@ -227,20 +200,34 @@ function createPlayer(id, name, symbol){
         score += amount;
     };
 
-    return {getId, getName, getSymbol, getScore, resetScore, incrementScoreBy};
+    return {getId, getName, getValue, getScore, resetScore, incrementScoreBy};
 }
 
-let player1 = createPlayer(0,'Alice','x');
-let player2 = createPlayer(1,'Bob','o');
-console.log(player1.getName());
-console.log(player1.getSymbol());
-console.log(player1.getScore());
-player1.incrementScoreBy();
-console.log(player1.getScore());
-player1.incrementScoreBy(3);
-console.log(player1.getScore());
-player1.resetScore();
-console.log(player1.getScore());
+let players = [createPlayer(0,'Alice','x'), createPlayer(0,'Bob','o')]
+let currentPlayer = players[0].getValue();
+let gameboard = createGameboard(3,players.map(player => player.getValue()),' ');
+gameboard.printGameboard();
+gameboard.makeMove(1,2,currentPlayer);
+gameboard.printGameboard();
+gameboard.makeMove(2,2,currentPlayer);
+gameboard.printGameboard();
+gameboard.makeMove(-1,2,currentPlayer);
+gameboard.printGameboard();
+gameboard.makeMove(2,2,currentPlayer);
+gameboard.printGameboard();
+gameboard.makeMove(2,2,currentPlayer);
+gameboard.printGameboard();
+gameboard.makeMove(2,1,currentPlayer);
+gameboard.makeMove(2,0,currentPlayer);
+gameboard.printGameboard();
+gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
+gameboard.makeMove(1,1,currentPlayer);
+gameboard.makeMove(0,2,currentPlayer);
+gameboard.printGameboard();
+gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
+gameboard.resetGameboard();
+gameboard.printGameboard();
+gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
 
 // This factory function handles the flow of the game
 function gameController() {
