@@ -148,14 +148,15 @@ gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell =>
 // This factory function handles the gameboard's cell functionality
 // By default, it is a binary cell, but you can allow multiple values
 // By default, it is initialized the first allowed value, but a different initialization value can be provided
-function createCell(row, column, id, allowedValues = [0,1], val=undefined){
-    let value = allowedValues.includes(val) ? val : allowedValues[0]; 
+function createCell(row, column, id, allowedValues = [0,1], initialValue=undefined){
+    initialValue = allowedValues.includes(initialValue) ? initialValue : allowedValues[0]; 
+    let value = initialValue;
 
-    let getValue = function(){
+    const getValue = function(){
         return value;
     }
 
-    let setValue = function(val){
+    const setValue = function(val){
         if (!allowedValues.includes(val)){
             console.log(`Cell:setValue. Value ${val} not allowed. Allowed values are: {${allowedValues}}`);
             return;
@@ -163,19 +164,23 @@ function createCell(row, column, id, allowedValues = [0,1], val=undefined){
         value = val;
     }
 
-    let getRow = function(){
+    const resetValue = function(val){
+        value = initialValue;
+    }
+
+    const getRow = function(){
         return row;
     }
 
-    let getColumn = function(){
+    const getColumn = function(){
         return column;
     }
 
-    let getId = function(){
+    const getId = function(){
         return id;
     }
 
-    return {getValue, setValue, getRow, getColumn, getId};
+    return {getValue, setValue, resetValue, getRow, getColumn, getId};
 }
 
 // This factory function handles the player functionality
