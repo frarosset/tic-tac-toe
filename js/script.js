@@ -1,5 +1,3 @@
-// cell values: 0: no mark, 1: player 1 mark, 2: player 2 mark, OR: [' ','X','O'];
-
 // This factory function handles the gameboard functionality
 function createGameboard(size, emptyCellValue=''){
     let gameboard = [];
@@ -17,7 +15,7 @@ function createGameboard(size, emptyCellValue=''){
 
     const resetGameboard = function(){
         numberOfEmptyCells = size*size;
-        gameboard.forEach(row => {row.map(cell => cell.resetCellValue());});
+        gameboard.forEach(row => {row.map(cell => cell.resetCellPlayer());});
     };
 
     const printGameboard = function(){
@@ -65,12 +63,12 @@ function createGameboard(size, emptyCellValue=''){
     const makeMove = function(row,column,currentPlayer){
         // returns true if the move is performed, false otherwise
         if (!_isMoveAllowed(row,column)){
-            console.log(`Gameboard:makeMove. Setting cell (${row},${column}) to "${currentPlayer}" not allowed`);
+            console.log(`Gameboard:makeMove. Setting cell (${row},${column}) to "${currentPlayer.getPlayerName()}" not allowed`);
             return false;
         }
 
         //console.log(`Gameboard:makeMove. Marking cell (${row},${column}) by user ${currentPlayer}`);
-        gameboard[row][column].setCellValue(currentPlayer);
+        gameboard[row][column].setCellPlayer(currentPlayer);
         numberOfEmptyCells--;
 
         return true;
@@ -135,21 +133,25 @@ function createGameboard(size, emptyCellValue=''){
 }
 
 // This factory function handles the gameboard's cell functionality
-// By default, it is a binary cell, but you can allow multiple values
-// By default, it is initialized the first allowed value, but a different initialization value can be provided
-function createCell(row, column, id, initialValue=undefined){
-    let value = initialValue;
+// A player object reference can be assigned to the cell, which has a getPlayerValue() method
+//    which gives the displayed symbol
+// By default, no player is associated: the empty cell displayed value is given by the parameter emptyCellValue
+function createCell(row, column, id, emptyCellValue=""){
+    let player = null;
 
     const getCellValue = function(){
-        return value;
+        if (player)
+            return player.getPlayerValue();
+        else
+            return emptyCellValue;
     };
 
-    const setCellValue = function(val){
-        value = val;
+    const setCellPlayer = function(playerToSet){
+        player = playerToSet;
     };
 
-    const resetCellValue = function(val){
-        value = initialValue;
+    const resetCellPlayer = function(){
+        player = null;
     };
 
     const getCellRow = function(){
@@ -164,7 +166,7 @@ function createCell(row, column, id, initialValue=undefined){
         return id;
     };
 
-    return {getCellValue, setCellValue, resetCellValue, getCellRow, getCellColumn, getCellId};
+    return {getCellValue, setCellPlayer, resetCellPlayer, getCellRow, getCellColumn, getCellId};
 }
 
 // This factory function handles the player functionality
@@ -257,7 +259,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
 
     const playMove = function(row, column){ 
         // try to make the move
-        if(!gameboard.makeMove(row,column,getCurrentPlayer().getPlayerValue()))
+        if(!gameboard.makeMove(row,column,getCurrentPlayer()))
             return 0; // continue game
 
         // check if a user has won
@@ -291,8 +293,10 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
         while (true){
             // Get info on the move to perform
             gameboard.printGameboard();
-            console.log(`${getCurrentPlayer().getPlayerName()}'s turn [${getCurrentPlayer().getPlayerValue()}].`);
-            let input = prompt(`${getCurrentPlayer().getPlayerName()}'s turn [${getCurrentPlayer().getPlayerValue()}].\n\nInsert the selected cell index as "row,column:"\n(recall that row and column indices starts from 0)`);
+            let currentPlayerName = getCurrentPlayer().getPlayerName();
+            let currentPlayerValue = getCurrentPlayer().getPlayerValue();
+            console.log(`${currentPlayerName}'s turn [${currentPlayerValue}].`);
+            let input = prompt(`${currentPlayerName}'s turn [${currentPlayerValue}].\n\nInsert the selected cell index as "row,column:"\n(recall that row and column indices starts from 0)`);
             [row,column] = input.split(',').map(itm => parseInt(itm.trim()));
 
             // Perform the move
@@ -341,7 +345,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
 
     playConsoleGame();
     
-    return {getCurrentPlayer, initRound, playMove, playConsoleGame, getGameWinnerPlayer};
+    return {getCurrentPlayer, initRound, playMove, playConsoleGame, getGameWinnerPlayer, getRoundWinnerPlayer};
 
 }
 
