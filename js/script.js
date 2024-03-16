@@ -351,7 +351,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
 
 }
 
-let game = gameController(3,'Alice','Bob');
+//let game = gameController(3,'Alice','Bob');
 
 
 // This factory function handles the display of the game in the DOM --> IIFE (module pattern), as we need a single instance

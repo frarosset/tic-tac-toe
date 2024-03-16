@@ -1,46 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
 :root,
 ::backdrop {
     /* Colors (palette)*/
-    --col-purewhite:     white;
-    --col-white:         #f5f3ff;
-    --col-black:         #474545;
-    --col-accent-dark:   #7c3aed;
-    --col-accent-medium: #a78bfa;
-    --col-accent-light:  #ddd6fe;
+    --col-black:     #0b132b;
+    --col-dark-grey: #1c2541;
+    --col-light-grey:#3a506b;
+    --col-white:     #ecebe4;
+    --col-x:         #009ddc;
+    --col-o:         #efa00b;
+    /* #6d9dc5,  ddd1c7*/
 
     /* Colors (background)*/
-    --bg-col:                   var(--col-purewhite);
+    --bg-col:                   var(--col-black);
     
     /* Colors (text/icons)*/
-    --col-txt:                  var(--col-black);
-    --col-txt-alt:              var(--col-white);
-    --col-highlight:            var(--col-accent-dark);
+    --col-txt:                  var(--col-white);
 
     /* Colors (icons)*/
 
+
     /* Font family */
-    --main-font: 'Montserrat', sans-serif;
+    --main-font: 'Century Gothic', sans-serif;
 
     /* Font sizes */
     --txt-fontsize:     18px;
-    --txt-lineheight:   1.2;
+    --txt-lineheight:   1;
+    --header-h1-fontsize: 1rem;
 
     /* Text clamping: number of lines */
-    /* --main-itm-project-description-max-lines: 6;
-    --main-itm-announcements-description-max-lines: 3; */
 
     /* Maximum width (including dashboard margin) */
-    /* --max-width: min(1440px, 100%); */
+    --max-width: min(1440px, 100%);
 
     /*Margins, gaps and paddings (+widths)*/
+    --main-lr-padding:   5vmin;
+    --main-ud-padding:   3vmin;
+    --header-ud-padding: 3vmin;
 
     /* Images / icons size */
 
 
     /* Radius */
-    /* --radius:           10px; */
+
 
     /* Shadows */
     /* --outset-shadow: 2px 2px 8px var(--col-accent-medium);
@@ -49,6 +51,9 @@
 
     /* Animations on hover / active / ...*/
     /* --transition-time: 0.8s; */
+
+    /* Other info */
+    --gameboard-size: 3;
 
 }
 
@@ -77,6 +82,7 @@ html {
     padding: 0;
     margin: 0;
     vertical-align: baseline;
+    user-select: none;
 }
 
 
@@ -92,7 +98,7 @@ body {
     width: 100%;
     /* or max-width -- this avoids horizontal scroll bars */
     
-     touch-action: manipulation; /* disable double tap to zoom on some browsers*/
+    touch-action: manipulation; /* disable double tap to zoom on some browsers*/
 }
 
 /*****************************************************/
@@ -105,39 +111,155 @@ body{
     align-items: center;
 }
 
-body>*{
-    width: 100%;
-}
+/* || Main and Header blocks */
 
-.header-container,
-.main-container{
+header,
+main{
     width: 100%;
     max-width: var(--max-width);
     margin: 0 auto;
 }
 
-p {
-   text-wrap: balance;
+header{
+    padding: var(--header-ud-padding) var(--main-lr-padding);
 }
 
-ul{
-    list-style: none;    
+main{
+    padding: var(--main-ud-padding) var(--main-lr-padding);
+    flex:1;
+    height: 100%;
 }
 
-a,
-a:hover,
-a:active,
-a:visited{
-    text-decoration: none;
+/* || Header */
+h1{
+    font-size: var(--header-h1-fontsize);
 }
+
+/* || Main - gameboard */
+.gameboard-div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 100%;
+    width: 100%;
+}
+
+:root{
+    --gameboard-gap:            2dvmin;
+    --gameboard-gap-hover:      4dvmin;  
+    --gameboard-padding:        var(--gameboard-gap);
+    --gameboard-cell-padding:   5%;
+
+    --gameboard-bg-col:             var(--col-light-grey);
+    --gameboard-bg-col-hover:       transparent;
+    --gameboard-cell-bg-col:        var(--col-dark-grey);
+    --gameboard-cell-bg-col-hover:  var(--col-light-grey);
+    --gameboard-cell-bg-col-active: var(--col-light-grey);   
+
+    --gameboard-cell-border-col:    var(--col-dark-grey);
+    --gameboard-cell-border-col-hover: var(--col-light-grey);
+    --gameboard-cell-border-col-active:var(--col-dark-grey);;
+
+    --gameboard-cell-border:        0px;
+    --gameboard-hover-cell-border:  5px;
+
+    --gameboard-radius:             20px;
+    --gameboard-cell-radius:        5px;
+    --gameboard-hover-cell-radius:  10px;
+    --gameboard-cell-radius-hover:  30px;
+    --gameboard-cell-radius-active: 40px;
+}
+
+.gameboard{
+    width: 100%; /* tofix height in landscape mode todo*/
+    aspect-ratio: 1;
+    background-color: var(--gameboard-bg-col);
+    
+    display: grid;
+    grid-template-rows: repeat(var(--gameboard-size), 1fr);
+    grid-template-columns: repeat(var(--gameboard-size), 1fr);
+
+    gap: var(--gameboard-gap);
+    padding: var(--gameboard-padding);                
+    border-radius: var(--gameboard-radius);
+}
+
+.gameboard .cell{
+    /* aspect-ratio: 1; */
+    background-color: var(--gameboard-cell-bg-col);
+
+    border: var(--gameboard-cell-border) solid var(--gameboard-cell-border-col);
+    border-radius: var(--gameboard-cell-radius);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: var(--gameboard-cell-padding);
+}
+
+/* Fix cells radius on vertex: you need to specify a specific class on the corner */
+/* While you could use :first-child and :last-child for the TL and BR corners, */
+/* you can't use CSS variables (--gameboard-size) within :nth-child() and ::nth-last-child() to get the remaining corners */
+.gameboard .cell.cell-tl{
+    border-top-left-radius: var(--gameboard-radius);
+}
+.gameboard .cell.cell-br{
+    border-bottom-right-radius: var(--gameboard-radius);
+}
+.gameboard .cell.cell-tr{
+    border-top-right-radius: var(--gameboard-radius);
+}
+.gameboard .cell.cell-bl{
+    border-bottom-left-radius: var(--gameboard-radius);  
+}
+
+/* Hovering behaviour */
+/* when hover is supported */
+@media not all and (hover: none){
+    .gameboard:hover{
+        --gameboard-cell-border: var(--gameboard-hover-cell-border);  
+        --gameboard-gap:         var(--gameboard-gap-hover);
+        --gameboard-bg-col:      var(--gameboard-bg-col-hover);
+        --gameboard-cell-radius: var(--gameboard-hover-cell-radius);
+    }
+    .gameboard .cell:hover{
+        /* --gameboard-cell-radius: var(--gameboard-cell-radius-hover); */
+        border-radius: var(--gameboard-cell-radius-hover);
+        --gameboard-cell-bg-col:        var(--gameboard-cell-bg-col-hover);
+        --gameboard-cell-border-col:    var(--gameboard-cell-border-col-hover);
+    }
+}
+
+/* here replicate the same style as above, for devices not supporing hover */
+/* active-specific styles are overwritten */
+.gameboard:active{
+    --gameboard-cell-border: var(--gameboard-hover-cell-border);  
+    --gameboard-gap:         var(--gameboard-gap-hover);
+    --gameboard-bg-col:      var(--gameboard-bg-col-hover);
+    --gameboard-cell-radius: var(--gameboard-hover-cell-radius);
+}
+.gameboard .cell:active{
+    /* --gameboard-cell-radius: var(--gameboard-cell-radius-active); */
+    border-radius: var(--gameboard-cell-radius-active);
+    --gameboard-cell-bg-col: var(--gameboard-cell-bg-col-active);
+    --gameboard-cell-border-col: var(--gameboard-cell-border-col-active);
+}
+
+
+
+
+
+
+
+
 
 
 
 /* when hover is supported */
 @media not all and (hover: none){
-    dialog.rules a:hover{
-        font-weight: bold;
-    }
+
 }
 
 /* tablet or larger, or landscape (vs portrait)*/
