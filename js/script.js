@@ -1,3 +1,14 @@
+const DOMUtilities = (function(){
+    const removeDescendants = function(elem){
+        while (elem.hasChildNodes()) {
+            removeDescendants(elem.lastChild)
+            elem.removeChild(elem.lastChild);
+        }
+    }
+
+    return {removeDescendants};
+})();
+
 // This factory function handles the gameboard functionality
 function createGameboard(size, emptyCellValue=''){
     let gameboard = [];
@@ -345,18 +356,74 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
             console.log(`No winner! It's a tie.`);
     };
 
-    playConsoleGame();
+    // playConsoleGame();
     
     return {getCurrentPlayer, initRound, playMove, playConsoleGame, getGameWinnerPlayer, getRoundWinnerPlayer};
 
 }
 
-//let game = gameController(3,'Alice','Bob');
-
-
 // This factory function handles the display of the game in the DOM --> IIFE (module pattern), as we need a single instance
 const dispalyController = (function() {
-    // todo
+    let gameboardSize = 3;
+    let playerXName = 'Alice';
+    let playerOName = 'Bob';
+    let game = null;
+
+    // DOM cache
+    const gameboardDiv = document.querySelector('main .gameboard');
+
+
+    // Gameboard creation, e.g.,
+    // <div class="gameboard">
+    //     <div class="cell cell-tl icon-mask"></div>
+    //     <div class="cell icon-mask"></div>
+    //     <div class="cell cell-tr icon-mask"></div>
+    //     <div class="cell icon-mask"></div>
+    //     <div class="cell icon-mask"></div>
+    //     <div class="cell icon-mask"></div>
+    //     <div class="cell cell-bl icon-mask"></div>
+    //     <div class="cell icon-mask"></div>
+    //     <div class="cell cell-br icon-mask"></div>
+    // </div>
+    const initGameboardDOM = function(){
+        // Reset the gameboard
+        resetGameboardDOM();
+
+        // Add the cells
+        for (let r=0; r<gameboardSize; r++){
+            for (let c=0; c<gameboardSize;c++){
+                let cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.classList.add('icon-mask');
+
+                if (r==0){
+                    if (c==0){
+                        cell.classList.add('cell-tl');
+                    } else if (c==gameboardSize-1){
+                        cell.classList.add('cell-tr');
+                    } 
+                } else if (r==gameboardSize-1){
+                    if (c==0){
+                        cell.classList.add('cell-bl');
+                    } else if (c==gameboardSize-1){
+                        cell.classList.add('cell-br');
+                    } 
+                } 
+
+                gameboardDiv.appendChild(cell);
+            }
+        }
+    }
+
+    const resetGameboardDOM = function(){
+        DOMUtilities.removeDescendants(gameboardDiv);
+    }
+
+
+    // Initailize a new game immediately
+    // todo: start after selecting the right settings
+    game = gameController(gameboardSize,playerXName,playerOName);
+    initGameboardDOM();
 })();
 
 
@@ -378,12 +445,7 @@ function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function removeDescendants(elem){
-    while (elem.hasChildNodes()) {
-        removeDescendants(elem.lastChild)
-        elem.removeChild(elem.lastChild);
-    }
-}
+
 
 // from: https://stackoverflow.com/a/143889
 // Determines if the passed element is overflowing its bounds,
