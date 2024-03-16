@@ -65,7 +65,7 @@ function createGameboard(size, playersValues,emptyCellValue=''){
     const makeMove = function(row,column,currentPlayer){
         // returns true if the move is performed, false otherwise
         if (!_isMoveAllowed(row,column)){
-            console.log(`Gameboard:makeMove. Move marking cell (${row},${column}) by user ${currentPlayer} not allowed`);
+            console.log(`Gameboard:makeMove. Setting cell (${row},${column}) to "${currentPlayer}" not allowed`);
             return false;
         }
 
@@ -203,11 +203,22 @@ function createPlayer(id, name, value){
     return {getId, getName, getValue, getScore, resetScore, incrementScoreBy};
 }
 
+function createRoundWinner(player, assignedPoints, winningCells){
+    // Game / win status
+    const getPlayer = function(){
+        return player;
+    }
 
+    const getAssignedPoints = function(){
+        return assignedPoints;
+    }
 
-// gameboard.makeMove(0,2,currentPlayer);
-// gameboard.printGameboard();
-// gameboard.getArrayOfLinesOfEqualCells().map(line =>{console.log(line.map(cell => cell.getId()));});
+    const getWinningCells = function(){
+        return winningCells;
+    }
+
+    return {getPlayer, getAssignedPoints, getWinningCells};
+}
 
 // This factory function handles the flow of the game
 function gameController(size,player1Name='Player 1', player2Name='Player 2') {
@@ -218,28 +229,129 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
     const players = [createPlayer(0,player1Name,'x'), createPlayer(1,player2Name,'o')];
     let currentPlayerIdx = 0;
 
+    let roundWinner;
+
     const gameboard = createGameboard(size,players.map(player => player.getValue()),emptyCellValue);
 
     // Player functions
     const getCurrentPlayer = function(){
         return players[currentPlayerIdx];
     }
-    const changeCurrentPlayer = function(){
+    const _changeCurrentPlayer = function(){
         currentPlayerIdx = (currentPlayerIdx+1) % players.length;
-    }  
+    }
+
+    const getRoundWinnerPlayer = function(){
+        return roundWinner;
+    }
+
+    const getGameWinnerPlayer = function(){
+        if (players[0].getScore() > players[1].getScore())
+            return players[0];
+        else if (players[0].getScore() < players[1].getScore())
+            return players[1];
+        else // no winner
+            return null;
+    }
+
+    // Play functions
+    const initRound = function(){
+        roundWinner = undefined;
+        gameboard.resetGameboard();
+    }
+
+    const playMove = function(row, column){ 
+        // try to make the move
+        if(!gameboard.makeMove(row,column,getCurrentPlayer().getValue()))
+            return 0; // continue game
+
+        // check if a user has won
+        let equalLines = gameboard.getArrayOfLinesOfEqualCells();
+        if (equalLines.length){
+            console.log(equalLines[0][0].getValue());
+            roundWinner = createRoundWinner(players[0], equalLines.length, equalLines)
+            // players [0] is a placeholder -- this is to fix. The gameboard has no info on the index of the user--> better to store the pointer to the userrather than its value (todo)
+
+            // Increment Player points
+            roundWinner.getPlayer().incrementScoreBy(roundWinner.getAssignedPoints());
+            return 1;  // games ends with a winner
+        }
+
+        // check if the gameboard is full
+        if (gameboard.noEmptyCells()){
+            return -1; // games ends with a tie
+        }
+
+        // change player
+        _changeCurrentPlayer();
+        return 0; // continue game
+    };
+
+    // Play in console
+    const _playConsoleRound = function(){
+        console.log('Starting a new round...');
+
+        initRound();
+
+        while (true){
+            // Get info on the move to perform
+            gameboard.printGameboard();
+            console.log(`${getCurrentPlayer().getName()}'s turn [${getCurrentPlayer().getValue()}].`);
+            let input = prompt(`${getCurrentPlayer().getName()}'s turn [${getCurrentPlayer().getValue()}].\n\nInsert the selected cell index as "row,column:"\n(recall that row and column indices starts from 0)`);
+            [row,column] = input.split(',').map(itm => parseInt(itm.trim()));
+
+            // Perform the move
+            let gameOutcome = playMove(row,column); // 0: the round continues, 1: a player wins, -1: it's a tie
+
+            // Possibly end the round
+            if (gameOutcome){ // games ends
+                gameboard.printGameboard();
+
+                if (gameOutcome==1){ // there is a winner
+                    let assignedPoints = roundWinner.getAssignedPoints(); 
+                    console.log(`${roundWinner.getPlayer().getName()} wins this round${assignedPoints>1 ? ` with a ${assignedPoints}x combo, getting ${assignedPoints-1} extra point${assignedPoints>2?'s':''}!` : '.'}`);
+                } else{ // -1, tie
+                    console.log(`It's a tie! No winner in this round...`);
+                }
+                break;
+            }
+        }
+    };
+
+    const playConsoleGame = function(){
+        console.log(`Welcome to tic-tac-toe\n`);
+        console.log(`${players[0].getName()} VS ${players[1].getName()}`);
+
+        while(true){
+            _playConsoleRound();
+
+            // Print player status
+            console.log(`${players[0].getName()}: ${players[0].getScore()}\n${players[1].getName()}: ${players[1].getScore()}\n`);
+
+            // Ask if the user wants to end the game
+            if(prompt(`Press 'ENTER' to continue. Type 'stop' to end the game.`).toLowerCase()=='stop')
+                break;
+        }
+
+        roundWinner = undefined; // clear the round winner
+        console.log(`Game ended!\n`);
+
+        // Print the final game result
+        let gameWinnerPlayer = getGameWinnerPlayer();
+        if (gameWinnerPlayer)
+            console.log(`${gameWinnerPlayer.getName()} WINS!`);
+        else
+            console.log(`No winner! It's a tie.`);
+    };
+
+    playConsoleGame();
     
-    return {getCurrentPlayer, changeCurrentPlayer};
+    return {getCurrentPlayer, initRound, playMove, playConsoleGame, getGameWinnerPlayer};
 
 }
 
-let game = gameController(3);
-console.log(game.getCurrentPlayer().getName());
-game.changeCurrentPlayer();
-console.log(game.getCurrentPlayer().getName());
-game.changeCurrentPlayer();
-console.log(game.getCurrentPlayer().getName());
-game.changeCurrentPlayer();
-console.log(game.getCurrentPlayer().getName());
+let game = gameController(3,'Alice','Bob');
+
 
 // This factory function handles the display of the game in the DOM --> IIFE (module pattern), as we need a single instance
 const dispalyController = (function() {
