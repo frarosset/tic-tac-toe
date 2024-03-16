@@ -146,6 +146,10 @@ function createCell(row, column, id, emptyCellValue=""){
             return emptyCellValue;
     };
 
+    const getCellPlayer = function(){
+        return player;
+    };
+
     const setCellPlayer = function(playerToSet){
         player = playerToSet;
     };
@@ -166,7 +170,7 @@ function createCell(row, column, id, emptyCellValue=""){
         return id;
     };
 
-    return {getCellValue, setCellPlayer, resetCellPlayer, getCellRow, getCellColumn, getCellId};
+    return {getCellValue, getCellPlayer, setCellPlayer, resetCellPlayer, getCellRow, getCellColumn, getCellId};
 }
 
 // This factory function handles the player functionality
@@ -265,9 +269,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
         // check if a user has won
         let equalLines = gameboard.getArrayOfLinesOfEqualCells();
         if (equalLines.length){
-            console.log(equalLines[0][0].getCellValue());
-            roundWinner = createRoundWinner(players[0], equalLines.length, equalLines)
-            // players [0] is a placeholder -- this is to fix. The gameboard has no info on the index of the user--> better to store the pointer to the userrather than its value (todo)
+            roundWinner = createRoundWinner(equalLines[0][0].getCellPlayer(), equalLines.length, equalLines);
 
             // Increment Player points
             roundWinner.getPlayer().incrementPlayerScoreBy(roundWinner.getAssignedPoints());
