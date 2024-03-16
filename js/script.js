@@ -275,7 +275,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
     const playMove = function(row, column){ 
         // try to make the move
         if(!gameboard.makeMove(row,column,getCurrentPlayer()))
-            return 0; // continue game
+            return -1; // continue game, invalid move
 
         // check if a user has won
         let equalLines = gameboard.getArrayOfLinesOfEqualCells();
@@ -289,7 +289,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
 
         // check if the gameboard is full
         if (gameboard.noEmptyCells()){
-            return -1; // games ends with a tie
+            return 2; // games ends with a tie
         }
 
         // change player
@@ -313,16 +313,16 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
             [row,column] = input.split(',').map(itm => parseInt(itm.trim()));
 
             // Perform the move
-            let gameOutcome = playMove(row,column); // 0: the round continues, 1: a player wins, -1: it's a tie
+            let moveOutcome = playMove(row,column); // 0,-1: the round continues, 1: a player wins, 2: it's a tie
 
             // Possibly end the round
-            if (gameOutcome){ // games ends
+            if (moveOutcome>0){ // games ends
                 gameboard.printGameboard();
 
-                if (gameOutcome==1){ // there is a winner
+                if (moveOutcome==1){ // there is a winner
                     let assignedPoints = roundWinner.getAssignedPoints(); 
                     console.log(`${roundWinner.getPlayer().getPlayerName()} wins this round${assignedPoints>1 ? ` with a ${assignedPoints}x combo, getting ${assignedPoints-1} extra point${assignedPoints>2?'s':''}!` : '.'}`);
-                } else{ // -1, tie
+                } else{ // 2, tie
                     console.log(`It's a tie! No winner in this round...`);
                 }
                 break;
@@ -410,20 +410,62 @@ const dispalyController = (function() {
                     } 
                 } 
 
+                // add row/col info
+                cell.varRow = r;
+                cell.varColumn = c;
+
                 gameboardDiv.appendChild(cell);
             }
         }
-    }
+    };
 
     const resetGameboardDOM = function(){
         DOMUtilities.removeDescendants(gameboardDiv);
-    }
+    };
 
+    // Player functions
+    const playMoveDOM_callback = function(e){
+        let elem = e.target;
+        if (!elem.classList.contains('cell'))
+            return;
+
+        // Get the cell row and column
+        let row = elem.varRow;
+        let column = elem.varColumn;
+
+        // Get the current player
+        let currentPlayerValue = game.getCurrentPlayer().getPlayerValue();
+
+        // Try to do the move
+        let moveOutcome = game.playMove(row,column);
+
+        // Invalid move: ignore it
+        if (moveOutcome < 0)
+            return;
+        
+        // Mark the cell with the player mark
+        elem.classList.add(currentPlayerValue);
+
+        // Possibly end the round
+        if (moveOutcome>0){
+            if (moveOutcome == 1){
+                // The current player wins
+                console.log('Someone wins')
+                gameboardDiv.removeEventListener('click',playMoveDOM_callback);
+            } else if (moveOutcome == 2){
+                // The game finishes with a tie
+                console.log('It\'s a tie')
+                gameboardDiv.removeEventListener('click',playMoveDOM_callback);
+            }        
+        }
+    }
 
     // Initailize a new game immediately
     // todo: start after selecting the right settings
     game = gameController(gameboardSize,playerXName,playerOName);
     initGameboardDOM();
+    gameboardDiv.addEventListener('click',playMoveDOM_callback);
+
 })();
 
 
