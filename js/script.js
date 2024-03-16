@@ -1,7 +1,7 @@
 // cell values: 0: no mark, 1: player 1 mark, 2: player 2 mark, OR: [' ','X','O'];
 
 // This factory function handles the gameboard functionality
-function createGameboard(size, playersValues,emptyCellValue=''){
+function createGameboard(size, emptyCellValue=''){
     let gameboard = [];
     let numberOfEmptyCells = size*size;
 
@@ -11,7 +11,7 @@ function createGameboard(size, playersValues,emptyCellValue=''){
         gameboard.push([]);
         for (let c=0; c<size; c++){
             // Add cells to row
-            gameboard[r].push(createCell(r,c,r*size+c, [emptyCellValue,...playersValues],emptyCellValue));
+            gameboard[r].push(createCell(r,c,r*size+c, emptyCellValue));
         }
     }
 
@@ -137,8 +137,7 @@ function createGameboard(size, playersValues,emptyCellValue=''){
 // This factory function handles the gameboard's cell functionality
 // By default, it is a binary cell, but you can allow multiple values
 // By default, it is initialized the first allowed value, but a different initialization value can be provided
-function createCell(row, column, id, allowedValues = [0,1], initialValue=undefined){
-    initialValue = allowedValues.includes(initialValue) ? initialValue : allowedValues[0]; 
+function createCell(row, column, id, initialValue=undefined){
     let value = initialValue;
 
     const getCellValue = function(){
@@ -146,10 +145,6 @@ function createCell(row, column, id, allowedValues = [0,1], initialValue=undefin
     };
 
     const setCellValue = function(val){
-        if (!allowedValues.includes(val)){
-            console.log(`Cell:setCellValue. Value ${val} not allowed. Allowed values are: {${allowedValues}}`);
-            return;
-        }
         value = val;
     };
 
@@ -231,7 +226,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
 
     let roundWinner;
 
-    const gameboard = createGameboard(size,players.map(player => player.getPlayerValue()),emptyCellValue);
+    const gameboard = createGameboard(size,emptyCellValue);
 
     // Player functions
     const getCurrentPlayer = function(){
