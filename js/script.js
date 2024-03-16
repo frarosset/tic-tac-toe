@@ -17,7 +17,7 @@ function createGameboard(size, playersValues,emptyCellValue=''){
 
     const resetGameboard = function(){
         numberOfEmptyCells = size*size;
-        gameboard.forEach(row => {row.map(cell => cell.resetValue());});
+        gameboard.forEach(row => {row.map(cell => cell.resetCellValue());});
     };
 
     const printGameboard = function(){
@@ -31,7 +31,7 @@ function createGameboard(size, playersValues,emptyCellValue=''){
             row.forEach((cell,idx) => {
                 if (idx>0)
                     str += verticalLine;
-                    str += cell.getValue();
+                    str += cell.getCellValue();
             });
             str += '\n';
         });
@@ -59,7 +59,7 @@ function createGameboard(size, playersValues,emptyCellValue=''){
     const _isMoveAllowed = function(row,column){
         return  0 <= row && row < size &&
                 0 <= column && column < size &&
-                gameboard[row][column].getValue() === emptyCellValue;
+                gameboard[row][column].getCellValue() === emptyCellValue;
     }; 
 
     const makeMove = function(row,column,currentPlayer){
@@ -70,7 +70,7 @@ function createGameboard(size, playersValues,emptyCellValue=''){
         }
 
         //console.log(`Gameboard:makeMove. Marking cell (${row},${column}) by user ${currentPlayer}`);
-        gameboard[row][column].setValue(currentPlayer);
+        gameboard[row][column].setCellValue(currentPlayer);
         numberOfEmptyCells--;
 
         return true;
@@ -78,9 +78,9 @@ function createGameboard(size, playersValues,emptyCellValue=''){
 
     /* Game finished methods */
     const _checkEqualValidCellsInLine = function(array){
-        let firstValue = array[0].getValue();
+        let firstValue = array[0].getCellValue();
         return firstValue != emptyCellValue
-               && array.every(itm => itm.getValue()===firstValue);
+               && array.every(itm => itm.getCellValue()===firstValue);
     };
 
     const getArrayOfLinesOfEqualCells = function(){
@@ -141,35 +141,35 @@ function createCell(row, column, id, allowedValues = [0,1], initialValue=undefin
     initialValue = allowedValues.includes(initialValue) ? initialValue : allowedValues[0]; 
     let value = initialValue;
 
-    const getValue = function(){
+    const getCellValue = function(){
         return value;
     };
 
-    const setValue = function(val){
+    const setCellValue = function(val){
         if (!allowedValues.includes(val)){
-            console.log(`Cell:setValue. Value ${val} not allowed. Allowed values are: {${allowedValues}}`);
+            console.log(`Cell:setCellValue. Value ${val} not allowed. Allowed values are: {${allowedValues}}`);
             return;
         }
         value = val;
     };
 
-    const resetValue = function(val){
+    const resetCellValue = function(val){
         value = initialValue;
     };
 
-    const getRow = function(){
+    const getCellRow = function(){
         return row;
     };
 
-    const getColumn = function(){
+    const getCellColumn = function(){
         return column;
     };
 
-    const getId = function(){
+    const getCellId = function(){
         return id;
     };
 
-    return {getValue, setValue, resetValue, getRow, getColumn, getId};
+    return {getCellValue, setCellValue, resetCellValue, getCellRow, getCellColumn, getCellId};
 }
 
 // This factory function handles the player functionality
@@ -177,30 +177,30 @@ function createPlayer(id, name, value){
     let score = 0;
     
     /* Get info */
-    const getId = function(){
+    const getPlayerId = function(){
         return id;
     };
 
-    const getName = function(){
+    const getPlayerName = function(){
         return name;
     };
 
-    const getValue = function(){
+    const getPlayerValue = function(){
         return value;
     };
 
     /* Edit score */
-    const getScore = function(){
+    const getPlayerScore = function(){
         return score;
     };
-    const resetScore = function(){
+    const resetPlayerScore = function(){
         score = 0;
     };
-    const incrementScoreBy = function(amount=1){
+    const incrementPlayerScoreBy = function(amount=1){
         score += amount;
     };
 
-    return {getId, getName, getValue, getScore, resetScore, incrementScoreBy};
+    return {getPlayerId, getPlayerName, getPlayerValue, getPlayerScore, resetPlayerScore, incrementPlayerScoreBy};
 }
 
 function createRoundWinner(player, assignedPoints, winningCells){
@@ -231,7 +231,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
 
     let roundWinner;
 
-    const gameboard = createGameboard(size,players.map(player => player.getValue()),emptyCellValue);
+    const gameboard = createGameboard(size,players.map(player => player.getPlayerValue()),emptyCellValue);
 
     // Player functions
     const getCurrentPlayer = function(){
@@ -246,9 +246,9 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
     }
 
     const getGameWinnerPlayer = function(){
-        if (players[0].getScore() > players[1].getScore())
+        if (players[0].getPlayerScore() > players[1].getPlayerScore())
             return players[0];
-        else if (players[0].getScore() < players[1].getScore())
+        else if (players[0].getPlayerScore() < players[1].getPlayerScore())
             return players[1];
         else // no winner
             return null;
@@ -262,18 +262,18 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
 
     const playMove = function(row, column){ 
         // try to make the move
-        if(!gameboard.makeMove(row,column,getCurrentPlayer().getValue()))
+        if(!gameboard.makeMove(row,column,getCurrentPlayer().getPlayerValue()))
             return 0; // continue game
 
         // check if a user has won
         let equalLines = gameboard.getArrayOfLinesOfEqualCells();
         if (equalLines.length){
-            console.log(equalLines[0][0].getValue());
+            console.log(equalLines[0][0].getCellValue());
             roundWinner = createRoundWinner(players[0], equalLines.length, equalLines)
             // players [0] is a placeholder -- this is to fix. The gameboard has no info on the index of the user--> better to store the pointer to the userrather than its value (todo)
 
             // Increment Player points
-            roundWinner.getPlayer().incrementScoreBy(roundWinner.getAssignedPoints());
+            roundWinner.getPlayer().incrementPlayerScoreBy(roundWinner.getAssignedPoints());
             return 1;  // games ends with a winner
         }
 
@@ -296,8 +296,8 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
         while (true){
             // Get info on the move to perform
             gameboard.printGameboard();
-            console.log(`${getCurrentPlayer().getName()}'s turn [${getCurrentPlayer().getValue()}].`);
-            let input = prompt(`${getCurrentPlayer().getName()}'s turn [${getCurrentPlayer().getValue()}].\n\nInsert the selected cell index as "row,column:"\n(recall that row and column indices starts from 0)`);
+            console.log(`${getCurrentPlayer().getPlayerName()}'s turn [${getCurrentPlayer().getPlayerValue()}].`);
+            let input = prompt(`${getCurrentPlayer().getPlayerName()}'s turn [${getCurrentPlayer().getPlayerValue()}].\n\nInsert the selected cell index as "row,column:"\n(recall that row and column indices starts from 0)`);
             [row,column] = input.split(',').map(itm => parseInt(itm.trim()));
 
             // Perform the move
@@ -309,7 +309,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
 
                 if (gameOutcome==1){ // there is a winner
                     let assignedPoints = roundWinner.getAssignedPoints(); 
-                    console.log(`${roundWinner.getPlayer().getName()} wins this round${assignedPoints>1 ? ` with a ${assignedPoints}x combo, getting ${assignedPoints-1} extra point${assignedPoints>2?'s':''}!` : '.'}`);
+                    console.log(`${roundWinner.getPlayer().getPlayerName()} wins this round${assignedPoints>1 ? ` with a ${assignedPoints}x combo, getting ${assignedPoints-1} extra point${assignedPoints>2?'s':''}!` : '.'}`);
                 } else{ // -1, tie
                     console.log(`It's a tie! No winner in this round...`);
                 }
@@ -320,13 +320,13 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
 
     const playConsoleGame = function(){
         console.log(`Welcome to tic-tac-toe\n`);
-        console.log(`${players[0].getName()} VS ${players[1].getName()}`);
+        console.log(`${players[0].getPlayerName()} VS ${players[1].getPlayerName()}`);
 
         while(true){
             _playConsoleRound();
 
             // Print player status
-            console.log(`${players[0].getName()}: ${players[0].getScore()}\n${players[1].getName()}: ${players[1].getScore()}\n`);
+            console.log(`${players[0].getPlayerName()}: ${players[0].getPlayerScore()}\n${players[1].getPlayerName()}: ${players[1].getPlayerScore()}\n`);
 
             // Ask if the user wants to end the game
             if(prompt(`Press 'ENTER' to continue. Type 'stop' to end the game.`).toLowerCase()=='stop')
@@ -339,7 +339,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
         // Print the final game result
         let gameWinnerPlayer = getGameWinnerPlayer();
         if (gameWinnerPlayer)
-            console.log(`${gameWinnerPlayer.getName()} WINS!`);
+            console.log(`${gameWinnerPlayer.getPlayerName()} WINS!`);
         else
             console.log(`No winner! It's a tie.`);
     };
