@@ -453,11 +453,9 @@ const dispalyController = (function() {
         if (moveOutcome>0){
             if (moveOutcome == 1){
                 // The current player wins
-                console.log('Someone wins')
                 roundWinHandler();
             } else if (moveOutcome == 2){
                 // The game finishes with a tie
-                console.log('It\'s a tie')
                 roundTieHandler();
             }    
             gameboardDiv.removeEventListener('click',playMoveDOM_callback);    

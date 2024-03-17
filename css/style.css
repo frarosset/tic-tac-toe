@@ -39,8 +39,19 @@
     --main-ud-padding:   3vmin;
     --header-ud-padding: 3vmin;
 
-    /* Images / icons size */
-
+    /* Buttons */
+    --button-bottom-border:             4px;
+    --button-bottom-border-hover:       6px;
+    --button-bottom-border-active:      2px;
+    --button-radius:                    calc(var(--gameboard-radius) / 2);
+    --button-padding:                   calc(var(--button-radius) / 1);
+    --button-width:                     max(max-content,8em);
+    --button-bottom-border-color:       var(--col-dark-grey);
+    --button-bottom-border-color-alt:   var(--col-black);
+    --button-bg-color:                  var(--col-light-grey);
+    --button-bg-color-alt:              var(--col-dark-grey);
+    --button-color:                     var(--col-white);
+    --button-color-alt:                 var(--col-white);
 
     /* Radius */
 
@@ -159,6 +170,24 @@ main{
     --marker-col: var(--col-o);
 }
 
+/* || Generic buttons */
+button{
+    border: none;
+    outline: none;
+    border-bottom: var(--button-bottom-border) solid var(--button-bottom-border-color);
+    background-color: var(--button-bg-color);
+    color: var(--button-color);
+    border-radius: var(--button-radius);
+    padding: var(--button-padding);
+    width: var(--button-width);
+    margin-top: calc(var(--button-bottom-border-hover) - var(--button-bottom-border));
+}
+
+button.alt{
+    --button-bottom-border-color: var(--button-bottom-border-color-alt);
+    --button-bg-color: var(--button-bg-color-alt);
+    --button-color: var(--button-color-alt);
+}
 
 /* || Header */
 h1{
@@ -338,6 +367,28 @@ h1{
 .round-outcome-div:is(.win):is(.extra) .round-outcome-subtext.extra{
     visibility: visible;
 } 
+
+/* Round outcome buttons */
+.outcome-div .outcome-next-actions{
+    display: flex;
+    align-items: flex-end;
+ }
+
+
+
+/* when hover is supported */
+@media not all and (hover: none){
+    button:hover{
+        border-bottom-width: var(--button-bottom-border-hover);
+        margin-top: 0px; 
+    }
+ }
+
+ button:active{
+    border-bottom-width: var(--button-bottom-border-active);
+    margin-top: calc(var(--button-bottom-border-hover) - var(--button-bottom-border-active));
+ }
+
 
 
 
