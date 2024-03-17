@@ -371,7 +371,10 @@ const dispalyController = (function() {
 
     // DOM cache
     const gameboardDiv = document.querySelector('main .gameboard');
-
+    const roundOutcomeDiv = document.querySelector('main .round-outcome-div');
+    const winnerPlayerSpan = document.querySelector('main .winner-player');
+    const winnerComboValSpan = document.querySelector('main .winner-combo-val'); 
+    const winnerComboExtraPointsSpan = document.querySelector('main .winner-combo-extra-points'); 
 
     // Gameboard creation, e.g.,
     // <div class="gameboard">
@@ -451,18 +454,57 @@ const dispalyController = (function() {
             if (moveOutcome == 1){
                 // The current player wins
                 console.log('Someone wins')
+                roundWinHandler();
             } else if (moveOutcome == 2){
                 // The game finishes with a tie
                 console.log('It\'s a tie')
+                roundTieHandler();
             }    
             gameboardDiv.removeEventListener('click',playMoveDOM_callback);    
         }
+    }
+
+    /* Outcome div handler */
+    const resetRoundOutcomeDiv = function(){
+        roundOutcomeDiv.classList.remove('tie');
+        roundOutcomeDiv.classList.remove('win');
+        roundOutcomeDiv.classList.remove('extra');
+
+        winnerPlayerSpan.textContent = "";
+        winnerComboValSpan.textContent = ""; 
+        winnerComboExtraPointsSpan.textContent = ""; 
+    }
+
+    /* tie / win handler */
+    const roundWinHandler = function(){
+        // Get the winner info
+        let winner = game.getRoundWinnerPlayer();
+
+        let winnerPlayerName  = winner.getPlayer().getPlayerName();
+        let winnerPlayerValue = winner.getPlayer().getPlayerValue();
+        let assignedPoints    = winner.getAssignedPoints();
+        let winningCells      = winner.getWinningCells();
+
+        // Show the round outcome
+        winnerPlayerSpan.textContent = winnerPlayerName;
+        roundOutcomeDiv.classList.add(winnerPlayerValue);
+        if (assignedPoints>1){
+            winnerComboValSpan.textContent = winningCells.length; 
+            winnerComboExtraPointsSpan.textContent = assignedPoints; 
+            roundOutcomeDiv.classList.add('extra');
+        }
+        roundOutcomeDiv.classList.add('win');
+    }
+    const roundTieHandler = function(){
+        // Show the round outcome
+        roundOutcomeDiv.classList.add('tie');
     }
 
     // Initailize a new game immediately
     // todo: start after selecting the right settings
     game = gameController(gameboardSize,playerXName,playerOName);
     initGameboardDOM();
+    resetRoundOutcomeDiv();
     gameboardDiv.addEventListener('click',playMoveDOM_callback);
 
 })();

@@ -177,14 +177,14 @@ h1{
 :root{
     --marker-col: transparent;
 
-    --outcome-text-fontsize:  2rem;
-    --outcome-subtext-fontsize: 1rem;
+    --round-outcome-text-fontsize:  2rem;
+    --round-outcome-subtext-fontsize: 1rem;
 
     --gameboard-gap:            2dvmin;
     --gameboard-gap-hover:      4dvmin;  
     --gameboard-padding:        var(--gameboard-gap);
     --gameboard-cell-padding:   10%;
-    --outcome-gap:              0.5rem;
+    --round-outcome-gap:              0.5rem;
 
     --gameboard-bg-col:             var(--col-light-grey);
     --gameboard-bg-col-hover:       transparent;
@@ -295,39 +295,47 @@ h1{
 }
 
 
-/* || Main - outcome div */
-.outcome-div{
+/* || Main - round outcome div */
+.round-outcome-div{
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--outcome-gap);
+    gap: var(--round-outcome-gap);
+    visibility: hidden;
 }
-.outcome-div .outcome-text{
+.round-outcome-div .round-outcome-text{
     font-variant: small-caps;
-    font-size: var(--outcome-text-fontsize);
+    font-size: var(--round-outcome-text-fontsize);
 }
 
-.outcome-div .outcome-subtext{
-    font-size: var(--outcome-subtext-fontsize);
+.round-outcome-div .round-outcome-subtext{
+    font-size: var(--round-outcome-subtext-fontsize);
 }
 
-.outcome-div .winner-player,
+.round-outcome-div .winner-player,
 .winner-combo{
     font-variant: normal;
     color: var(--marker-col);
 }
 
-.outcome-div:not(.win) .outcome-text.win{
+.round-outcome-div.tie,
+.round-outcome-div.win{
+    visibility: visible;
+}
+.round-outcome-div:is(.win) .round-outcome-text.tie{
     display: none;
 }
-.outcome-div:is(.win) .outcome-text.tie{
+.round-outcome-div:is(.tie) .round-outcome-text.win{
     display: none;
 }
-.outcome-subtext.extra{
+.round-outcome-div:is(.win) .round-outcome-text.tie{
+    display: none;
+}
+.round-outcome-subtext.extra{
     visibility: hidden;
 }
-.outcome-div:is(.win):is(.extra) .outcome-subtext.extra{
+.round-outcome-div:is(.win):is(.extra) .round-outcome-subtext.extra{
     visibility: visible;
 } 
 
