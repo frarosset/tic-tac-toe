@@ -451,12 +451,11 @@ const dispalyController = (function() {
             if (moveOutcome == 1){
                 // The current player wins
                 console.log('Someone wins')
-                gameboardDiv.removeEventListener('click',playMoveDOM_callback);
             } else if (moveOutcome == 2){
                 // The game finishes with a tie
                 console.log('It\'s a tie')
-                gameboardDiv.removeEventListener('click',playMoveDOM_callback);
-            }        
+            }    
+            gameboardDiv.removeEventListener('click',playMoveDOM_callback);    
         }
     }
 

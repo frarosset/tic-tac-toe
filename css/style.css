@@ -34,6 +34,7 @@
     --max-width: min(1440px, 100%);
 
     /*Margins, gaps and paddings (+widths)*/
+    --main-gap:          1.5rem;
     --main-lr-padding:   5vmin;
     --main-ud-padding:   3vmin;
     --header-ud-padding: 3vmin;
@@ -128,6 +129,11 @@ main{
     padding: var(--main-ud-padding) var(--main-lr-padding);
     flex:1;
     height: 100%;
+
+    display: grid;
+    grid-template-rows: min-content minmax(0,1fr);
+    justify-items: center;
+    gap: var(--main-gap);
 }
 
 /* || Generic icon mask: specify bg color, size and  mask-image*/
@@ -165,17 +171,20 @@ h1{
     align-items: center;
     justify-content: center;
 
-    height: 100%;
     width: 100%;
 }
 
 :root{
     --marker-col: transparent;
 
+    --outcome-text-fontsize:  2rem;
+    --outcome-subtext-fontsize: 1rem;
+
     --gameboard-gap:            2dvmin;
     --gameboard-gap-hover:      4dvmin;  
     --gameboard-padding:        var(--gameboard-gap);
     --gameboard-cell-padding:   10%;
+    --outcome-gap:              0.5rem;
 
     --gameboard-bg-col:             var(--col-light-grey);
     --gameboard-bg-col-hover:       transparent;
@@ -286,9 +295,41 @@ h1{
 }
 
 
+/* || Main - outcome div */
+.outcome-div{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--outcome-gap);
+}
+.outcome-div .outcome-text{
+    font-variant: small-caps;
+    font-size: var(--outcome-text-fontsize);
+}
 
+.outcome-div .outcome-subtext{
+    font-size: var(--outcome-subtext-fontsize);
+}
 
+.outcome-div .winner-player,
+.winner-combo{
+    font-variant: normal;
+    color: var(--marker-col);
+}
 
+.outcome-div:not(.win) .outcome-text.win{
+    display: none;
+}
+.outcome-div:is(.win) .outcome-text.tie{
+    display: none;
+}
+.outcome-subtext.extra{
+    visibility: hidden;
+}
+.outcome-div:is(.win):is(.extra) .outcome-subtext.extra{
+    visibility: visible;
+} 
 
 
 
