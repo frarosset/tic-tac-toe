@@ -269,6 +269,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
     // Play functions
     const initRound = function(){
         roundWinner = undefined;
+        currentPlayerIdx = 0;
         gameboard.resetGameboard();
     }
 
@@ -375,6 +376,7 @@ const dispalyController = (function() {
     const winnerPlayerSpan = document.querySelector('main .winner-player');
     const winnerComboValSpan = document.querySelector('main .winner-combo-val'); 
     const winnerComboExtraPointsSpan = document.querySelector('main .winner-combo-extra-points'); 
+    const nextRoundBtn = roundOutcomeDiv.querySelector('.next-round-btn'); 
 
     // Gameboard creation, e.g.,
     // <div class="gameboard">
@@ -426,8 +428,97 @@ const dispalyController = (function() {
         DOMUtilities.removeDescendants(gameboardDiv);
     };
 
-    // Player functions
-    const playMoveDOM_callback = function(e){
+    /* Outcome div handler */
+    const resetRoundOutcomeDiv = function(){
+        roundOutcomeDiv.classList.remove('tie');
+        roundOutcomeDiv.classList.remove('win');
+        roundOutcomeDiv.classList.remove('extra');
+        roundOutcomeDiv.classList.remove('x');
+        roundOutcomeDiv.classList.remove('o');
+
+        winnerPlayerSpan.textContent = "";
+        winnerComboValSpan.textContent = ""; 
+        winnerComboExtraPointsSpan.textContent = ""; 
+
+        // Remove button event listener
+        nextRoundBtn.removeEventListener('click',startRoundDOM);
+    }
+
+    const setWinRoundOutcomeDiv = function(winnerPlayerName,winnerPlayerValue,winnerPlayerComboVal,assignedPoints){
+        winnerPlayerSpan.textContent = winnerPlayerName;
+        roundOutcomeDiv.classList.add(winnerPlayerValue);
+        if (assignedPoints>1){
+            winnerComboValSpan.textContent = winnerPlayerComboVal; 
+            winnerComboExtraPointsSpan.textContent = assignedPoints; 
+            roundOutcomeDiv.classList.add('extra');
+        }
+        roundOutcomeDiv.classList.add('win'); 
+
+        // Add button event listener to select what to do next
+        nextRoundBtn.addEventListener('click',startRoundDOM);
+    }
+
+    const setTieRoundOutcomeDiv = function(){
+        roundOutcomeDiv.classList.add('tie');
+
+        // Add button event listener to select what to do next
+        nextRoundBtn.addEventListener('click',startRoundDOM);
+    }
+
+    /* tie / win handler */
+    const roundWinHandler = function(){
+        // Get the winner info
+        let winner = game.getRoundWinnerPlayer();
+
+        let winnerPlayerName  = winner.getPlayer().getPlayerName();
+        let winnerPlayerValue = winner.getPlayer().getPlayerValue();
+        let assignedPoints    = winner.getAssignedPoints();
+        let winningCells      = winner.getWinningCells();
+
+        // Show the round outcome
+        setWinRoundOutcomeDiv(winnerPlayerName,winnerPlayerValue,winningCells.length,assignedPoints);
+    }
+    const roundTieHandler = function(){
+        // Show the round outcome
+        setTieRoundOutcomeDiv();
+    }
+
+    // Start game / round
+
+    const startGameDOM = function(){
+        // todo: get gameboardSize,playerXName,playerOName from settings
+
+        // Create a new game
+        game = gameController(gameboardSize,playerXName,playerOName);
+        
+        // Start the round
+        startRoundDOM();
+    }
+
+    const startRoundDOM = function(){
+        game.initRound();
+        initGameboardDOM();
+
+        // Reset the game outcome info
+        resetRoundOutcomeDiv();
+
+        // Add event listener to the click events on the gameboard
+        gameboardDiv.addEventListener('click',playMoveDOM);
+    }
+
+    const endRoundDOM = function(moveOutcome){
+        if (moveOutcome == 1){
+            // The current player wins
+            roundWinHandler();
+        } else if (moveOutcome == 2){
+            // The game finishes with a tie
+            roundTieHandler();
+        } 
+        // Remove event listener   
+        gameboardDiv.removeEventListener('click',playMoveDOM); 
+    }
+
+    const playMoveDOM = function(e){
         let elem = e.target;
         if (!elem.classList.contains('cell'))
             return;
@@ -450,60 +541,18 @@ const dispalyController = (function() {
         elem.classList.add(currentPlayerValue);
 
         // Possibly end the round
-        if (moveOutcome>0){
-            if (moveOutcome == 1){
-                // The current player wins
-                roundWinHandler();
-            } else if (moveOutcome == 2){
-                // The game finishes with a tie
-                roundTieHandler();
-            }    
-            gameboardDiv.removeEventListener('click',playMoveDOM_callback);    
-        }
-    }
-
-    /* Outcome div handler */
-    const resetRoundOutcomeDiv = function(){
-        roundOutcomeDiv.classList.remove('tie');
-        roundOutcomeDiv.classList.remove('win');
-        roundOutcomeDiv.classList.remove('extra');
-
-        winnerPlayerSpan.textContent = "";
-        winnerComboValSpan.textContent = ""; 
-        winnerComboExtraPointsSpan.textContent = ""; 
-    }
-
-    /* tie / win handler */
-    const roundWinHandler = function(){
-        // Get the winner info
-        let winner = game.getRoundWinnerPlayer();
-
-        let winnerPlayerName  = winner.getPlayer().getPlayerName();
-        let winnerPlayerValue = winner.getPlayer().getPlayerValue();
-        let assignedPoints    = winner.getAssignedPoints();
-        let winningCells      = winner.getWinningCells();
-
-        // Show the round outcome
-        winnerPlayerSpan.textContent = winnerPlayerName;
-        roundOutcomeDiv.classList.add(winnerPlayerValue);
-        if (assignedPoints>1){
-            winnerComboValSpan.textContent = winningCells.length; 
-            winnerComboExtraPointsSpan.textContent = assignedPoints; 
-            roundOutcomeDiv.classList.add('extra');
-        }
-        roundOutcomeDiv.classList.add('win');
-    }
-    const roundTieHandler = function(){
-        // Show the round outcome
-        roundOutcomeDiv.classList.add('tie');
+        if (moveOutcome>0)
+            endRoundDOM(moveOutcome);
     }
 
     // Initailize a new game immediately
-    // todo: start after selecting the right settings
-    game = gameController(gameboardSize,playerXName,playerOName);
-    initGameboardDOM();
-    resetRoundOutcomeDiv();
-    gameboardDiv.addEventListener('click',playMoveDOM_callback);
+    const init = (function(){
+        // Initialize the DOM
+        resetRoundOutcomeDiv();
+        
+        // todo: start after selecting the right settings
+        startGameDOM();
+    })();
 
 })();
 
