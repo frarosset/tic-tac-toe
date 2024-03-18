@@ -371,6 +371,7 @@ const dispalyController = (function() {
     let game = null;
 
     // DOM cache
+    const startNewGameDiv = document.querySelector('main .start-new-game-div');
     const startNewGameBtn = document.querySelector('main .start-new-game-btn');
     const gameboardDiv = document.querySelector('main .gameboard');
     const roundOutcomeDiv = document.querySelector('main .round-outcome-div');
@@ -548,6 +549,7 @@ const dispalyController = (function() {
 
     const startNewGame = function(){
         startNewGameBtn.removeEventListener('click',startNewGame);
+        startNewGameDiv.classList.toggle('game-on');
         startGameDOM();
     }
 

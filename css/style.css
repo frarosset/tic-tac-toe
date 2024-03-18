@@ -203,6 +203,9 @@ h1{
     justify-content: center;
     width: 100%;
 }
+.start-new-game-div.game-on{
+    display: none;
+}
 
 /* || Main - Playing View*/
 
@@ -219,6 +222,10 @@ h1{
     grid-template-areas:
         "round-outcome"
         "gameboard";
+}
+
+.start-new-game-div:not(.game-on) + .playing-div{
+    display: none;
 }
 
 .playing-div:has(.round-outcome-div.tie),
