@@ -370,7 +370,7 @@ const dispalyController = (function() {
     let playerOName = 'Bob';
     let game = null;
 
-    // DOM cache
+    // DOM cache  
     const gameboardDiv = document.querySelector('main .gameboard');
     const roundOutcomeDiv = document.querySelector('main .round-outcome-div');
     const winnerPlayerSpan = document.querySelector('main .winner-player');

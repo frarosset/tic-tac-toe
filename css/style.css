@@ -144,21 +144,8 @@ main{
     flex:1;
     height: 100%;
 
-    display: grid;
-    justify-items: center;
-    
-    gap: 0px;
-    grid-template-columns: 1fr;
-    grid-template-rows: 0px minmax(0,1fr);
-    grid-template-areas:
-        "round-outcome"
-        "gameboard";
-}
-
-main:has(.round-outcome-div.tie),
-main:has(.round-outcome-div.win){
-    grid-template-rows: min-content minmax(0,1fr);
-    gap: var(--main-gap);
+    display: flex;
+    flex-direction: column;
 }
 
 /* || Generic icon mask: specify bg color, size and  mask-image*/
@@ -206,6 +193,38 @@ button.alt{
 /* || Header */
 h1{
     font-size: var(--header-h1-fontsize);
+}
+
+/* || Main - start new game VIEW*/
+.start-new-game-div{
+    flex:1;
+    display: flex; /* becomes none in certain conditions (see below) */
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+/* || Main - Playing View*/
+
+.playing-div{
+    flex:1;
+    height: 100%;
+
+    display: grid;
+    justify-items: center;
+    
+    gap: 0px;
+    grid-template-columns: 1fr;
+    grid-template-rows: 0px minmax(0,1fr);
+    grid-template-areas:
+        "round-outcome"
+        "gameboard";
+}
+
+.playing-div:has(.round-outcome-div.tie),
+.playing-div:has(.round-outcome-div.win){
+    grid-template-rows:min-content minmax(0,1fr);
+    gap: var(--main-gap);
 }
 
 /* || Main - gameboard */
