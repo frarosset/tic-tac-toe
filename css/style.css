@@ -40,8 +40,9 @@
     --header-ud-padding: 3vmin;
 
     /* Buttons */
+    --button-fontsize:                  1rem;
     --button-bottom-border:             4px;
-    --button-bottom-border-hover:       6px;
+    --button-bottom-border-hover:       6px; /* this must be the largest*/
     --button-bottom-border-active:      2px;
     --button-radius:                    calc(var(--gameboard-radius) / 2);
     --button-padding:                   calc(var(--button-radius) / 1);
@@ -52,6 +53,8 @@
     --button-bg-color-alt:              var(--col-dark-grey);
     --button-color:                     var(--col-white);
     --button-color-alt:                 var(--col-white);
+    --button-height: calc(2 * var(--button-padding) + var(--button-fontsize) * var(--txt-lineheight)  
+                     + var(--button-bottom-border-hover));
 
     /* Radius */
 
@@ -142,8 +145,19 @@ main{
     height: 100%;
 
     display: grid;
-    grid-template-rows: min-content minmax(0,1fr);
     justify-items: center;
+    
+    gap: 0px;
+    grid-template-columns: 1fr;
+    grid-template-rows: 0px minmax(0,1fr);
+    grid-template-areas:
+        "round-outcome"
+        "gameboard";
+}
+
+main:has(.round-outcome-div.tie),
+main:has(.round-outcome-div.win){
+    grid-template-rows: min-content minmax(0,1fr);
     gap: var(--main-gap);
 }
 
@@ -196,6 +210,7 @@ h1{
 
 /* || Main - gameboard */
 .gameboard-div{
+    grid-area: gameboard;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -207,19 +222,21 @@ h1{
     --marker-col: transparent;
 
     --round-outcome-text-fontsize:  2rem;
-    --round-outcome-subtext-fontsize: 1rem;
+    --round-outcome-subtext-fontsize: 0.8rem;
 
     --gameboard-gap:            2dvmin;
     --gameboard-gap-hover:      4dvmin;  
     --gameboard-padding:        var(--gameboard-gap);
     --gameboard-cell-padding:   10%;
-    --round-outcome-gap:              0.5rem;
+    --round-outcome-gap:        1rem;
+    --round-outcome-padding:    1rem;
 
     --gameboard-bg-col:             var(--col-light-grey);
     --gameboard-bg-col-hover:       transparent;
     --gameboard-cell-bg-col:        var(--col-dark-grey);
     --gameboard-cell-bg-col-hover:  var(--col-light-grey);
     --gameboard-cell-bg-col-active: var(--col-light-grey);   
+    --round-outcome-bg-col:         var(--col-light-grey);
 
     --gameboard-cell-border-col:    var(--col-dark-grey);
     --gameboard-cell-border-col-hover: var(--col-light-grey);
@@ -326,20 +343,46 @@ h1{
 
 /* || Main - round outcome div */
 .round-outcome-div{
+    --round-outcome-height: calc(var(--round-outcome-text-fontsize) * var(--txt-lineheight) 
+                            + var(--round-outcome-subtext-fontsize) * var(--txt-lineheight)
+                            + 2 *  var(--round-outcome-padding) + 2 * var(--round-outcome-gap)
+                            + var(--button-height));
+
+    grid-area: round-outcome;
     width: 100%;
-    display: flex;
+    
     flex-direction: column;
     align-items: center;
-    gap: var(--round-outcome-gap);
-    visibility: hidden;
+    justify-content: flex-end;
+
+    background-color: var(--round-outcome-bg-col);
+    padding: var(--round-outcome-padding) 0px;
+    height: var(--round-outcome-height);
+    max-height: var(--round-outcome-height);
+
+    display: none; /* becomes flex in certain conditions (see below) */
 }
+
 .round-outcome-div .round-outcome-text{
     font-variant: small-caps;
     font-size: var(--round-outcome-text-fontsize);
+    flex: 2;
+    display: none; /* becomes flex in certain conditions (see below) */
+    align-items: center;
 }
-
 .round-outcome-div .round-outcome-subtext{
     font-size: var(--round-outcome-subtext-fontsize);
+    flex: 1;
+    display: none; /* becomes flex in certain conditions (see below) */
+    align-items: flex-start;
+}
+
+.round-outcome-div:is(.win),
+.round-outcome-div:is(.tie),
+.round-outcome-div:is(.win) .round-outcome-text.win,
+.round-outcome-div:is(.tie) .round-outcome-text.tie,
+.round-outcome-div:is(.win):is(.extra) .round-outcome-subtext.extra{
+    display: flex;   
 }
 
 .round-outcome-div .winner-player,
@@ -347,37 +390,17 @@ h1{
     font-variant: normal;
     color: var(--marker-col);
 }
-
-.round-outcome-div.tie,
-.round-outcome-div.win{
-    visibility: visible;
+.winner-combo{
+    font-weight: bold;
 }
-.round-outcome-div:is(.win) .round-outcome-text.tie{
-    display: none;
-}
-.round-outcome-div:is(.tie) .round-outcome-text.win{
-    display: none;
-}
-.round-outcome-div:is(.win) .round-outcome-text.tie{
-    display: none;
-}
-.round-outcome-subtext.extra{
-    visibility: hidden;
-}
-.round-outcome-div:is(.win):is(.extra) .round-outcome-subtext.extra{
-    visibility: visible;
-} 
 
 /* Round outcome buttons */
 .outcome-div .outcome-next-actions{
     display: flex;
-    align-items: flex-end;
  }
 
-
-
-/* when hover is supported */
 @media not all and (hover: none){
+    /* when hover is supported */
     button:hover{
         border-bottom-width: var(--button-bottom-border-hover);
         margin-top: 0px; 
