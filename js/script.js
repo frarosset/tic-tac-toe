@@ -370,12 +370,13 @@ const dispalyController = (function() {
     let playerOName = 'Bob';
     let game = null;
 
-    // DOM cache  
+    // DOM cache
+    const startNewGameBtn = document.querySelector('main .start-new-game-btn');
     const gameboardDiv = document.querySelector('main .gameboard');
     const roundOutcomeDiv = document.querySelector('main .round-outcome-div');
-    const winnerPlayerSpan = document.querySelector('main .winner-player');
-    const winnerComboValSpan = document.querySelector('main .winner-combo-val'); 
-    const winnerComboExtraPointsSpan = document.querySelector('main .winner-combo-extra-points'); 
+    const winnerPlayerSpan = roundOutcomeDiv.querySelector('main .winner-player');
+    const winnerComboValSpan = roundOutcomeDiv.querySelector('main .winner-combo-val'); 
+    const winnerComboExtraPointsSpan = roundOutcomeDiv.querySelector('main .winner-combo-extra-points'); 
     const nextRoundBtn = roundOutcomeDiv.querySelector('.next-round-btn'); 
 
     // Gameboard creation, e.g.,
@@ -545,13 +546,17 @@ const dispalyController = (function() {
             endRoundDOM(moveOutcome);
     }
 
+    const startNewGame = function(){
+        startNewGameBtn.removeEventListener('click',startNewGame);
+        startGameDOM();
+    }
+
     // Initailize a new game immediately
     const init = (function(){
         // Initialize the DOM
         resetRoundOutcomeDiv();
         
-        // todo: start after selecting the right settings
-        startGameDOM();
+        startNewGameBtn.addEventListener('click',startNewGame);     
     })();
 
 })();
