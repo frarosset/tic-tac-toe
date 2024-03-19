@@ -250,7 +250,7 @@ h1{
 }
 
 /* || Main - gameboard */
-.gameboard-div{
+.gameboard-cnt{
     grid-area: gameboard;
     display: flex;
     align-items: center;
@@ -306,6 +306,11 @@ h1{
     gap: var(--gameboard-gap);
     padding: var(--gameboard-padding);                
     border-radius: var(--gameboard-radius);
+}
+
+.gameboard.larger-width-than-height{
+    width: auto;
+    height: 100%;   
 }
 
 .gameboard .cell{

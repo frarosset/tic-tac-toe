@@ -373,6 +373,7 @@ const dispalyController = (function() {
     // DOM cache
     const startNewGameDiv = document.querySelector('main .start-new-game-div');
     const startNewGameBtn = document.querySelector('main .start-new-game-btn');
+    const gameboardCntDiv = document.querySelector('main .gameboard-cnt');
     const gameboardDiv = document.querySelector('main .gameboard');
     const roundOutcomeDiv = document.querySelector('main .round-outcome-div');
     const winnerPlayerSpan = roundOutcomeDiv.querySelector('main .winner-player');
@@ -380,6 +381,10 @@ const dispalyController = (function() {
     const winnerComboExtraPointsSpan = roundOutcomeDiv.querySelector('main .winner-combo-extra-points'); 
     const nextRoundBtn = roundOutcomeDiv.querySelector('.next-round-btn');
     const endGameAfterRoundBtn = roundOutcomeDiv.querySelector('.end-game-btn'); 
+
+    // Resize observer, to adapt the gameboard size
+    // see https://web.dev/articles/resize-observer
+    const gameboardResizeObserver = new ResizeObserver(setGameboardSizeDOM);
 
     // Gameboard creation, e.g.,
     // <div class="gameboard">
@@ -567,8 +572,19 @@ const dispalyController = (function() {
         endGame();
     };
 
+    function setGameboardSizeDOM(entry){
+        // Resize observer callback: there is only one entry here
+        //let sizes = gameboardCntDiv.getBoundingClientRect();
+        let sizes = entry[0].contentRect;
+        gameboardDiv.classList.toggle('larger-width-than-height',sizes.width>=sizes.height);
+    }
+
     // Initailize a new game immediately
     const init = (function(){
+        // Resize observer, to adapt the gameboard size
+        // see https://web.dev/articles/resize-observer
+        gameboardResizeObserver.observe(gameboardCntDiv);
+
         // Initialize the DOM
         resetRoundOutcomeDiv();
         
