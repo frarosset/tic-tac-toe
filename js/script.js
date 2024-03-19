@@ -378,7 +378,8 @@ const dispalyController = (function() {
     const winnerPlayerSpan = roundOutcomeDiv.querySelector('main .winner-player');
     const winnerComboValSpan = roundOutcomeDiv.querySelector('main .winner-combo-val'); 
     const winnerComboExtraPointsSpan = roundOutcomeDiv.querySelector('main .winner-combo-extra-points'); 
-    const nextRoundBtn = roundOutcomeDiv.querySelector('.next-round-btn'); 
+    const nextRoundBtn = roundOutcomeDiv.querySelector('.next-round-btn');
+    const endGameAfterRoundBtn = roundOutcomeDiv.querySelector('.end-game-btn'); 
 
     // Gameboard creation, e.g.,
     // <div class="gameboard">
@@ -444,6 +445,7 @@ const dispalyController = (function() {
 
         // Remove button event listener
         nextRoundBtn.removeEventListener('click',startRoundDOM);
+        endGameAfterRoundBtn.removeEventListener('click',endGameAfterRound);
     }
 
     const setWinRoundOutcomeDiv = function(winnerPlayerName,winnerPlayerValue,winnerPlayerComboVal,assignedPoints){
@@ -458,6 +460,7 @@ const dispalyController = (function() {
 
         // Add button event listener to select what to do next
         nextRoundBtn.addEventListener('click',startRoundDOM);
+        endGameAfterRoundBtn.addEventListener('click',endGameAfterRound);
     }
 
     const setTieRoundOutcomeDiv = function(){
@@ -465,6 +468,7 @@ const dispalyController = (function() {
 
         // Add button event listener to select what to do next
         nextRoundBtn.addEventListener('click',startRoundDOM);
+        endGameAfterRoundBtn.addEventListener('click',endGameAfterRound);
     }
 
     /* tie / win handler */
@@ -549,9 +553,19 @@ const dispalyController = (function() {
 
     const startNewGame = function(){
         startNewGameBtn.removeEventListener('click',startNewGame);
-        startNewGameDiv.classList.toggle('game-on');
+        startNewGameDiv.classList.toggle('game-on',true);
         startGameDOM();
     }
+
+    const endGame = function(){
+        startNewGameBtn.addEventListener('click',startNewGame);
+        startNewGameDiv.classList.toggle('game-on',false);
+    }
+
+    const endGameAfterRound = function(){
+        resetRoundOutcomeDiv();
+        endGame();
+    };
 
     // Initailize a new game immediately
     const init = (function(){
