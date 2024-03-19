@@ -30,7 +30,7 @@
 
     /* Text clamping: number of lines */
 
-    /* Maximum width (including dashboard margin) */
+    /* Maximum width (including margin) */
     --max-width: min(1440px, 100%);
 
     /*Margins, gaps and paddings (+widths)*/
@@ -38,6 +38,8 @@
     --main-lr-padding:   5vmin;
     --main-ud-padding:   3vmin;
     --header-ud-padding: 3vmin;
+
+    --game-logo-icon-len: calc(1*var(--header-h1-fontsize));
 
     /* Buttons */
     --button-fontsize:                  1rem;
@@ -151,7 +153,6 @@ main{
 /* || Generic icon mask: specify bg color, size and  mask-image*/
 
 .icon-mask::before{
-    --icon-len: 100%;
     display: inline-block;
     content:"";
     width: var(--icon-len); 
@@ -206,6 +207,20 @@ button.alt{
 
 
 /* || Header */
+.game-title-div{
+    width: max-content;
+}
+
+.game-logo{
+    display: flex;
+    justify-content: space-between;
+}
+
+.game-logo .icon-mask{
+    --icon-len: var(--game-logo-icon-len);
+    --icon-col: var(--marker-col);
+}
+
 h1{
     font-size: var(--header-h1-fontsize);
 }
