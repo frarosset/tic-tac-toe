@@ -287,6 +287,7 @@ h1{
     --round-outcome-gap:        1rem;
     --round-outcome-padding:    1rem;
     --round-outcome-btns-gap:   2rem;
+    --not-winning-cell-scale:   0.75;
 
     --gameboard-bg-col:             var(--col-light-grey);
     --gameboard-bg-col-hover:       transparent;
@@ -340,6 +341,10 @@ h1{
     justify-content: center;
 
     padding: var(--gameboard-cell-padding);
+
+    /* Mark in the cells (x and o) */
+    --icon-len: 100%;
+    --icon-col: var(--marker-col);
 }
 
 /* Fix cells radius on vertex: you need to specify a specific class on the corner */
@@ -358,15 +363,18 @@ h1{
     border-bottom-left-radius: var(--gameboard-radius);  
 }
 
-/* Mark in the cells (x and o) */
-.gameboard .cell{
-    --icon-len: 100%;
-    --icon-col: var(--marker-col);
-}
-
 .gameboard .cell.x,
 .gameboard .cell.o{
     pointer-events: none;
+}
+
+/* Highlight winning cells */
+.gameboard:has(.winning-cell) .cell:not(.winning-cell)::before{
+    transform: scale(0.75);
+}
+.gameboard .cell.winning-cell{
+    background-color: var(--marker-col);
+    --icon-col: var(--bg-col);
 }
 
 

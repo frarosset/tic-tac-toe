@@ -476,6 +476,14 @@ const dispalyController = (function() {
         endGameAfterRoundBtn.addEventListener('click',endGameAfterRound);
     }
 
+    const highlightWinningCells = function(winningCells){
+        winningCells.forEach(line => {
+            line.forEach((cell) => {
+                gameboardDiv.childNodes[cell.getCellId()].classList.add('winning-cell');
+            });
+        });
+    }
+
     /* tie / win handler */
     const roundWinHandler = function(){
         // Get the winner info
@@ -485,6 +493,9 @@ const dispalyController = (function() {
         let winnerPlayerValue = winner.getPlayer().getPlayerValue();
         let assignedPoints    = winner.getAssignedPoints();
         let winningCells      = winner.getWinningCells();
+
+        // Highlight winning cells
+        highlightWinningCells(winningCells);
 
         // Show the round outcome
         setWinRoundOutcomeDiv(winnerPlayerName,winnerPlayerValue,winningCells.length,assignedPoints);
