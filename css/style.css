@@ -48,6 +48,8 @@
     --player-info-score-fontsize: 2rem;
     --player-info-icon-len:       2rem;
 
+    --settings-btn-fontsize:            2rem;
+    --header-btn-fontsize:              1rem;
     --round-outcome-btn-fontsize:       1rem;
     --round-outcome-text-fontsize:      1.5rem;
     --round-outcome-subtext-fontsize:   0.8rem;
@@ -256,6 +258,11 @@ button.alt{
 
 
 /* || Header */
+header{
+    display: flex;
+    justify-content: space-between;
+}
+
 .game-title-div{
     width: max-content;
 }
@@ -274,6 +281,14 @@ h1{
     font-size: var(--header-h1-fontsize);
 }
 
+body:has(.start-new-game-div:not(.game-on)) .back-btn{
+    display: none;
+}
+
+header button{
+    --button-fontsize: var(--header-btn-fontsize);
+}
+
 /* || Main - start new game VIEW*/
 .start-new-game-div{
     flex:1;
@@ -281,10 +296,13 @@ h1{
     align-items: center;
     justify-content: center;
     width: 100%;
+
+    --button-fontsize: var(--settings-btn-fontsize);
 }
 .start-new-game-div.game-on{
     display: none;
 }
+
 
 /* || Main - Playing View*/
 

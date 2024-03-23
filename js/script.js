@@ -376,6 +376,7 @@ const dispalyController = (function() {
     // DOM cache
     const startNewGameDiv = document.querySelector('main .start-new-game-div');
     const startNewGameBtn = document.querySelector('main .start-new-game-btn');
+    const backBtn = document.querySelector('header .back-btn');
 
     const playerInfoDiv =   {x: document.querySelector('.player-info.x'),
                              o: document.querySelector('.player-info.o')};
@@ -621,11 +622,13 @@ const dispalyController = (function() {
 
     const startNewGame = function(){
         startNewGameBtn.removeEventListener('click',startNewGame);
+        backBtn.addEventListener('click',endGameAfterRound);
         startNewGameDiv.classList.toggle('game-on',true);
         startGameDOM();
     }
 
     const endGame = function(){
+        backBtn.removeEventListener('click',endGameAfterRound);
         startNewGameBtn.addEventListener('click',startNewGame);
         startNewGameDiv.classList.toggle('game-on',false);
     }
