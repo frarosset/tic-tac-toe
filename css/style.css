@@ -113,6 +113,9 @@
 
     /* Animations on hover / active / ...*/
     --cell-transition-duration: 1s;
+    --current-player-animation-duration: 0.5s;
+    --current-player-animation-displ-up: calc(var(--player-info-margin-tb) / 3);
+    --current-player-animation-displ-down: calc(-1 * var(--current-player-animation-displ-up));
     /* --transition-time: 0.8s; */
 
     /* Other info */
@@ -389,9 +392,6 @@ h1{
     }
 }
 .player-info.current-player{
-    --current-player-animation-duration: 0.5s;
-    --current-player-animation-displ-up: calc(var(--player-info-margin-tb) / 3);
-    --current-player-animation-displ-down: calc(-1 * var(--current-player-animation-displ-up));
     animation-duration: var(--current-player-animation-duration), var(--current-player-animation-duration);
     animation-iteration-count: 1, infinite;
     animation-direction: normal, alternate;
@@ -489,6 +489,11 @@ h1{
     --icon-col: var(--bg-col);
 }
 
+/* Disable click events when the round ends */
+.playing-div:has(.round-outcome-div.win) .gameboard,
+.playing-div:has(.round-outcome-div.tie) .gameboard{
+    pointer-events: none;
+}
 
 /* Hovering behaviour */
 /* when hover is supported */
