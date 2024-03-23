@@ -249,6 +249,9 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
     const getCurrentPlayer = function(){
         return players[currentPlayerIdx];
     }
+    const getPlayers = function(){
+        return players;
+    }
     const _changeCurrentPlayer = function(){
         currentPlayerIdx = (currentPlayerIdx+1) % players.length;
     }
@@ -359,7 +362,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
 
     // playConsoleGame();
     
-    return {getCurrentPlayer, initRound, playMove, playConsoleGame, getGameWinnerPlayer, getRoundWinnerPlayer};
+    return {getCurrentPlayer, getPlayers,initRound, playMove, playConsoleGame, getGameWinnerPlayer, getRoundWinnerPlayer};
 
 }
 
@@ -373,6 +376,11 @@ const dispalyController = (function() {
     // DOM cache
     const startNewGameDiv = document.querySelector('main .start-new-game-div');
     const startNewGameBtn = document.querySelector('main .start-new-game-btn');
+
+    const playerInfoDiv =   {x: document.querySelector('.player-info.x'),
+                             o: document.querySelector('.player-info.o')};
+    const playerInfoScore = {x: playerInfoDiv.x.querySelector('.player-score'),
+                             o: playerInfoDiv.o.querySelector('.player-score')};
     const gameboardCntDiv = document.querySelector('main .gameboard-cnt');
     const gameboardDiv = document.querySelector('main .gameboard');
     const roundOutcomeDiv = document.querySelector('main .round-outcome-div');
@@ -385,6 +393,7 @@ const dispalyController = (function() {
     // Resize observer, to adapt the gameboard size
     // see https://web.dev/articles/resize-observer
     const gameboardResizeObserver = new ResizeObserver(setGameboardSizeDOM);
+
 
     // Gameboard creation, e.g.,
     // <div class="gameboard">
@@ -484,13 +493,24 @@ const dispalyController = (function() {
         });
     }
 
+    const setPlayerInfoScore = function(player){
+        let playerValue = player.getPlayerValue();
+        let playerScore = player.getPlayerScore();
+        playerInfoScore[playerValue].textContent = playerScore;
+    }
+
+    const setAllPlayersInfoScore = function(){
+        game.getPlayers().forEach(player => {setPlayerInfoScore(player);});
+    }
+
     /* tie / win handler */
     const roundWinHandler = function(){
         // Get the winner info
         let winner = game.getRoundWinnerPlayer();
 
-        let winnerPlayerName  = winner.getPlayer().getPlayerName();
-        let winnerPlayerValue = winner.getPlayer().getPlayerValue();
+        let winnerPlayer = winner.getPlayer();
+        let winnerPlayerName  = winnerPlayer.getPlayerName();
+        let winnerPlayerValue = winnerPlayer.getPlayerValue();
         let assignedPoints    = winner.getAssignedPoints();
         let winningCells      = winner.getWinningCells();
 
@@ -499,6 +519,9 @@ const dispalyController = (function() {
 
         // Show the round outcome
         setWinRoundOutcomeDiv(winnerPlayerName,winnerPlayerValue,winningCells.length,assignedPoints);
+   
+        // Change the winner player score
+        setPlayerInfoScore(winnerPlayer);
     }
     const roundTieHandler = function(){
         // Show the round outcome
@@ -512,6 +535,9 @@ const dispalyController = (function() {
 
         // Create a new game
         game = gameController(gameboardSize,playerXName,playerOName);
+
+        // Initialize players score on playerInfoDiv
+        setAllPlayersInfoScore();
         
         // Start the round
         startRoundDOM();
@@ -588,7 +614,7 @@ const dispalyController = (function() {
         //let sizes = gameboardCntDiv.getBoundingClientRect();
         let sizes = entry[0].contentRect;
         gameboardDiv.classList.toggle('larger-width-than-height',sizes.width>=sizes.height);
-    }
+    };
 
     // Initailize a new game immediately
     const init = (function(){
@@ -603,11 +629,6 @@ const dispalyController = (function() {
     })();
 
 })();
-
-
-
-
-
 
 
 
