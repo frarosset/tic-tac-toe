@@ -112,7 +112,7 @@
     --inset-shadow: 2px 2px 2px var(--col-accent-light) inset; */
 
     /* Animations on hover / active / ...*/
-    --cell-transition-time: 1s;
+    --cell-transition-duration: 1s;
     /* --transition-time: 0.8s; */
 
     /* Other info */
@@ -372,6 +372,34 @@ h1{
 }
 
 /* Highlight current player */
+@keyframes currentPlayerAnimationInit {
+    from{
+        transform: translateY(0px);
+    }
+    to{
+        transform: translateY(var(--current-player-animation-displ-up));
+    }
+}
+@keyframes currentPlayerAnimation {
+    from{
+        transform: translateY(var(--current-player-animation-displ-up));
+    }
+    to{
+        transform: translateY(var(--current-player-animation-displ-down));
+    }
+}
+.player-info.current-player{
+    --current-player-animation-duration: 0.5s;
+    --current-player-animation-displ-up: calc(var(--player-info-margin-tb) / 3);
+    --current-player-animation-displ-down: calc(-1 * var(--current-player-animation-displ-up));
+    animation-duration: var(--current-player-animation-duration), var(--current-player-animation-duration);
+    animation-iteration-count: 1, infinite;
+    animation-direction: normal, alternate;
+    animation-name: currentPlayerAnimationInit, currentPlayerAnimation;
+    animation-timing-function: ease-in-out;
+    will-change: transform; 
+}
+
 .player-info.current-player{
     background-color: var(--marker-col);
 }
@@ -427,7 +455,7 @@ h1{
     --icon-len: 100%;
     --icon-col: var(--marker-col);
 
-    transition: all var(--cell-transition-time);
+    transition: all var(--cell-transition-duration);
 }
 
 /* Fix cells radius on vertex: you need to specify a specific class on the corner */
