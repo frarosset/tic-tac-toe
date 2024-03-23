@@ -25,11 +25,10 @@
     /* Colors (text/icons)*/
     --col-txt:                          var(--col-white);
     --marker-col:                       transparent;
-    --gameboard-cell-border-col:        var(--col-dark-grey);
     --gameboard-cell-border-col-hover:  var(--col-dark-grey);
     --gameboard-cell-border-col-active: var(--col-light-grey);
 
-    /* Maximum width (including margin) */
+   /* Maximum width (including margin) */
     --max-width: min(1440px, 100%);
 
     /* Font family */
@@ -113,6 +112,7 @@
 
     /* Animations on hover / active / ...*/
     --cell-transition-duration: 1s;
+    --winning-player-animation-duration: 1s;
     --current-player-animation-duration: 0.5s;
     --current-player-animation-displ-up: calc(var(--player-info-margin-tb) / 3);
     --current-player-animation-displ-down: calc(-1 * var(--current-player-animation-displ-up));
@@ -392,7 +392,7 @@ h1{
     }
 }
 .player-info.current-player{
-    animation-duration: var(--current-player-animation-duration), var(--current-player-animation-duration);
+    animation-duration: var(--current-player-animation-duration);
     animation-iteration-count: 1, infinite;
     animation-direction: normal, alternate;
     animation-name: currentPlayerAnimationInit, currentPlayerAnimation;
@@ -484,9 +484,25 @@ h1{
 .gameboard:has(.winning-cell) .cell:not(.winning-cell)::before{
     transform: scale(var(--not-winning-cell-mark-scale));
 }
+@keyframes winningPlayerAnimation {
+    from{
+        transform: scale(1);
+    }
+    to{
+        transform: scale(var(--not-winning-cell-mark-scale))
+    }
+}
 .gameboard .cell.winning-cell{
     background-color: var(--marker-col);
     --icon-col: var(--bg-col);
+}
+.gameboard .cell.winning-cell::before{
+    animation-duration: var(--winning-player-animation-duration);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-name: winningPlayerAnimation;
+    animation-timing-function: ease-in-out;
+    will-change: transform; 
 }
 
 /* Disable click events when the round ends */
