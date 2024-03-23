@@ -512,6 +512,14 @@ const dispalyController = (function() {
             });
     }
 
+    const resetPlayerInfoCurrentPlayer = function(){
+        game.getPlayers().forEach(
+            player => {
+                let playerValue = player.getPlayerValue();
+                playerInfoDiv[playerValue].classList.toggle('current-player',0)
+            });
+    }
+
 
     /* tie / win handler */
     const roundWinHandler = function(){
@@ -602,9 +610,10 @@ const dispalyController = (function() {
         elem.classList.add(currentPlayerValue);
 
         // Possibly end the round
-        if (moveOutcome>0)
+        if (moveOutcome>0){
+            resetPlayerInfoCurrentPlayer();
             endRoundDOM(moveOutcome);
-        else{
+        }else{
             // Highlight the current player info div
             setPlayerInfoCurrentPlayer();
         }
