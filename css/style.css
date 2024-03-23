@@ -12,48 +12,89 @@
     /* #6d9dc5,  ddd1c7*/
 
     /* Colors (background)*/
-    --bg-col:                   var(--col-black);
-    --player-info-bg-col: var(--col-dark-grey);
-    
+    --bg-col:                       var(--col-black);
+    --player-info-bg-col:           var(--col-dark-grey);
+    --gameboard-bg-col:             var(--col-black);
+    --gameboard-cell-bg-col:        var(--col-light-grey);
+    --gameboard-cell-bg-col-hover:  var(--col-dark-grey);
+    --gameboard-cell-bg-col-active: var(--col-dark-grey);   
+    --gameboard-cell-bg-col-marked: var(--col-dark-grey);   
+    --round-outcome-bg-col:         var(--col-light-grey);
+
     /* Colors (text/icons)*/
-    --col-txt:                  var(--col-white);
+    --col-txt:                          var(--col-white);
+    --marker-col:                       transparent;
+    --gameboard-cell-border-col:        var(--col-dark-grey);
+    --gameboard-cell-border-col-hover:  var(--col-dark-grey);
+    --gameboard-cell-border-col-active: var(--col-light-grey);
 
-    /* Colors (icons)*/
-
+    /* Maximum width (including margin) */
+    --max-width: min(1440px, 100%);
 
     /* Font family */
     --main-font: 'Century Gothic', sans-serif;
 
     /* Font sizes */
-    --txt-fontsize:     4vmin;
-    --txt-lineheight:   1;
-    --header-h1-fontsize: 1rem;
-    --player-info-name-fontsize: 1.5rem;
-    --player-info-score-fontsize: 2.5rem;
+    /* Fluid font size: see https://matthewjamestaylor.com/responsive-font-size*/
+    /* The base (body) text is in the range [16px-25px] and depends on the viewport size */
+    /* It must not depend only on vh/vw/vmin only, for allowing zoom for accessibility*/
+    /* In the link the suggested formula is: calc(15px + 0.390625vw)*/
+    /* In body, 1rem=16px, then 15px=0.9375rem and 25px=1.5625rem */
+    /* The other font sized are relative to this base font */
+    --txt-fontsize:               clamp(1rem,calc(0.9375rem + 0.390625vmin),1.5625rem);
+    --txt-lineheight:             1;
+    --header-h1-fontsize:         1rem;
+    --player-info-name-fontsize:  1rem;
+    --player-info-score-fontsize: 2rem;
+    --player-info-icon-len:       2rem;
+
+    --round-outcome-btn-fontsize:       1rem;
+    --round-outcome-text-fontsize:      1.5rem;
+    --round-outcome-subtext-fontsize:   0.8rem;
 
     /* Text clamping: number of lines */
 
-    /* Maximum width (including margin) */
-    --max-width: min(1440px, 100%);
-
     /*Margins, gaps and paddings (+widths)*/
-    --main-gap:          1.5rem;
+    --header-ud-padding: 2vh;
+    --main-ud-padding:   2vh;
     --main-lr-padding:   5vmin;
-    --main-ud-padding:   3vmin;
-    --header-ud-padding: 3vmin;
+    --main-gap-hor:      1rem;
+    --main-gap-ver:      2vh;
+    --player-info-margin-tb: 2vmin;
 
-    --game-logo-icon-len: calc(1*var(--header-h1-fontsize));
+    --game-logo-icon-len: var(--header-h1-fontsize);
 
+    --player-info-width: 10rem;
     --player-info-border: 4px;
-    --player-info-padding: calc(var(--gameboard-radius) / 2);
+    --player-info-padding: 0.5rem;
+
+    --gameboard-gap:            2vmin;
+    --gameboard-padding:        0px;
+    --gameboard-cell-padding:   10%;
+    --round-outcome-gap:        2vmin;
+    --round-outcome-padding:    2vmin;
+    --round-outcome-btns-gap:   2rem;
+
+    --active-cell-scale:            0.25;
+    --not-winning-cell-mark-scale:  0.75;
+
+    --gameboard-cell-border:        0px;
+
+    /* Radius */
+
+    --gameboard-radius:             20px;
+    --gameboard-cell-radius:        5px;
+    --gameboard-cell-radius-hover:  30px;
+    --gameboard-cell-radius-active: 20px;
 
     /* Buttons */
-    --button-fontsize:                  1rem;
+    --button-fontsize:                  1.5rem; /*default: might be overwritten*/
+    --button-border:                    1px;
     --button-bottom-border:             4px;
     --button-bottom-border-hover:       6px; /* this must be the largest*/
     --button-bottom-border-active:      2px;
-    --button-radius:                    calc(var(--gameboard-radius) / 2);
-    --button-padding:                   calc(var(--button-radius) / 1);
+    --button-radius:                    calc(var(--gameboard-radius) / 1);
+    --button-padding:                   calc(var(--button-radius) / 2);
     --button-width:                     max(max-content,8em);
     --button-bottom-border-color:       var(--col-dark-grey);
     --button-bottom-border-color-alt:   var(--col-black);
@@ -62,10 +103,7 @@
     --button-color:                     var(--col-white);
     --button-color-alt:                 var(--col-white);
     --button-height: calc(2 * var(--button-padding) + var(--button-fontsize) * var(--txt-lineheight)  
-                     + var(--button-bottom-border-hover));
-
-    /* Radius */
-
+                     + var(--button-bottom-border-hover) + var(--button-border));
 
     /* Shadows */
     /* --outset-shadow: 2px 2px 8px var(--col-accent-medium);
@@ -73,11 +111,11 @@
     --inset-shadow: 2px 2px 2px var(--col-accent-light) inset; */
 
     /* Animations on hover / active / ...*/
+    --cell-transition-time: 1s;
     /* --transition-time: 0.8s; */
 
     /* Other info */
     --gameboard-size: 3;
-
 }
 
 ::backdrop {
@@ -182,6 +220,7 @@ main{
 button{
     border: none;
     outline: none;
+    border: var(--button-border) solid var(--button-bottom-border-color);
     border-bottom: var(--button-bottom-border) solid var(--button-bottom-border-color);
     background-color: var(--button-bg-color);
     color: var(--button-color);
@@ -252,7 +291,7 @@ h1{
     display: grid;
     justify-items: center;
     
-    gap: var(--main-gap); /*to fix double gap*/
+    gap: 0px var(--main-gap-hor); /*Apply horizontal gap only: see player-info for vertical space*/
     grid-template-columns: 1fr 1fr;
     grid-template-rows: min-content 0px minmax(0,1fr);
     grid-template-areas:
@@ -268,7 +307,12 @@ h1{
 .playing-div:has(.round-outcome-div.tie),
 .playing-div:has(.round-outcome-div.win){
     grid-template-rows: min-content min-content minmax(0,1fr);
-    gap: var(--main-gap);
+}
+
+
+.round-outcome-div:is(.win),
+.round-outcome-div:is(.tie){
+    margin: var(--main-gap-ver) 0;
 }
 
 
@@ -278,10 +322,19 @@ h1{
     padding: var(--player-info-padding);
     border: var(--player-info-border) solid var(--marker-col);
     border-radius: var(--gameboard-radius);
-    display: grid;
+    align-self: center;
     justify-self: stretch;
+    display: grid;
     align-items: center;
+    justify-items: center;
+    margin: var(--player-info-margin-tb) 0;
 }
+
+.playing-div:has(.round-outcome-div.tie) .player-info,
+.playing-div:has(.round-outcome-div.win) .player-info{
+    /* Ignore margin when the round outcome is shown */
+    margin: 0; 
+} 
 
 .player-info.x{
     grid-area: player-x;
@@ -313,7 +366,7 @@ h1{
 
 .player-info .player-icon{
     grid-area: icon;
-    --icon-len: var(--player-info-score-fontsize);
+    --icon-len: var(--player-info-icon-len);
     --icon-col: var(--marker-col);
 }
 
@@ -327,44 +380,8 @@ h1{
     width: 100%;
 }
 
-:root{
-    --marker-col: transparent;
-
-    --round-outcome-text-fontsize:  2rem;
-    --round-outcome-subtext-fontsize: 0.8rem;
-
-    --gameboard-gap:            2dvmin;
-    --gameboard-gap-hover:      4dvmin;  
-    --gameboard-padding:        var(--gameboard-gap);
-    --gameboard-cell-padding:   10%;
-    --round-outcome-gap:        1rem;
-    --round-outcome-padding:    1rem;
-    --round-outcome-btns-gap:   2rem;
-    --not-winning-cell-scale:   0.75;
-
-    --gameboard-bg-col:             var(--col-light-grey);
-    --gameboard-bg-col-hover:       transparent;
-    --gameboard-cell-bg-col:        var(--col-dark-grey);
-    --gameboard-cell-bg-col-hover:  var(--col-light-grey);
-    --gameboard-cell-bg-col-active: var(--col-light-grey);   
-    --round-outcome-bg-col:         var(--col-light-grey);
-
-    --gameboard-cell-border-col:    var(--col-dark-grey);
-    --gameboard-cell-border-col-hover: var(--col-light-grey);
-    --gameboard-cell-border-col-active:var(--col-dark-grey);;
-
-    --gameboard-cell-border:        0px;
-    --gameboard-hover-cell-border:  5px;
-
-    --gameboard-radius:             20px;
-    --gameboard-cell-radius:        5px;
-    --gameboard-hover-cell-radius:  10px;
-    --gameboard-cell-radius-hover:  30px;
-    --gameboard-cell-radius-active: 40px;
-}
-
 .gameboard{
-    width: 100%; /* tofix height in landscape mode todo*/
+    width: 100%;
     aspect-ratio: 1;
     background-color: var(--gameboard-bg-col);
     
@@ -383,7 +400,6 @@ h1{
 }
 
 .gameboard .cell{
-    /* aspect-ratio: 1; */
     background-color: var(--gameboard-cell-bg-col);
 
     border: var(--gameboard-cell-border) solid var(--gameboard-cell-border-col);
@@ -398,6 +414,8 @@ h1{
     /* Mark in the cells (x and o) */
     --icon-len: 100%;
     --icon-col: var(--marker-col);
+
+    transition: all var(--cell-transition-time);
 }
 
 /* Fix cells radius on vertex: you need to specify a specific class on the corner */
@@ -419,11 +437,12 @@ h1{
 .gameboard .cell.x,
 .gameboard .cell.o{
     pointer-events: none;
+    background-color: var( --gameboard-cell-bg-col-marked);
 }
 
 /* Highlight winning cells */
 .gameboard:has(.winning-cell) .cell:not(.winning-cell)::before{
-    transform: scale(0.75);
+    transform: scale(var(--not-winning-cell-mark-scale));
 }
 .gameboard .cell.winning-cell{
     background-color: var(--marker-col);
@@ -434,12 +453,6 @@ h1{
 /* Hovering behaviour */
 /* when hover is supported */
 @media not all and (hover: none){
-    .gameboard:hover{
-        --gameboard-cell-border: var(--gameboard-hover-cell-border);  
-        --gameboard-gap:         var(--gameboard-gap-hover);
-        --gameboard-bg-col:      var(--gameboard-bg-col-hover);
-        --gameboard-cell-radius: var(--gameboard-hover-cell-radius);
-    }
     .gameboard .cell:hover{
         /* --gameboard-cell-radius: var(--gameboard-cell-radius-hover); */
         border-radius: var(--gameboard-cell-radius-hover);
@@ -450,22 +463,18 @@ h1{
 
 /* here replicate the same style as above, for devices not supporing hover */
 /* active-specific styles are overwritten */
-.gameboard:active{
-    --gameboard-cell-border: var(--gameboard-hover-cell-border);  
-    --gameboard-gap:         var(--gameboard-gap-hover);
-    --gameboard-bg-col:      var(--gameboard-bg-col-hover);
-    --gameboard-cell-radius: var(--gameboard-hover-cell-radius);
-}
 .gameboard .cell:active{
     /* --gameboard-cell-radius: var(--gameboard-cell-radius-active); */
     border-radius: var(--gameboard-cell-radius-active);
     --gameboard-cell-bg-col: var(--gameboard-cell-bg-col-active);
     --gameboard-cell-border-col: var(--gameboard-cell-border-col-active);
+    transform: scale(var(--active-cell-scale)); /*tofix*/
 }
 
 
 /* || Main - round outcome div */
 .round-outcome-div{
+    --button-fontsize: var(--round-outcome-btn-fontsize);
     --round-outcome-height: calc(var(--round-outcome-text-fontsize) * var(--txt-lineheight) 
                             + var(--round-outcome-subtext-fontsize) * var(--txt-lineheight)
                             + 2 *  var(--round-outcome-padding) + 2 * var(--round-outcome-gap)
