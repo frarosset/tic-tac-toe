@@ -503,6 +503,16 @@ const dispalyController = (function() {
         game.getPlayers().forEach(player => {setPlayerInfoScore(player);});
     }
 
+    const setPlayerInfoCurrentPlayer = function(){
+        let currentPlayerValue = game.getCurrentPlayer().getPlayerValue();
+        game.getPlayers().forEach(
+            player => {
+                let playerValue = player.getPlayerValue();
+                playerInfoDiv[playerValue].classList.toggle('current-player',playerValue===currentPlayerValue)
+            });
+    }
+
+
     /* tie / win handler */
     const roundWinHandler = function(){
         // Get the winner info
@@ -550,6 +560,9 @@ const dispalyController = (function() {
         // Reset the game outcome info
         resetRoundOutcomeDiv();
 
+        // Highlight the current player info div
+        setPlayerInfoCurrentPlayer();
+
         // Add event listener to the click events on the gameboard
         gameboardDiv.addEventListener('click',playMoveDOM);
     }
@@ -591,6 +604,10 @@ const dispalyController = (function() {
         // Possibly end the round
         if (moveOutcome>0)
             endRoundDOM(moveOutcome);
+        else{
+            // Highlight the current player info div
+            setPlayerInfoCurrentPlayer();
+        }
     }
 
     const startNewGame = function(){

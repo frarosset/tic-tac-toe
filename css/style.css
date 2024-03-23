@@ -7,6 +7,7 @@
     --col-dark-grey: #1c2541;
     --col-light-grey:#3a506b;
     --col-white:     #ecebe4;
+
     --col-x:         #009ddc;
     --col-o:         #efa00b;
     /* #6d9dc5,  ddd1c7*/
@@ -368,6 +369,17 @@ h1{
     grid-area: icon;
     --icon-len: var(--player-info-icon-len);
     --icon-col: var(--marker-col);
+}
+
+/* Highlight current player */
+.player-info.current-player{
+    background-color: var(--marker-col);
+}
+.player-info.current-player .player-name{
+    color: var(--player-info-bg-col);
+}
+.player-info.current-player .player-icon{
+    --icon-col: var(--player-info-bg-col);
 }
 
 /* || Main - gameboard */
