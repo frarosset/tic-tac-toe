@@ -27,6 +27,7 @@
     --marker-col:                       transparent;
     --gameboard-cell-border-col-hover:  var(--col-dark-grey);
     --gameboard-cell-border-col-active: var(--col-light-grey);
+    --focus-visible-outline-col:   var(--col-white);
 
    /* Maximum width (including margin) */
     --max-width: min(1440px, 100%);
@@ -81,6 +82,8 @@
     --not-winning-cell-mark-scale:  0.75;
 
     --gameboard-cell-border:        0px;
+
+    --focus-visible-outline-size: 2px;
 
     /* Radius */
 
@@ -256,6 +259,10 @@ button.alt{
     margin-top: calc(var(--button-bottom-border-hover) - var(--button-bottom-border-active));
  }
 
+ button:focus-visible{
+    outline: var(--focus-visible-outline-size) solid var(--focus-visible-outline-col);
+ }
+
 
 /* || Header */
 header{
@@ -293,16 +300,87 @@ header button{
 .start-new-game-div{
     flex:1;
     display: flex; /* becomes none in certain conditions (see below) */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 100%;
 
     --button-fontsize: var(--settings-btn-fontsize);
+
 }
 .start-new-game-div.game-on{
     display: none;
 }
 
+.start-new-game-div .settings-div{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--settings-gap);
+}
+
+.start-new-game-div .settings-div .input-div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--settings-input-label-gap);
+}
+
+:root{
+    --settings-label-fontsize: 1rem;
+    --settings-input-fontsize: 1.5rem;
+    --settings-input-padding: 0.1rem;
+    --settings-input-placeholder-scale: 0.7;
+    --settings-input-border-col: var(--col-light-grey);
+    --settings-input-border-size: 4px;
+    --settings-input-bg-col: var(--col-white);
+    --settings-input-col:    var(--col-black);
+    --settings-input-placeholder-col: var(--col-light-grey);
+    --settings-input-radius: var(--gameboard-radius);
+
+    --settings-gap:             3vh;
+    --settings-input-label-gap: max(calc(2*var(--focus-visible-outline-size)),0.2rem);
+}
+.start-new-game-div .settings-div .input-div label{
+    font-variant: small-caps;
+    font-size: var(--settings-label-fontsize)
+}
+
+.start-new-game-div .settings-div .input-div input[type='text']{
+    border: var(--settings-input-border-size) solid var(--settings-input-border-col);
+    background-color: var(--settings-input-bg-col);
+    color: var(--settings-input-col);
+    border-radius: var(--settings-input-radius);
+    text-align: center;
+    font-weight: bold;
+    font-size: var(--settings-input-fontsize);
+    display:flex;
+    align-items: center;
+    padding: var(--settings-input-padding);
+}
+.start-new-game-div .settings-div .input-div input[type='text']:focus-visible{
+    outline: var(--focus-visible-outline-size) solid var(--focus-visible-outline-col);
+}
+.start-new-game-div .settings-div .input-div input[type='text']::placeholder{
+    color: var(--settings-input-placeholder-col);
+    transform: scale(var(--settings-input-placeholder-scale));
+    font-weight: normal;
+    font-style: italic;
+}
+
+.start-new-game-div .button-div{
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.start-new-game-div .note-div{
+    text-align: center;
+    text-wrap: balance;
+}
 
 /* || Main - Playing View*/
 

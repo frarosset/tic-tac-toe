@@ -23,7 +23,22 @@
     </header>
     <main>
         <div class="start-new-game-div">
-            <button class="start-new-game-btn">PLAY</button>
+            <div class='settings-div'>
+                <div class="input-div">
+                    <label for="input-player-x-name">Player X</label>
+                    <input id="input-player-x-name" type="text" placeholder="Player 1" maxlength="12">
+                </div>
+                <div class="input-div">
+                    <label for="input-player-o-name">Player O</label>
+                    <input id="input-player-o-name" type="text" placeholder="Player 2" maxlength="12">
+                </div>
+            </div>
+            <div class='button-div'>
+                <button class="start-new-game-btn" form="settings-form">PLAY</button>
+            </div>
+            <div class="note-div">
+                Note: the starting player of each round is randomly chosen.
+            </div>
         </div>
 
         <div class="playing-div">
