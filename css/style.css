@@ -346,7 +346,23 @@ header button{
 }
 .start-new-game-div .settings-div .input-div label{
     font-variant: small-caps;
-    font-size: var(--settings-label-fontsize)
+    font-size: var(--settings-label-fontsize);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3em;
+}
+.start-new-game-div .settings-div .input-div .icon-mask{
+    --icon-len: calc(0.9*var(--settings-label-fontsize));
+    --icon-col: var(--marker-col);
+    width: var(--settings-label-fontsize);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.start-new-game-div .settings-div .input-div .icon-mask:before{
+    width: var(--settings-label-fontsize);
+    height: var(--settings-label-fontsize);
 }
 
 .start-new-game-div .settings-div .input-div input[type='text']{
@@ -501,6 +517,7 @@ header button{
 }
 .player-info.current-player .player-name{
     color: var(--player-info-bg-col);
+    font-weight: bold;
 }
 .player-info.current-player .player-icon{
     --icon-col: var(--player-info-bg-col);
