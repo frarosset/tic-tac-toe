@@ -379,8 +379,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
 // This factory function handles the display of the game in the DOM --> IIFE (module pattern), as we need a single instance
 const dispalyController = (function() {
     let gameboardSize = 3;
-    let playerXName = 'Alice';
-    let playerOName = 'Bob';
+    let playerName = {};
     let game = null;
 
     // DOM cache
@@ -390,16 +389,21 @@ const dispalyController = (function() {
 
     const playerInfoDiv =   {x: document.querySelector('.player-info.x'),
                              o: document.querySelector('.player-info.o')};
+    const playerInfoName = {x: playerInfoDiv.x.querySelector('.player-name'),
+                             o: playerInfoDiv.o.querySelector('.player-name')};
     const playerInfoScore = {x: playerInfoDiv.x.querySelector('.player-score'),
                              o: playerInfoDiv.o.querySelector('.player-score')};
     const gameboardCntDiv = document.querySelector('main .gameboard-cnt');
-    const gameboardDiv = document.querySelector('main .gameboard');
+    const gameboardDiv = gameboardCntDiv.querySelector('.gameboard');
     const roundOutcomeDiv = document.querySelector('main .round-outcome-div');
     const winnerPlayerSpan = roundOutcomeDiv.querySelector('main .winner-player');
     const winnerComboValSpan = roundOutcomeDiv.querySelector('main .winner-combo-val'); 
     const winnerComboExtraPointsSpan = roundOutcomeDiv.querySelector('main .winner-combo-extra-points'); 
     const nextRoundBtn = roundOutcomeDiv.querySelector('.next-round-btn');
     const endGameAfterRoundBtn = roundOutcomeDiv.querySelector('.end-game-btn'); 
+
+    const playerNameInput = {x: startNewGameDiv.querySelector('#input-player-x-name'),
+                             o: startNewGameDiv.querySelector('#input-player-o-name')};
 
     // Resize observer, to adapt the gameboard size
     // see https://web.dev/articles/resize-observer
@@ -563,7 +567,7 @@ const dispalyController = (function() {
         // todo: get gameboardSize,playerXName,playerOName from settings
 
         // Create a new game
-        game = gameController(gameboardSize,playerXName,playerOName);
+        game = gameController(gameboardSize,playerName.x,playerName.o);
 
         // Initialize players score on playerInfoDiv
         setAllPlayersInfoScore();
@@ -630,10 +634,19 @@ const dispalyController = (function() {
         }
     }
 
+    const getPlayersNamesFromSettings = function(){
+        for (sym in playerNameInput){
+            let playerValue = playerNameInput[sym].value;
+            playerName[sym] = playerValue.length>0? playerValue : playerNameInput[sym].placeholder;
+            playerInfoName[sym].textContent = playerName[sym]
+        }
+    }
+
     const startNewGame = function(){
         startNewGameBtn.removeEventListener('click',startNewGame);
         backBtn.addEventListener('click',endGameAfterRound);
         startNewGameDiv.classList.toggle('game-on',true);
+        getPlayersNamesFromSettings();
         startGameDOM();
     }
 
