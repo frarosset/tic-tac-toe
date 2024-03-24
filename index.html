@@ -25,13 +25,26 @@
         <div class="start-new-game-div">
             <div class='settings-div'>
                 <div class="input-div">
-                    <label for="input-player-x-name">Player <div class="icon-mask x"></div></label>
+                    <label for="input-player-x-name">player <div class="icon-mask x"></div></label>
                     <input id="input-player-x-name" type="text" placeholder="Player 1" maxlength="12">
                 </div>
                 <div class="input-div">
-                    <label for="input-player-o-name">Player <div class="icon-mask o"></div></label>
+                    <label for="input-player-o-name">player <div class="icon-mask o"></div></label>
                     <input id="input-player-o-name" type="text" placeholder="Player 2" maxlength="12">
                 </div>
+
+                <div class="input-div">
+                    <label for="input-gameboard-size">gameboard size</label>
+                    <fieldset id="input-gameboard-size" class="radio-input-fieldset">
+                        <input type="radio" value="3" id="input-gameboard-size-3x3" name="input-gameboard-size" checked>
+                        <label for="input-gameboard-size-3x3">3×3</label>
+                        <input type="radio" value="4" id="input-gameboard-size-4x4" name="input-gameboard-size">
+                        <label for="input-gameboard-size-4x4">4×4</label>
+                        <input type="radio" value="5" id="input-gameboard-size-5x5" name="input-gameboard-size">
+                        <label for="input-gameboard-size-5x5">5×5</label>
+                    </fieldset>
+                </div>
+
             </div>
             <div class='button-div'>
                 <button class="start-new-game-btn" form="settings-form">PLAY</button>
