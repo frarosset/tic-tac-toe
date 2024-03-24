@@ -9,6 +9,16 @@ const DOMUtilities = (function(){
     return {removeDescendants};
 })();
 
+const commonUtilities = (function(){
+    const randomInt = function(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    return {randomInt};
+})();
+
 // This factory function handles the gameboard functionality
 function createGameboard(size, emptyCellValue=''){
     let gameboard = [];
@@ -272,7 +282,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
     // Play functions
     const initRound = function(){
         roundWinner = undefined;
-        currentPlayerIdx = 0;
+        currentPlayerIdx = commonUtilities.randomInt(0,1);
         gameboard.resetGameboard();
     }
 
@@ -667,11 +677,7 @@ const dispalyController = (function() {
 
 /* Other temporary functions that might be useful: possibly put them in modules */
 
-function randomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+
 
 
 
