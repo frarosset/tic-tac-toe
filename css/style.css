@@ -314,7 +314,7 @@ header button{
     --settings-gap-ver:             3vh;
     --settings-gap-hor:             3vw;
     --settings-label-fontsize:      1rem;
-    --settings-input-label-gap:     max(calc(3*var(--focus-visible-outline-size)),0.2rem);
+    --settings-input-label-gap:     max(calc(2*var(--focus-visible-outline-size)),0.2rem);
 
     --settings-input-fontsize:      1.4rem;
     --settings-input-padding:       0.3rem;

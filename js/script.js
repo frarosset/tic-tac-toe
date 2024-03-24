@@ -6,7 +6,11 @@ const DOMUtilities = (function(){
         }
     }
 
-    return {removeDescendants};
+    const getCheckedRadioValueAmongDescendants = function(ascendentElement){
+        return ascendentElement.querySelector("input[type=radio]:checked").value;
+    }
+
+    return {removeDescendants,getCheckedRadioValueAmongDescendants};
 })();
 
 const commonUtilities = (function(){
@@ -404,6 +408,7 @@ const dispalyController = (function() {
 
     const playerNameInput = {x: startNewGameDiv.querySelector('#input-player-x-name'),
                              o: startNewGameDiv.querySelector('#input-player-o-name')};
+    const gameboardSizeInput = startNewGameDiv.querySelector('#input-gameboard-size');                         
 
     // Resize observer, to adapt the gameboard size
     // see https://web.dev/articles/resize-observer
@@ -641,12 +646,21 @@ const dispalyController = (function() {
             playerInfoName[sym].textContent = playerName[sym]
         }
     }
+    const getGameboardSizeFromSettings = function(){
+        gameboardSize = DOMUtilities.getCheckedRadioValueAmongDescendants(gameboardSizeInput);
+        console.log(gameboardSizeInput,gameboardSize);
+        document.documentElement.style.setProperty('--gameboard-size', gameboardSize);
+    }
+
 
     const startNewGame = function(){
         startNewGameBtn.removeEventListener('click',startNewGame);
         backBtn.addEventListener('click',endGameAfterRound);
         startNewGameDiv.classList.toggle('game-on',true);
+
         getPlayersNamesFromSettings();
+        getGameboardSizeFromSettings();
+
         startGameDOM();
     }
 
