@@ -740,6 +740,28 @@ header button{
     max-height: var(--round-outcome-height);
 
     display: none; /* becomes flex in certain conditions (see below) */
+    position: relative;
+}
+
+/* https://css-tricks.com/full-width-containers-limited-width-parents/#aa-no-calc-needed */
+.round-outcome-div::before{
+    content:    "";
+    display:    block;
+    width:      100vw;
+    position:   absolute;
+    left:       50%;
+    right:      50%;
+    margin-left:  -50vw;
+    margin-right: -50vw;
+    height:     100%;
+    top:        0;
+
+    background-color: var(--round-outcome-bg-col);
+}
+.round-outcome-div .round-outcome-text,
+.round-outcome-div .round-outcome-subtext,
+.round-outcome-div button{
+    z-index: 1;
 }
 
 .round-outcome-div .round-outcome-text{
