@@ -343,7 +343,8 @@ header button{
     grid-template-areas: 
         "player-x-name"
         "player-o-name"
-        "gameboard-size";
+        "gameboard-size"
+        "extended-mode";
 
     align-items: center;
     justify-content: center;
@@ -358,6 +359,9 @@ header button{
 }
 .input-div:has(#input-gameboard-size){
     grid-area: gameboard-size;
+}
+.input-div:has(#input-extended-mode){
+    grid-area: extended-mode;
 }
 
 .start-new-game-div .button-div{

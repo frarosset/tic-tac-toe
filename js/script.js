@@ -254,7 +254,7 @@ function createRoundWinner(player, assignedPoints, winningCells){
 }
 
 // This factory function handles the flow of the game
-function gameController(size,player1Name='Player 1', player2Name='Player 2', extendedMode=true) {
+function gameController(size,player1Name='Player 1', player2Name='Player 2', extendedMode=false) {
 
     const emptyCellValue = " ";
 
@@ -432,6 +432,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2', ext
 // This factory function handles the display of the game in the DOM --> IIFE (module pattern), as we need a single instance
 const dispalyController = (function() {
     let gameboardSize = 3;
+    let extendedMode = false;
     let playerName = {};
     let game = null;
 
@@ -457,7 +458,9 @@ const dispalyController = (function() {
 
     const playerNameInput = {x: startNewGameDiv.querySelector('#input-player-x-name'),
                              o: startNewGameDiv.querySelector('#input-player-o-name')};
-    const gameboardSizeInput = startNewGameDiv.querySelector('#input-gameboard-size');                         
+    const gameboardSizeInput = startNewGameDiv.querySelector('#input-gameboard-size'); 
+    const extendedModeInput = startNewGameDiv.querySelector('#input-gameboard-extended-mode');
+    
 
     // Resize observer, to adapt the gameboard size
     // see https://web.dev/articles/resize-observer
@@ -619,7 +622,7 @@ const dispalyController = (function() {
 
     const startGameDOM = function(){
         // Create a new game
-        game = gameController(gameboardSize,playerName.x,playerName.o);
+        game = gameController(gameboardSize,playerName.x,playerName.o,extendedMode);
 
         // Initialize players score on playerInfoDiv
         setAllPlayersInfoScore();
@@ -703,7 +706,9 @@ const dispalyController = (function() {
         gameboardSize = parseInt(DOMUtilities.getCheckedRadioValueAmongDescendants(gameboardSizeInput));
         document.documentElement.style.setProperty('--gameboard-size', gameboardSize);
     }
-
+    const getExtendedModeFromSettings = function(){
+        extendedMode = parseInt(DOMUtilities.getCheckedRadioValueAmongDescendants(extendedModeInput));
+    }
 
     const startNewGame = function(){
         startNewGameBtn.removeEventListener('click',startNewGame);
@@ -712,6 +717,7 @@ const dispalyController = (function() {
 
         getPlayersNamesFromSettings();
         getGameboardSizeFromSettings();
+        getExtendedModeFromSettings();
 
         startGameDOM();
     }
