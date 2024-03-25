@@ -673,6 +673,17 @@ const dispalyController = (function() {
         startRoundDOM();
     };
 
+    // Temporary fix to disable context menu to appear on prolonged touch or right-mouse click
+    // https://stackoverflow.com/questions/36668147/disable-mobile-longpress-context-menu-on-specific-elements?noredirect=1&lq=1
+    // See below
+    const contextMenuCallback = function(e){
+        //console.log('CONTEXTMENU',e.target.classList[0])
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        e.target.click(); /* Simulate click to play the move */
+    }
+
     const startRoundDOM = function(){
         game.initRound();
         initGameboardDOM();
@@ -685,6 +696,10 @@ const dispalyController = (function() {
 
         // Add event listener to the click events on the gameboard
         gameboardDiv.addEventListener('click',playMoveDOM);
+
+        // Temporary fix to disable context menu to appear on prolonged touch or right-mouse click
+        // https://stackoverflow.com/questions/36668147/disable-mobile-longpress-context-menu-on-specific-elements?noredirect=1&lq=1
+        gameboardDiv.addEventListener('contextmenu',contextMenuCallback ,true);
     };
 
     const endRoundDOM = function(moveOutcome){
@@ -697,6 +712,7 @@ const dispalyController = (function() {
         } 
         // Remove event listener   
         gameboardDiv.removeEventListener('click',playMoveDOM); 
+        gameboardDiv.removeEventListener('contextmenu',contextMenuCallback ,true);
     };
 
     const playMoveDOM = function(e){
