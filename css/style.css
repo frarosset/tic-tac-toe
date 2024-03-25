@@ -625,7 +625,11 @@ header button{
     height: 100%;   
 }
 
+.gameboard .cell-clickable-area{
+    border-radius: var(--gameboard-cell-radius);
+}
 .gameboard .cell{
+    height: 100%;
     background-color: var(--gameboard-cell-bg-col);
 
     border: var(--gameboard-cell-border) solid var(--gameboard-cell-border-col);
@@ -647,22 +651,32 @@ header button{
 /* Fix cells radius on vertex: you need to specify a specific class on the corner */
 /* While you could use :first-child and :last-child for the TL and BR corners, */
 /* you can't use CSS variables (--gameboard-size) within :nth-child() and ::nth-last-child() to get the remaining corners */
-.gameboard .cell.cell-tl{
+.gameboard .cell.cell-tl,
+.gameboard .cell-clickable-area:has(.cell.cell-tl){
     border-top-left-radius: var(--gameboard-radius);
 }
-.gameboard .cell.cell-br{
+.gameboard .cell.cell-br,
+.gameboard .cell-clickable-area:has(.cell.cell-br){
     border-bottom-right-radius: var(--gameboard-radius);
 }
-.gameboard .cell.cell-tr{
+.gameboard .cell.cell-tr,
+.gameboard .cell-clickable-area:has(.cell.cell-tr){
     border-top-right-radius: var(--gameboard-radius);
 }
-.gameboard .cell.cell-bl{
+.gameboard .cell.cell-bl,
+.gameboard .cell-clickable-area:has(.cell.cell-bl){
     border-bottom-left-radius: var(--gameboard-radius);  
 }
 
 .gameboard .cell.x,
-.gameboard .cell.o{
+.gameboard .cell.o,
+.gameboard .cell-clickable-area:has(.cell.x),
+.gameboard .cell-clickable-area:has(.cell.o){
     pointer-events: none;
+}
+
+.gameboard .cell.x,
+.gameboard .cell.o{
     background-color: var( --gameboard-cell-bg-col-marked);
 }
 

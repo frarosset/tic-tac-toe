@@ -4,11 +4,11 @@ const DOMUtilities = (function(){
             removeDescendants(elem.lastChild)
             elem.removeChild(elem.lastChild);
         }
-    }
+    };
 
     const getCheckedRadioValueAmongDescendants = function(ascendentElement){
         return ascendentElement.querySelector("input[type=radio]:checked").value;
-    }
+    };
 
     return {removeDescendants,getCheckedRadioValueAmongDescendants};
 })();
@@ -18,7 +18,7 @@ const commonUtilities = (function(){
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+    };
 
     return {randomInt};
 })();
@@ -76,7 +76,7 @@ function createGameboard(size, emptyCellValue=''){
 
     const _getAntiDiagonalCells = function(){
         return gameboard.map((itm,idx) => itm[size-idx-1]);
-    }
+    };
 
     /* Move methods */
     const _isMoveAllowed = function(row,column){
@@ -120,7 +120,7 @@ function createGameboard(size, emptyCellValue=''){
         for (let row=0; row<size; row++){
             let rowArray = _getRowCells(row);
             if (_checkEqualValidCellsInLine(rowArray)){
-                console.log('R'+row);
+                // console.log('R'+row);
                 linesOfEqualCells.push(rowArray);
                 break;
             }
@@ -130,7 +130,7 @@ function createGameboard(size, emptyCellValue=''){
         for (let column=0; column<size; column++){        
             let colArray = _getColumnCells(column);
             if (_checkEqualValidCellsInLine(colArray)){
-                console.log('C'+column);
+                // console.log('C'+column);
                 linesOfEqualCells.push(colArray);
                 break;
             }
@@ -140,7 +140,7 @@ function createGameboard(size, emptyCellValue=''){
         {    
             let mainDiagArray = _getMainDiagonalCells();
             if (_checkEqualValidCellsInLine(mainDiagArray)){
-                console.log('D');
+                // console.log('D');
                 linesOfEqualCells.push(mainDiagArray);
             }
         }
@@ -149,7 +149,7 @@ function createGameboard(size, emptyCellValue=''){
         {    
             let antiDiagArray = _getAntiDiagonalCells();
             if (_checkEqualValidCellsInLine(antiDiagArray)){
-                console.log('AD');
+                // console.log('AD');
                 linesOfEqualCells.push(antiDiagArray);
             }
         }
@@ -159,7 +159,7 @@ function createGameboard(size, emptyCellValue=''){
 
     const noEmptyCells = function(){
         return numberOfEmptyCells==0;
-    }
+    };
 
     return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,deactivatedMove};
 }
@@ -240,15 +240,15 @@ function createRoundWinner(player, assignedPoints, winningCells){
     // Game / win status
     const getPlayer = function(){
         return player;
-    }
+    };
 
     const getAssignedPoints = function(){
         return assignedPoints;
-    }
+    };
 
     const getWinningCells = function(){
         return winningCells;
-    }
+    };
 
     return {getPlayer, getAssignedPoints, getWinningCells};
 }
@@ -284,17 +284,17 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2', ext
     // Player functions
     const getCurrentPlayer = function(){
         return players[currentPlayerIdx];
-    }
+    };
     const getPlayers = function(){
         return players;
-    }
+    };
     const _changeCurrentPlayer = function(){
         currentPlayerIdx = (currentPlayerIdx+1) % players.length;
-    }
+    };
 
     const getRoundWinnerPlayer = function(){
         return roundWinner;
-    }
+    };
 
     const getGameWinnerPlayer = function(){
         if (players[0].getPlayerScore() > players[1].getPlayerScore())
@@ -303,7 +303,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2', ext
             return players[1];
         else // no winner
             return null;
-    }
+    };
 
     // Play functions
     const initRound = function(){
@@ -312,7 +312,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2', ext
         activeCells = [];
         deactivatedCell=null;
         gameboard.resetGameboard();
-    }
+    };
 
     // A function to get the cell that has been deactivated, to be used, eg, to update the DOM by the displayController
     const getDeactivatedCell = function(){
@@ -479,6 +479,38 @@ const dispalyController = (function() {
     //     <div class="cell icon-mask"></div>
     //     <div class="cell cell-br icon-mask"></div>
     // </div>
+    // 
+    // However, each cell is wrapped in a cell-clickable-area div
+    // which is just used to capture the click events and will not
+    // be scaled or transformed
+    // 
+    // <div class="cell-clickable-area">
+    //     <div class="cell cell-tl icon-mask"></div>
+    // </div>
+    // <div class="cell-clickable-area">
+    //     <div class="cell icon-mask o"></div>
+    // </div>
+    // <div class="cell-clickable-area">
+    //     <div class="cell cell-tr icon-mask"></div
+    // </div>
+    // <div class="cell-clickable-area">
+    //     <div class="cell icon-mask"></div>
+    // </div>
+    // <div class="cell-clickable-area">                        
+    //     <div class="cell icon-mask x"></div>
+    // </div>
+    // <div class="cell-clickable-area">                        
+    //     <div class="cell icon-mask"></div>
+    // </div>
+    // <div class="cell-clickable-area">                        
+    //     <div class="cell cell-bl icon-mask"></div>
+    // </div>
+    // <div class="cell-clickable-area">                        
+    //     <div class="cell icon-mask x"></div>
+    // </div>
+    // <div class="cell-clickable-area">                        
+    //     <div class="cell cell-br icon-mask o"></div>
+    // </div> 
     const initGameboardDOM = function(){
         // Reset the gameboard
         resetGameboardDOM();
@@ -486,6 +518,9 @@ const dispalyController = (function() {
         // Add the cells
         for (let r=0; r<gameboardSize; r++){
             for (let c=0; c<gameboardSize;c++){
+                let cellClickableArea = document.createElement('div');
+                cellClickableArea.classList.add('cell-clickable-area');
+
                 let cell = document.createElement('div');
                 cell.classList.add('cell');
                 cell.classList.add('icon-mask');
@@ -508,13 +543,21 @@ const dispalyController = (function() {
                 cell.varRow = r;
                 cell.varColumn = c;
 
-                gameboardDiv.appendChild(cell);
+                cellClickableArea.appendChild(cell);
+                gameboardDiv.appendChild(cellClickableArea);
             }
         }
     };
 
     const resetGameboardDOM = function(){
         DOMUtilities.removeDescendants(gameboardDiv);
+    };
+
+    const addClassToCellDOM = function(cell,className){
+        gameboardDiv.childNodes[cell.getCellId()].firstChild.classList.add(className);
+    };
+    const removeClassFromCellDOM = function(cell,className){
+        gameboardDiv.childNodes[cell.getCellId()].firstChild.classList.remove(className);
     };
 
     /* Outcome div handler */
@@ -532,7 +575,7 @@ const dispalyController = (function() {
         // Remove button event listener
         nextRoundBtn.removeEventListener('click',startRoundDOM);
         endGameAfterRoundBtn.removeEventListener('click',endGameAfterRound);
-    }
+    };
 
     const setWinRoundOutcomeDiv = function(winnerPlayerName,winnerPlayerValue,winnerPlayerComboVal,assignedPoints){
         winnerPlayerSpan.textContent = winnerPlayerName;
@@ -547,7 +590,7 @@ const dispalyController = (function() {
         // Add button event listener to select what to do next
         nextRoundBtn.addEventListener('click',startRoundDOM);
         endGameAfterRoundBtn.addEventListener('click',endGameAfterRound);
-    }
+    };
 
     const setTieRoundOutcomeDiv = function(){
         roundOutcomeDiv.classList.add('tie');
@@ -555,25 +598,25 @@ const dispalyController = (function() {
         // Add button event listener to select what to do next
         nextRoundBtn.addEventListener('click',startRoundDOM);
         endGameAfterRoundBtn.addEventListener('click',endGameAfterRound);
-    }
+    };
 
     const highlightWinningCells = function(winningCells){
         winningCells.forEach(line => {
             line.forEach((cell) => {
-                gameboardDiv.childNodes[cell.getCellId()].classList.add('winning-cell');
+                addClassToCellDOM(cell,'winning-cell');
             });
         });
-    }
+    };
 
     const setPlayerInfoScore = function(player){
         let playerValue = player.getPlayerValue();
         let playerScore = player.getPlayerScore();
         playerInfoScore[playerValue].textContent = playerScore;
-    }
+    };
 
     const setAllPlayersInfoScore = function(){
         game.getPlayers().forEach(player => {setPlayerInfoScore(player);});
-    }
+    };
 
     const setPlayerInfoCurrentPlayer = function(){
         let currentPlayerValue = game.getCurrentPlayer().getPlayerValue();
@@ -582,7 +625,7 @@ const dispalyController = (function() {
                 let playerValue = player.getPlayerValue();
                 playerInfoDiv[playerValue].classList.toggle('current-player',playerValue===currentPlayerValue)
             });
-    }
+    };
 
     const resetPlayerInfoCurrentPlayer = function(){
         game.getPlayers().forEach(
@@ -590,8 +633,7 @@ const dispalyController = (function() {
                 let playerValue = player.getPlayerValue();
                 playerInfoDiv[playerValue].classList.toggle('current-player',0)
             });
-    }
-
+    };
 
     /* tie / win handler */
     const roundWinHandler = function(){
@@ -612,11 +654,11 @@ const dispalyController = (function() {
    
         // Change the winner player score
         setPlayerInfoScore(winnerPlayer);
-    }
+    };
     const roundTieHandler = function(){
         // Show the round outcome
         setTieRoundOutcomeDiv();
-    }
+    };
 
     // Start game / round
 
@@ -629,7 +671,7 @@ const dispalyController = (function() {
         
         // Start the round
         startRoundDOM();
-    }
+    };
 
     const startRoundDOM = function(){
         game.initRound();
@@ -643,7 +685,7 @@ const dispalyController = (function() {
 
         // Add event listener to the click events on the gameboard
         gameboardDiv.addEventListener('click',playMoveDOM);
-    }
+    };
 
     const endRoundDOM = function(moveOutcome){
         if (moveOutcome == 1){
@@ -655,12 +697,27 @@ const dispalyController = (function() {
         } 
         // Remove event listener   
         gameboardDiv.removeEventListener('click',playMoveDOM); 
-    }
+    };
 
     const playMoveDOM = function(e){
+        // NOTE: the gameboard structure is:
+        //       gameboard > cell-clickable-area > cell
+        //       gameboard has an event listener, but because of bubbling, 
+        //       elem is the top element present that capture the click
+        //       cell-clickable-area has  a fixed size, while cell might get transformed
+
         let elem = e.target;
-        if (!elem.classList.contains('cell'))
-            return;
+
+        // If elem is a cell, play the move on that cell
+        if (!elem.classList.contains('cell')){
+            // Otherwise, a cell might still have been selected
+            // Check if the clicking point is in the cell-clickable-area
+            // This happens, eg, if cell is scaled down
+            if (elem.classList.contains('cell-clickable-area'))
+                elem = elem.firstChild; // .cell
+            else
+                return;
+        }
 
         // Get the cell row and column
         let row = elem.varRow;
@@ -675,7 +732,7 @@ const dispalyController = (function() {
         // Deactivated a cell (this depends on the modality of the game: this happens in extended mode)
         let deactivatedCell = game.getDeactivatedCell();
         if (deactivatedCell){
-            gameboardDiv.childNodes[deactivatedCell.getCellId()].classList.remove(currentPlayerValue);
+            removeClassFromCellDOM(deactivatedCell,currentPlayerValue);
         }
 
         // Invalid move: ignore it
@@ -693,7 +750,7 @@ const dispalyController = (function() {
             // Highlight the current player info div
             setPlayerInfoCurrentPlayer();
         }
-    }
+    };
 
     const getPlayersNamesFromSettings = function(){
         for (sym in playerNameInput){
@@ -701,14 +758,14 @@ const dispalyController = (function() {
             playerName[sym] = playerValue.length>0? playerValue : playerNameInput[sym].placeholder;
             playerInfoName[sym].textContent = playerName[sym]
         }
-    }
+    };
     const getGameboardSizeFromSettings = function(){
         gameboardSize = parseInt(DOMUtilities.getCheckedRadioValueAmongDescendants(gameboardSizeInput));
         document.documentElement.style.setProperty('--gameboard-size', gameboardSize);
-    }
+    };
     const getExtendedModeFromSettings = function(){
         extendedMode = parseInt(DOMUtilities.getCheckedRadioValueAmongDescendants(extendedModeInput));
-    }
+    };
 
     const startNewGame = function(){
         startNewGameBtn.removeEventListener('click',startNewGame);
@@ -720,13 +777,13 @@ const dispalyController = (function() {
         getExtendedModeFromSettings();
 
         startGameDOM();
-    }
+    };
 
     const endGame = function(){
         backBtn.removeEventListener('click',endGameAfterRound);
         startNewGameBtn.addEventListener('click',startNewGame);
         startNewGameDiv.classList.toggle('game-on',false);
-    }
+    };
 
     const endGameAfterRound = function(){
         resetRoundOutcomeDiv();
@@ -762,10 +819,7 @@ const dispalyController = (function() {
 
 /* Other temporary functions that might be useful: possibly put them in modules */
 
-
-
-
-
+/*
 // from: https://stackoverflow.com/a/143889
 // Determines if the passed element is overflowing its bounds,
 // either vertically or horizontally.
@@ -786,22 +840,6 @@ function checkOverflow(el)
    return isOverflowing;
 }
 
-// throttle function to avoid calling the actual callback continuously (eg, on resize or scroll)
-// from: https://stackoverflow.com/questions/68751736/throttle-window-scroll-event-in-react-with-settimeout
-function throttle (callbackFn, limit=100) {
-    let wait = false;                  
-    return function () {              
-        if (!wait) {                  
-            callbackFn.call();           
-            wait = true;               
-            setTimeout(function () {
-                callbackFn.call();
-                wait = false;          
-            }, limit);
-        }
-    }
-}
-
 function fitFontSize(elem, defaultFontSize='',delta=0.9){
     // Initialize the fontSize, if the initial value is provided
     if (defaultFontSize)
@@ -820,4 +858,4 @@ function fitFontSize(elem, defaultFontSize='',delta=0.9){
 function splitCSSUnits(CSSAttrVal){
     return [CSSAttrVal.match(/[\d.]+/)[0],CSSAttrVal.match(/[^\d.]+/)[0]];
 }
-
+*/
