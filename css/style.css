@@ -67,9 +67,11 @@
 
     --game-logo-icon-len: var(--header-h1-fontsize);
 
-    --player-info-width: 10rem;
-    --player-info-border: 4px;
-    --player-info-padding: 0.5rem;
+    --player-info-width:    10rem;
+    --player-info-border:   4px;
+    --player-info-padding:  0.5rem;
+    --player-info-gap-score:2px;
+    --player-info-gap-icon: var(--player-info-padding);
 
     --gameboard-gap:            2vmin;
     --gameboard-padding:        0px;
@@ -514,6 +516,7 @@ header button{
     align-items: center;
     justify-items: center;
     margin: var(--player-info-margin-tb) 0;
+    gap: var(--player-info-gap-score) var(--player-info-gap-icon);
 }
 
 .playing-div:has(.round-outcome-div.tie) .player-info,
