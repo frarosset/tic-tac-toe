@@ -89,14 +89,21 @@ function createGameboard(size, emptyCellValue=''){
         // returns true if the move is performed, false otherwise
         if (!_isMoveAllowed(row,column)){
             console.log(`Gameboard:makeMove. Setting cell (${row},${column}) to "${currentPlayer.getPlayerName()}" not allowed`);
-            return false;
+            return null;
         }
 
         //console.log(`Gameboard:makeMove. Marking cell (${row},${column}) by user ${currentPlayer}`);
         gameboard[row][column].setCellPlayer(currentPlayer);
         numberOfEmptyCells--;
 
-        return true;
+        return gameboard[row][column];
+    };
+
+    const deactivatedMove = function(row,column,currentPlayer){
+        if (gameboard[row][column].getCellPlayer()==currentPlayer){
+            gameboard[row][column].resetCellPlayer();
+            numberOfEmptyCells++;
+        }
     };
 
     /* Game finished methods */
@@ -154,7 +161,7 @@ function createGameboard(size, emptyCellValue=''){
         return numberOfEmptyCells==0;
     }
 
-    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells};
+    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,deactivatedMove};
 }
 
 // This factory function handles the gameboard's cell functionality
@@ -247,9 +254,24 @@ function createRoundWinner(player, assignedPoints, winningCells){
 }
 
 // This factory function handles the flow of the game
-function gameController(size,player1Name='Player 1', player2Name='Player 2') {
+function gameController(size,player1Name='Player 1', player2Name='Player 2', extendedMode=true) {
 
     const emptyCellValue = " ";
+
+    // Classic Mode: each player puts a mark, until a player wins or the gameboard is full
+    // Extended Mode: each player puts AT MOST a number of marks equal to the size of the gameboard.
+    // Eg, in a 3x3 board, you can put at most 3 marks per playerl
+    // If a mark is set in a gameboard where there are already 'size' marks of the same type, the
+    // one placed first is removed and a new one is put in another spot. Then, in the gameboard remain
+    // only the most recents ones. To do this, we need to save the current activeCells (activeCells array).
+    let activeCells;
+    let deactivatedCell;
+    // To cover both cases, you just need to check when the number of activeCells is equal to the maximum
+    // allowed, and in that case, deactivate the cell in activeCells array that has been set first, ie, 
+    // activeCells[0]
+    // Classic mode: max size*size active cells including both players (ie, all of the cells)
+    // Extended mode: at most 2*size active cells including both players
+    let maxActiveCells = extendedMode ? 2*size : size*size;
 
     // Create players
     const players = [createPlayer(0,player1Name,'x'), createPlayer(1,player2Name,'o')];
@@ -287,14 +309,41 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
     const initRound = function(){
         roundWinner = undefined;
         currentPlayerIdx = commonUtilities.randomInt(0,1);
+        activeCells = [];
+        deactivatedCell=null;
         gameboard.resetGameboard();
     }
 
-    const playMove = function(row, column){ 
+    // A function to get the cell that has been deactivated, to be used, eg, to update the DOM by the displayController
+    const getDeactivatedCell = function(){
+        return deactivatedCell;
+    };
+
+    const handleCellDeactivation = function(){
+        if (activeCells.length == maxActiveCells){
+            deactivatedCell = activeCells.shift();
+            gameboard.deactivatedMove(deactivatedCell.getCellRow(),deactivatedCell.getCellColumn(),getCurrentPlayer());
+        } else {
+            deactivatedCell = null;
+        }
+    };
+
+    const saveActivationCell = function(cell){
+        activeCells.push(cell);
+    };
+
+    const playMove = function(row, column){
+        // Check whether a cell must be deactivated and do it if possible
+        handleCellDeactivation();
+
         // try to make the move
-        if(!gameboard.makeMove(row,column,getCurrentPlayer()))
+        let cell = gameboard.makeMove(row,column,getCurrentPlayer());
+        if(!cell)
             return -1; // continue game, invalid move
 
+        // Add the current cell  where a mark is set to the activeCells array
+        saveActivationCell(cell);
+        
         // check if a user has won
         let equalLines = gameboard.getArrayOfLinesOfEqualCells();
         if (equalLines.length){
@@ -376,7 +425,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2') {
 
     // playConsoleGame();
     
-    return {getCurrentPlayer, getPlayers,initRound, playMove, playConsoleGame, getGameWinnerPlayer, getRoundWinnerPlayer};
+    return {getCurrentPlayer, getPlayers,initRound, playMove, playConsoleGame, getGameWinnerPlayer, getRoundWinnerPlayer,getDeactivatedCell};
 
 }
 
@@ -569,8 +618,6 @@ const dispalyController = (function() {
     // Start game / round
 
     const startGameDOM = function(){
-        // todo: get gameboardSize,playerXName,playerOName from settings
-
         // Create a new game
         game = gameController(gameboardSize,playerName.x,playerName.o);
 
@@ -622,6 +669,12 @@ const dispalyController = (function() {
         // Try to do the move
         let moveOutcome = game.playMove(row,column);
 
+        // Deactivated a cell (this depends on the modality of the game: this happens in extended mode)
+        let deactivatedCell = game.getDeactivatedCell();
+        if (deactivatedCell){
+            gameboardDiv.childNodes[deactivatedCell.getCellId()].classList.remove(currentPlayerValue);
+        }
+
         // Invalid move: ignore it
         if (moveOutcome < 0)
             return;
@@ -647,8 +700,7 @@ const dispalyController = (function() {
         }
     }
     const getGameboardSizeFromSettings = function(){
-        gameboardSize = DOMUtilities.getCheckedRadioValueAmongDescendants(gameboardSizeInput);
-        console.log(gameboardSizeInput,gameboardSize);
+        gameboardSize = parseInt(DOMUtilities.getCheckedRadioValueAmongDescendants(gameboardSizeInput));
         document.documentElement.style.setProperty('--gameboard-size', gameboardSize);
     }
 
