@@ -511,6 +511,40 @@ header button{
     transition-delay: 0s;
 }
 
+@media (orientation: landscape) and (min-aspect-ratio: 1.2){   
+    .playing-div{
+        grid-template-areas:
+            "round-outcome round-outcome"
+            "player-x gameboard"
+            "player-o gameboard";
+        grid-template-columns: var(--player-info-width) 1fr;
+        grid-template-rows: 0px minmax(0,1fr) minmax(0,1fr);
+        gap: 0px var(--main-gap-hor);  
+    }
+
+    .playing-div:has(.round-outcome-div.tie),
+    .playing-div:has(.round-outcome-div.win){
+        grid-template-rows: var(--round-outcome-height) minmax(0,1fr) minmax(0,1fr);
+    }
+}
+@media (orientation: landscape) and (min-aspect-ratio: 1.6){   
+    .playing-div{
+        grid-template-areas:
+            "round-outcome round-outcome round-outcome"
+            "player-x gameboard player-o";
+        grid-template-columns:  var(--player-info-width) 1fr var(--player-info-width);
+        grid-template-rows: 0px minmax(0,1fr);
+        gap: 0px var(--main-gap-hor);  
+    }
+
+    .playing-div:has(.round-outcome-div.tie),
+    .playing-div:has(.round-outcome-div.win){
+        grid-template-rows: var(--round-outcome-height) minmax(0,1fr);
+    }
+}
+
+
+
 /* || Main player info */
 .player-info{
     background-color: var(--player-info-bg-col);
@@ -524,6 +558,7 @@ header button{
     justify-items: center;
     margin: var(--player-info-margin-tb) 0;
     gap: var(--player-info-gap-score) var(--player-info-gap-icon);
+
 }
 
 .player-info.x{
@@ -539,6 +574,31 @@ header button{
     grid-template-areas:
         "name icon"
         "score icon";
+}
+
+@media (orientation: landscape) and (min-aspect-ratio: 1.2){
+    .player-info.x{
+        align-self: end;
+    }
+    .player-info.o{
+        grid-template-columns: min-content 1fr;
+        grid-template-areas:
+            "icon name"
+            "icon score";
+        align-self: start;
+    }
+}
+@media (orientation: landscape) and (min-aspect-ratio: 1.6){ 
+    .player-info.x{
+        align-self: center;
+    }
+    .player-info.o{
+        grid-template-columns: 1fr  min-content;
+        grid-template-areas:
+            "name icon"
+            "score icon";
+        align-self: center;
+    }
 }
 
 .player-info .player-name{
