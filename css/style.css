@@ -59,15 +59,25 @@
 
     /*Margins, gaps and paddings (+widths)*/
     --header-ud-padding: 2vh;
-    --main-ud-padding:   2vh;
+    --main-ud-padding:   4vh;
     --main-lr-padding:   5vmin;
     --main-gap-hor:      1rem;
-    --main-gap-ver:      2vh;
+    --main-gap-ver:      4vh;
     --player-info-margin-tb: 2vmin;
 
     --game-logo-icon-len: var(--header-h1-fontsize);
 
-    --player-info-width:    10rem;
+    /* LAYOUT1: when screen AR<1.2
+       LAYOUT 2: when screen 1.2<=AR<1.6
+       LAYOUT 3: when screen AR>=1.6
+    */
+    --player-info-max-width-layout1: 100%;
+    --player-info-max-width-layout2: 12rem;
+    --player-info-max-width-layout3: var(--player-info-max-width-layout2);
+    /* --player-info-col-width-layout1: 100%; /*not used */
+    --player-info-col-width-layout2: 0.5fr; 
+    --player-info-col-width-layout3: 0.75fr;
+
     --player-info-border:   4px;
     --player-info-padding:  0.5rem;
     --player-info-gap-score:2px;
@@ -480,6 +490,8 @@ header button{
 /* || Main - Playing View*/
 
 .playing-div{
+    --player-info-max-width:    var(--player-info-max-width-layout1);
+
     flex:1;
     height: 100%;
 
@@ -513,11 +525,14 @@ header button{
 
 @media (orientation: landscape) and (min-aspect-ratio: 1.2){   
     .playing-div{
+        --player-info-col-width:    var(--player-info-col-width-layout2);
+        --player-info-max-width:    var(--player-info-max-width-layout2);
+
         grid-template-areas:
             "round-outcome round-outcome"
             "player-x gameboard"
             "player-o gameboard";
-        grid-template-columns: var(--player-info-width) 1fr;
+        grid-template-columns: var(--player-info-col-width) 1fr;
         grid-template-rows: 0px minmax(0,1fr) minmax(0,1fr);
         gap: 0px var(--main-gap-hor);  
     }
@@ -529,10 +544,13 @@ header button{
 }
 @media (orientation: landscape) and (min-aspect-ratio: 1.6){   
     .playing-div{
+        --player-info-col-width:    var(--player-info-col-width-layout3);
+        --player-info-max-width:    var(--player-info-max-width-layout3);
+
         grid-template-areas:
             "round-outcome round-outcome round-outcome"
             "player-x gameboard player-o";
-        grid-template-columns:  var(--player-info-width) 1fr var(--player-info-width);
+        grid-template-columns:  var(--player-info-col-width) 1fr var(--player-info-col-width);
         grid-template-rows: 0px minmax(0,1fr);
         gap: 0px var(--main-gap-hor);  
     }
@@ -552,13 +570,14 @@ header button{
     border: var(--player-info-border) solid var(--marker-col);
     border-radius: var(--gameboard-radius);
     align-self: center;
-    justify-self: stretch;
+    justify-self: center;
     display: grid;
     align-items: center;
     justify-items: center;
     margin: var(--player-info-margin-tb) 0;
     gap: var(--player-info-gap-score) var(--player-info-gap-icon);
-
+    width: 100%;
+    max-width: var(--player-info-max-width);
 }
 
 .player-info.x{
@@ -926,7 +945,7 @@ header button{
 
 /* || Footer */
 footer {
-    --light-grey: rgb(210, 210, 210);
+    --light-grey: rgb(210, 210, 210,0.75);
     --black: rgb(0, 0, 0);
     --ftr-fontsize: 12px;
     --ftr-font: 'Montserrat';
