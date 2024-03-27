@@ -23,6 +23,27 @@ const commonUtilities = (function(){
     return {randomInt};
 })();
 
+// Disable CSS transitions on window resize
+// From: https://stackoverflow.com/questions/38526764/disable-css-transitions-on-window-resize
+// In style.css, add: body.stop-transitions * {transition: none !important;}
+(function() { 
+    const classes = document.body.classList;
+    let timer = 0;
+    window.addEventListener('resize', function () {
+        if (timer) {
+            clearTimeout(timer);
+            timer = null;
+        }
+        else
+            classes.add('stop-transitions');
+
+        timer = setTimeout(() => {
+            classes.remove('stop-transitions');
+            timer = null;
+        }, 100);
+    });
+})();
+
 // This factory function handles the gameboard functionality
 function createGameboard(size, emptyCellValue=''){
     let gameboard = [];

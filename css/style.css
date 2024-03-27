@@ -190,6 +190,10 @@ body {
     touch-action: manipulation; /* disable double tap to zoom on some browsers*/
 }
 
+body.stop-transitions * {
+    transition: none !important;
+}
+
 /*****************************************************/
 
 /* || Generic */
