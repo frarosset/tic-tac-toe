@@ -675,7 +675,7 @@ const dispalyController = (function() {
 
     // Temporary fix to disable context menu to appear on prolonged touch or right-mouse click
     // https://stackoverflow.com/questions/36668147/disable-mobile-longpress-context-menu-on-specific-elements?noredirect=1&lq=1
-    // See below
+    // (See below, on gameboardDiv.addEventListener('contextmenu',...))
     const contextMenuCallback = function(e){
         //console.log('CONTEXTMENU',e.target.classList[0])
         e.preventDefault();

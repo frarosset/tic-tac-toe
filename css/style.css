@@ -87,6 +87,11 @@
 
     --focus-visible-outline-size: 4px;
 
+    --round-outcome-height: calc(var(--round-outcome-text-fontsize) * var(--txt-lineheight) 
+    + var(--round-outcome-subtext-fontsize) * var(--txt-lineheight)
+    + 2 *  var(--round-outcome-padding) + 2 * var(--round-outcome-gap)
+    + var(--button-height));
+
     /* Radius */
 
     --gameboard-radius:             20px;
@@ -123,7 +128,9 @@
     --current-player-animation-duration: 0.5s;
     --current-player-animation-displ-up: calc(var(--player-info-margin-tb) / 3);
     --current-player-animation-displ-down: calc(-1 * var(--current-player-animation-displ-up));
-    /* --transition-time: 0.8s; */
+
+    --round-outcome-animation-delay: 0.5s;
+    --round-outcome-animation-duration: 0.5s;
 
     /* Other info */
     --gameboard-size: 3;
@@ -479,13 +486,18 @@ header button{
     display: grid;
     justify-items: center;
     
-    gap: 0px var(--main-gap-hor); /*Apply horizontal gap only: see player-info for vertical space*/
     grid-template-columns: 1fr 1fr;
     grid-template-rows: min-content 0px minmax(0,1fr);
     grid-template-areas:
         "player-x player-o"
         "round-outcome round-outcome"
         "gameboard gameboard";
+    gap: calc(var(--main-gap-ver)/2) var(--main-gap-hor);        
+
+    transition-property: grid-template-rows, gap;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--round-outcome-animation-delay);
+    transition-delay: calc(var(--round-outcome-animation-duration) / 2);
 }
 
 .start-new-game-div:not(.game-on) + .playing-div{
@@ -494,15 +506,10 @@ header button{
 
 .playing-div:has(.round-outcome-div.tie),
 .playing-div:has(.round-outcome-div.win){
-    grid-template-rows: min-content min-content minmax(0,1fr);
+    grid-template-rows: min-content var(--round-outcome-height) minmax(0,1fr);
+    gap: var(--main-gap-ver) var(--main-gap-hor);
+    transition-delay: 0s;
 }
-
-
-.round-outcome-div:is(.win),
-.round-outcome-div:is(.tie){
-    margin: var(--main-gap-ver) 0;
-}
-
 
 /* || Main player info */
 .player-info{
@@ -518,12 +525,6 @@ header button{
     margin: var(--player-info-margin-tb) 0;
     gap: var(--player-info-gap-score) var(--player-info-gap-icon);
 }
-
-.playing-div:has(.round-outcome-div.tie) .player-info,
-.playing-div:has(.round-outcome-div.win) .player-info{
-    /* Ignore margin when the round outcome is shown */
-    margin: 0; 
-} 
 
 .player-info.x{
     grid-area: player-x;
@@ -604,6 +605,7 @@ header button{
     justify-content: center;
 
     width: 100%;
+    z-index: 2;
 }
 
 .gameboard{
@@ -746,10 +748,6 @@ header button{
 /* || Main - round outcome div */
 .round-outcome-div{
     --button-fontsize: var(--round-outcome-btn-fontsize);
-    --round-outcome-height: calc(var(--round-outcome-text-fontsize) * var(--txt-lineheight) 
-                            + var(--round-outcome-subtext-fontsize) * var(--txt-lineheight)
-                            + 2 *  var(--round-outcome-padding) + 2 * var(--round-outcome-gap)
-                            + var(--button-height));
 
     grid-area: round-outcome;
     width: 100%;
@@ -765,6 +763,26 @@ header button{
 
     display: none; /* becomes flex in certain conditions (see below) */
     position: relative;
+
+    opacity: 0;
+
+    transition-property: opacity, display;
+    transition-behavior: allow-discrete;
+    transition-timing-function: ease-out;
+    transition-duration: var(--round-outcome-animation-duration);
+    transition-delay: 0s;
+}
+.round-outcome-div.tie,
+.round-outcome-div.win{
+    opacity: 1;
+    transition-timing-function: ease-in;
+    transition-delay: calc(var(--round-outcome-animation-delay) / 2);
+}
+
+@starting-style{
+    .round-outcome-div{
+        opacity: 0 !important;
+    } 
 }
 
 /* https://css-tricks.com/full-width-containers-limited-width-parents/#aa-no-calc-needed */
