@@ -882,6 +882,9 @@ const dispalyController = (function() {
     const getExtendedModeFromSettings = function(){
         extendedMode = parseInt(DOMUtilities.getCheckedRadioValueAmongDescendants(extendedModeInput));
     };
+    const getGameboardWinLen = function(){
+        gameboardWinLen = Math.min(gameboardSize, 4);
+    };
 
     const startNewGame = function(){
         startNewGameBtn.removeEventListener('click',startNewGame);
@@ -890,6 +893,7 @@ const dispalyController = (function() {
 
         getPlayersNamesFromSettings();
         getGameboardSizeFromSettings();
+        getGameboardWinLen();
         getExtendedModeFromSettings();
 
         startGameDOM();
