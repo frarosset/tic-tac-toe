@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Questrial&display=swap');
 
 :root,
 ::backdrop {
@@ -10,6 +10,13 @@
 
     --col-x:         #009ddc;
     --col-o:         #efa00b;
+
+    --col-dark:     #a6a6a8; 
+    --col-light:    #cecece;
+    --col-x-dark:   #6d9dc5;
+    --col-x-light:  #8ecae6;
+    --col-o-dark:   #d17b0f;
+    --col-o-light:  #ffc600;
     /* #6d9dc5,  ddd1c7*/
 
     /* Colors (background)*/
@@ -20,7 +27,7 @@
     --gameboard-cell-bg-col-hover:  var(--col-dark-grey);
     --gameboard-cell-bg-col-active: var(--col-dark-grey);   
     --gameboard-cell-bg-col-marked: var(--col-dark-grey);   
-    --round-outcome-bg-col:         var(--col-light-grey);
+    --round-outcome-bg-col:         var(--col-dark-grey);
 
     /* Colors (text/icons)*/
     --col-txt:                          var(--col-white);
@@ -28,12 +35,13 @@
     --gameboard-cell-border-col-hover:  var(--col-dark-grey);
     --gameboard-cell-border-col-active: var(--col-light-grey);
     --focus-visible-outline-col:        var(--col-white);
+    --round-outcome-border-col:         var(--col-light-grey);
 
    /* Maximum width (including margin) */
     --max-width: min(1440px, 100%);
 
     /* Font family */
-    --main-font: 'Century Gothic', sans-serif;
+    --main-font: 'Century Gothic', 'Questrial', sans-serif;
 
     /* Font sizes */
     /* Fluid font size: see https://matthewjamestaylor.com/responsive-font-size*/
@@ -89,6 +97,7 @@
     --round-outcome-gap:        2vmin;
     --round-outcome-padding:    2vmin;
     --round-outcome-btns-gap:   2rem;
+    --round-outcome-border-top: 1.5vh;
 
     --active-cell-scale:            0.25;
     --not-winning-cell-mark-scale:  0.75;
@@ -111,21 +120,49 @@
 
     /* Buttons */
     --button-fontsize:                  1.5rem; /*default: might be overwritten*/
-    --button-border:                    1px;
-    --button-bottom-border:             4px;
-    --button-bottom-border-hover:       6px; /* this must be the largest*/
+    --button-border:                    0px;
+    --button-bottom-border:             5px;
+    --button-bottom-border-hover:       8px; /* this must be the largest*/
     --button-bottom-border-active:      2px;
     --button-radius:                    calc(var(--gameboard-radius) / 1);
     --button-padding:                   calc(var(--button-radius) / 2);
     --button-width:                     max(max-content,8em);
-    --button-bottom-border-color:       var(--col-dark-grey);
-    --button-bottom-border-color-alt:   var(--col-black);
-    --button-bg-color:                  var(--col-light-grey);
-    --button-bg-color-alt:              var(--col-dark-grey);
-    --button-color:                     var(--col-white);
-    --button-color-alt:                 var(--col-white);
+    --button-bottom-border-color:       var(--col-o-dark);
+    --button-bottom-border-color-alt:   var(--col-x-dark);
+    --button-bg-color:                  var(--col-o-light);
+    --button-bg-color-alt:              var(--col-x-light);
+    --button-color:                     var(--col-black);
+    --button-color-alt:                 var(--col-black);
     --button-height: calc(2 * var(--button-padding) + var(--button-fontsize) * var(--txt-lineheight)  
                      + var(--button-bottom-border-hover) + var(--button-border));
+
+    /* Settings input */
+    --settings-gap-ver:             3vh;
+    --settings-gap-hor:             3vw;
+    --settings-label-fontsize:      1rem;
+    --settings-input-label-gap:     max(calc(2*var(--focus-visible-outline-size)),0.2rem);
+
+    --settings-input-fontsize:      1.4rem;
+    --settings-input-padding:       0.3rem;
+    --settings-input-border-size:   0px;
+    --settings-input-radius:        var(--gameboard-radius);
+    --settings-input-border-col:    var(--col-light-grey);
+    --settings-input-col:           var(--col-black);
+    --settings-input-bg-col:        var(--col-white);
+    --settings-input-col-sel:       var(--col-black);
+    --settings-input-bg-col-sel:    var(--col-x-dark);  /*var(--col-dark-grey);*/
+    --settings-input-outline-col-sel:var(--col-x-dark); /*var(--col-light-grey);*/
+    --settings-input-border-size-sel: 0.25rem;
+    --settings-input-border-col-sel: var(--col-x-light); 
+
+    --settings-input-focus-visible-outline-col: var(--col-light-grey);
+
+    --settings-input-height: calc(2 * (var(--settings-input-padding) + var(--settings-input-border-size) + var(--settings-input-border-size-sel)) + var(--settings-input-fontsize) * var(--txt-lineheight));
+
+    --settings-input-placeholder-scale: 0.7;
+    --settings-input-placeholder-col:   var(--col-light-grey);
+
+    --settings-input-radio-fieldset-label-width: 3em;
 
     /* Shadows */
     /* --outset-shadow: 2px 2px 8px var(--col-accent-medium);
@@ -261,6 +298,7 @@ button{
     width: var(--button-width);
     margin-top: calc(var(--button-bottom-border-hover) - var(--button-bottom-border));
     font-size: var(--button-fontsize);
+    font-weight: bold;
 }
 
 button.alt{
@@ -331,33 +369,6 @@ header button{
 }
 .start-new-game-div.game-on{
     display: none;
-}
-
-:root{
-    --settings-gap-ver:             3vh;
-    --settings-gap-hor:             3vw;
-    --settings-label-fontsize:      1rem;
-    --settings-input-label-gap:     max(calc(2*var(--focus-visible-outline-size)),0.2rem);
-
-    --settings-input-fontsize:      1.4rem;
-    --settings-input-padding:       0.3rem;
-    --settings-input-border-size:   0px;
-    --settings-input-radius:        var(--gameboard-radius);
-    --settings-input-border-col:    var(--col-light-grey);
-    --settings-input-col:           var(--col-black);
-    --settings-input-bg-col:        var(--col-white);
-    --settings-input-col-sel:       var(--col-white);
-    --settings-input-bg-col-sel:    var(--col-dark-grey);
-    --settings-input-outline-col-sel: var(--col-light-grey);
-
-    --settings-input-focus-visible-outline-col: var(--col-light-grey);
-
-    --settings-input-height:        calc(2 * (var(--settings-input-padding) + var(--settings-input-border-size)) + var(--settings-input-fontsize) * var(--txt-lineheight));
-
-    --settings-input-placeholder-scale: 0.7;
-    --settings-input-placeholder-col:   var(--col-light-grey);
-
-    --settings-input-radio-fieldset-label-width:    3em;
 }
 
 .start-new-game-div .settings-div{
@@ -488,6 +499,8 @@ header button{
     flex:   1;
     outline: var(--focus-visible-outline-size) solid var(--settings-input-outline-col-sel);
     outline-offset: -1px;
+    font-weight: bold;
+    border: var(--settings-input-border-size-sel) solid var(--settings-input-border-col-sel);
 }
 
 
@@ -500,7 +513,6 @@ header button{
     height: 100%;
 
     display: grid;
-    justify-items: center;
     
     grid-template-columns: 1fr 1fr;
     grid-template-rows: min-content 0px minmax(0,1fr);
@@ -882,7 +894,13 @@ header button{
     top:        0;
 
     background-color: var(--round-outcome-bg-col);
+
+    border-top: var(--round-outcome-border-top) solid var(--round-outcome-border-col);
 }
+.round-outcome-div.win::before{
+    --round-outcome-border-col: var(--marker-col);
+}
+
 .round-outcome-div .round-outcome-text,
 .round-outcome-div .round-outcome-subtext,
 .round-outcome-div button{
@@ -914,6 +932,7 @@ header button{
 .round-outcome-div .winner-player,
 .winner-combo{
     font-variant: normal;
+    font-weight: bold;
     color: var(--marker-col);
 }
 .winner-combo{
