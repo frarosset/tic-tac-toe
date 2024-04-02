@@ -45,7 +45,11 @@ const commonUtilities = (function(){
 })();
 
 // This factory function handles the gameboard functionality
-function createGameboard(size, emptyCellValue=''){
+function createGameboard(size, emptyCellValue='',winLen = 0){
+
+    if (winLen==0)
+        winLen = size;
+
     let gameboard = [];
     let numberOfEmptyCells = size*size;
 
@@ -91,13 +95,53 @@ function createGameboard(size, emptyCellValue=''){
         return gameboard.map((itm,idx) => itm[column]);
     };
 
-    const _getMainDiagonalCells = function(){
-        return gameboard.map((itm,idx) => itm[idx]);
+    const _getMainDiagonalCells = function(k=0){
+        //return gameboard.map((itm,idx) => itm[idx]); /* valid only if k=0 */
+        return gameboard.reduce((arr,itm,idx) => {
+            let i = idx+k;
+            if (i>=0 && i < size){
+                arr.push(itm[i]);
+            }
+            return arr;
+        },[]);
     };
 
-    const _getAntiDiagonalCells = function(){
-        return gameboard.map((itm,idx) => itm[size-idx-1]);
+    const _getAntiDiagonalCells = function(k=0){
+        //return gameboard.map((itm,idx) => itm[size-idx-1]); /* valid only if k=0 */
+        return gameboard.reduce((arr,itm,idx) => {
+            let i = size-idx-1+k;
+            if (i>=0 && i < size){
+                arr.push(itm[i]);
+            }
+            return arr;
+        },[]);
     };
+
+    let gameboardLines = (function(){
+        let lines = [];
+                   
+        // Row lines
+        for (let row=0; row<size; row++)
+            lines.push(_getRowCells(row));
+    
+        // Column lines
+        for (let column=0; column<size; column++) 
+            lines.push(_getColumnCells(column));
+        
+        let diagN = size-winLen;
+    
+        // Main diagonal
+        for (let diagK=-diagN; diagK<diagN+1; diagK++)    
+            lines.push(_getMainDiagonalCells(diagK));
+    
+        // Check a winner in the anti diagonal
+        for (let diagK=-diagN; diagK<diagN+1; diagK++)      
+            lines.push(_getAntiDiagonalCells(diagK));
+    
+        // lines.forEach(itm => {console.log(itm.map(itm => itm.getCellId()))})
+
+        return lines;
+    })();
 
     /* Move methods */
     const _isMoveAllowed = function(row,column){
@@ -106,22 +150,22 @@ function createGameboard(size, emptyCellValue=''){
                 gameboard[row][column].getCellValue() === emptyCellValue;
     }; 
 
-    const makeMove = function(row,column,currentPlayer){
+    const makeMove = function(row,column,currentTurn){
         // returns true if the move is performed, false otherwise
         if (!_isMoveAllowed(row,column)){
-            console.log(`Gameboard:makeMove. Setting cell (${row},${column}) to "${currentPlayer.getPlayerName()}" not allowed`);
+            console.log(`Gameboard:makeMove. Setting cell (${row},${column}) to "${currentTurn.getPlayerName()}" not allowed`);
             return null;
         }
 
-        //console.log(`Gameboard:makeMove. Marking cell (${row},${column}) by user ${currentPlayer}`);
-        gameboard[row][column].setCellPlayer(currentPlayer);
+        //console.log(`Gameboard:makeMove. Marking cell (${row},${column}) by user ${currentTurn}`);
+        gameboard[row][column].setCellPlayer(currentTurn);
         numberOfEmptyCells--;
 
         return gameboard[row][column];
     };
 
-    const deactivatedMove = function(row,column,currentPlayer){
-        if (gameboard[row][column].getCellPlayer()==currentPlayer){
+    const deactivatedMove = function(row,column,currentTurn){
+        if (gameboard[row][column].getCellPlayer()==currentTurn){
             gameboard[row][column].resetCellPlayer();
             numberOfEmptyCells++;
         }
@@ -134,44 +178,55 @@ function createGameboard(size, emptyCellValue=''){
                && array.every(itm => itm.getCellValue()===firstValue);
     };
 
+    const _checkAtLeastMEqualCellsInLine = function(array){
+        let iStart = 0;
+        let iEnd = -1;
+        let found = false;
+        let prevValue;
+        let cellValue = array[iStart].getCellValue();
+
+        if (winLen == 1 && cellValue != emptyCellValue){
+            iEnd = array.length;
+            found = true;
+        }
+
+        for (let i=1; i<array.length; i++){
+            prevValue = cellValue;
+            cellValue = array[i].getCellValue();
+
+            // empty cell or cell different from previous one
+            if (cellValue == emptyCellValue || cellValue != prevValue){
+                if (!found){
+                    iStart = i;
+                } else {
+                    iEnd = i; /* adjust the ending index */
+                    break;
+                }
+            } else if (i - iStart + 1 == winLen){ // same cell as before
+                iEnd = array.length;
+                found = true;
+            }
+        }
+
+        if (found){
+            if (iEnd - iStart == winLen)
+                return [array.slice(iStart, iEnd)];
+            else
+                return [array.slice(iStart, iStart+winLen),array.slice(iEnd-winLen, iEnd)];
+        } else {
+            return null;
+        }
+    };
+
     const getArrayOfLinesOfEqualCells = function(){
         let linesOfEqualCells = [];
                
-        // Check a winner in the rows: only one can be winning!
-        for (let row=0; row<size; row++){
-            let rowArray = _getRowCells(row);
-            if (_checkEqualValidCellsInLine(rowArray)){
-                // console.log('R'+row);
-                linesOfEqualCells.push(rowArray);
-                break;
-            }
-        }
-
-        // Check a winner in the columns: only one can be winning!
-        for (let column=0; column<size; column++){        
-            let colArray = _getColumnCells(column);
-            if (_checkEqualValidCellsInLine(colArray)){
-                // console.log('C'+column);
-                linesOfEqualCells.push(colArray);
-                break;
-            }
-        }
-
-        // Check a winner in the main diagonal
-        {    
-            let mainDiagArray = _getMainDiagonalCells();
-            if (_checkEqualValidCellsInLine(mainDiagArray)){
-                // console.log('D');
-                linesOfEqualCells.push(mainDiagArray);
-            }
-        }
-
-        // Check a winner in the anti diagonal
-        {    
-            let antiDiagArray = _getAntiDiagonalCells();
-            if (_checkEqualValidCellsInLine(antiDiagArray)){
-                // console.log('AD');
-                linesOfEqualCells.push(antiDiagArray);
+        // Check a winner in the lines
+        for (line of gameboardLines){
+            let seq = _checkAtLeastMEqualCellsInLine(line);
+            // if (_checkEqualValidCellsInLine(line)){
+            if (seq){
+                linesOfEqualCells.push(...seq);
             }
         }
 
@@ -182,7 +237,21 @@ function createGameboard(size, emptyCellValue=''){
         return numberOfEmptyCells==0;
     };
 
-    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,deactivatedMove};
+    const getTerminalCondition = function(){        
+        let equalLines = getArrayOfLinesOfEqualCells();
+        // Gameboard has a winner
+        if (equalLines.length){
+            return createTerminalCondition(equalLines[0][0].getCellPlayer(), equalLines);
+        }
+        // Gameboard is full
+        if (noEmptyCells()){
+            return createTerminalCondition(null, []);
+        }
+        // There are empty cells to fill and no winner yet
+        return null;
+    }
+
+    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,deactivatedMove,getTerminalCondition};
 }
 
 // This factory function handles the gameboard's cell functionality
@@ -257,7 +326,9 @@ function createPlayer(id, name, value){
     return {getPlayerId, getPlayerName, getPlayerValue, getPlayerScore, resetPlayerScore, incrementPlayerScoreBy};
 }
 
-function createRoundWinner(player, assignedPoints, winningCells){
+function createTerminalCondition(player, winningCells){
+    let assignedPoints = winningCells.length;
+
     // Game / win status
     const getPlayer = function(){
         return player;
@@ -275,7 +346,7 @@ function createRoundWinner(player, assignedPoints, winningCells){
 }
 
 // This factory function handles the flow of the game
-function gameController(size,player1Name='Player 1', player2Name='Player 2', extendedMode=false) {
+function gameController(size,player1Name='Player 1', player2Name='Player 2', extendedMode=false, winLen=0) {
 
     const emptyCellValue = " ";
 
@@ -294,13 +365,16 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2', ext
     // Extended mode: at most 2*size active cells including both players
     let maxActiveCells = extendedMode ? 2*size : size*size;
 
+    if (winLen==0)
+        winLen = size;
+
     // Create players
     const players = [createPlayer(0,player1Name,'x'), createPlayer(1,player2Name,'o')];
     let currentPlayerIdx = 0;
 
     let roundWinner;
 
-    const gameboard = createGameboard(size,emptyCellValue);
+    const gameboard = createGameboard(size,emptyCellValue,winLen);
 
     // Player functions
     const getCurrentPlayer = function(){
@@ -365,20 +439,23 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2', ext
         // Add the current cell  where a mark is set to the activeCells array
         saveActivationCell(cell);
         
-        // check if a user has won
-        let equalLines = gameboard.getArrayOfLinesOfEqualCells();
-        if (equalLines.length){
-            roundWinner = createRoundWinner(equalLines[0][0].getCellPlayer(), equalLines.length, equalLines);
 
-            // Increment Player points
-            roundWinner.getPlayer().incrementPlayerScoreBy(roundWinner.getAssignedPoints());
-            return 1;  // games ends with a winner
+        let terminalCondition = gameboard.getTerminalCondition();
+        if (terminalCondition){
+            // check if there is a valid winner
+            if (terminalCondition.getPlayer()){
+                // Terminal condition has info on the actual winner player
+                roundWinner = terminalCondition;
+                // Increment Player points
+                roundWinner.getPlayer().incrementPlayerScoreBy(roundWinner.getAssignedPoints());
+                return 1;  // games ends with a winner
+            } else {
+                // the gameboard is full, with no winner
+                return 2; // games ends with a tie
+            }
         }
 
-        // check if the gameboard is full
-        if (gameboard.noEmptyCells()){
-            return 2; // games ends with a tie
-        }
+
 
         // change player
         _changeCurrentPlayer();
@@ -453,6 +530,7 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2', ext
 // This factory function handles the display of the game in the DOM --> IIFE (module pattern), as we need a single instance
 const dispalyController = (function() {
     let gameboardSize = 3;
+    let gameboardWinLen = 3;
     let extendedMode = false;
     let playerName = {};
     let game = null;
@@ -685,7 +763,7 @@ const dispalyController = (function() {
 
     const startGameDOM = function(){
         // Create a new game
-        game = gameController(gameboardSize,playerName.x,playerName.o,extendedMode);
+        game = gameController(gameboardSize,playerName.x,playerName.o,extendedMode,gameboardWinLen);
 
         // Initialize players score on playerInfoDiv
         setAllPlayersInfoScore();
@@ -789,6 +867,7 @@ const dispalyController = (function() {
         }
     };
 
+    /* Start / end game -- toggling between settings and playing view */
     const getPlayersNamesFromSettings = function(){
         for (sym in playerNameInput){
             let playerValue = playerNameInput[sym].value;
@@ -847,52 +926,3 @@ const dispalyController = (function() {
     })();
 
 })();
-
-
-
-
-
-
-
-/* Other temporary functions that might be useful: possibly put them in modules */
-
-/*
-// from: https://stackoverflow.com/a/143889
-// Determines if the passed element is overflowing its bounds,
-// either vertically or horizontally.
-// Will temporarily modify the "overflow" style to detect this
-// if necessary.
-function checkOverflow(el)
-{
-   let curOverflow = el.style.overflow;
-
-   if ( !curOverflow || curOverflow === "visible" )
-      el.style.overflow = "hidden";
-
-   let isOverflowing = el.clientWidth < el.scrollWidth 
-                    || el.clientHeight < el.scrollHeight;
-
-   el.style.overflow = curOverflow;
-
-   return isOverflowing;
-}
-
-function fitFontSize(elem, defaultFontSize='',delta=0.9){
-    // Initialize the fontSize, if the initial value is provided
-    if (defaultFontSize)
-        elem.style.fontSize = defaultFontSize;
-    let fontSize = getComputedStyle(elem).getPropertyValue('font-size');
-
-    let fontSizeVal,fontSizeUnit; 
-    [fontSizeVal,fontSizeUnit] = splitCSSUnits(fontSize);
-
-    while (checkOverflow(elem)){
-        fontSizeVal *= delta;
-        elem.style.fontSize = fontSizeVal + fontSizeUnit;
-    }
-}
-
-function splitCSSUnits(CSSAttrVal){
-    return [CSSAttrVal.match(/[\d.]+/)[0],CSSAttrVal.match(/[^\d.]+/)[0]];
-}
-*/
