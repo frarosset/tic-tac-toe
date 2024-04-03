@@ -53,19 +53,27 @@ function createGameboard(size, emptyCellValue='',winLen = 0){
     let gameboard = [];
     let numberOfEmptyCells = size*size;
 
+    // Map(): see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
+    let emptyCells = new Map();
+
     // Create the empty gameboard
     for (let r=0; r<size; r++){
         // Add a row
         gameboard.push([]);
         for (let c=0; c<size; c++){
+            let id = r*size+c;
             // Add cells to row
-            gameboard[r].push(createCell(r,c,r*size+c, emptyCellValue));
+            gameboard[r].push(createCell(r,c, id, emptyCellValue));
+            emptyCells.set(id, gameboard[r][c]);
         }
     }
 
     const resetGameboard = function(){
         numberOfEmptyCells = size*size;
-        gameboard.forEach(row => {row.map(cell => cell.resetCellPlayer());});
+        gameboard.forEach(row => {row.forEach(cell => {
+            cell.resetCellPlayer();
+            emptyCells.set(cell.getCellId(), cell);
+        });});
     };
 
     const printGameboard = function(){
@@ -162,16 +170,20 @@ function createGameboard(size, emptyCellValue='',winLen = 0){
         }
 
         //console.log(`Gameboard:makeMove. Marking cell (${row},${column}) by user ${currentTurn}`);
-        gameboard[row][column].setCellPlayer(currentTurn);
+        let cell = gameboard[row][column];
+        cell.setCellPlayer(currentTurn);
         numberOfEmptyCells--;
+        emptyCells.delete(cell.getCellId());
 
-        return gameboard[row][column];
+        return cell;
     };
 
     const unmarkMove = function(row,column,currentTurn){
-        if (gameboard[row][column].getCellPlayer()==currentTurn){
-            gameboard[row][column].resetCellPlayer();
+        let cell = gameboard[row][column];
+        if (cell.getCellPlayer()==currentTurn){
+            cell.resetCellPlayer();
             numberOfEmptyCells++;
+            emptyCells.set(cell.getCellId(), cell);
         }
     };
 
@@ -241,6 +253,10 @@ function createGameboard(size, emptyCellValue='',winLen = 0){
         return numberOfEmptyCells==0;
     };
 
+    const getEmptyCells = function(){
+        return emptyCells;
+    };
+
     const getTerminalCondition = function(){        
         let equalLines = getArrayOfLinesOfEqualCells();
         // Gameboard has a winner
@@ -255,7 +271,7 @@ function createGameboard(size, emptyCellValue='',winLen = 0){
         return null;
     }
 
-    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,unmarkMove,getTerminalCondition, getSize};
+    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,getEmptyCells,unmarkMove,getTerminalCondition, getSize};
 }
 
 // This factory function handles the gameboard's cell functionality
@@ -344,17 +360,9 @@ function createAIPlayer(id, name="AI", value){
 
     let getRandomMove = function(gameboard){
         // todo: use a list of empty cells
-        let size = gameboard.getSize();
-        while (true){
-            let r = commonUtilities.randomInt(0,size-1);
-            let c = commonUtilities.randomInt(0,size-1);
-            let cell = gameboard.makeMove(r,c,player);
-            if(cell){
-                // Restore the cell
-                gameboard.unmarkMove(r,c,player);
-                return cell.getCellId();
-            }
-        }
+        let emptyCells = gameboard.getEmptyCells();
+        let randomIdx = commonUtilities.randomInt(0,emptyCells.size-1);
+        return [...emptyCells.keys()][randomIdx];
     }
 
     let getBestMove = function(gameboard){
@@ -862,7 +870,6 @@ const nextMoveDOM = function(){
     // Highlight the current player info div
     setPlayerInfoCurrentPlayer();
 
-    console.log(game.getCurrentPlayer().getPlayerName());
     if (!game.getCurrentPlayer().isHuman()){ 
         let cellToMove = game.getAIMove();
     
