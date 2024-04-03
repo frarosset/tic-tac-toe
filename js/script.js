@@ -143,6 +143,10 @@ function createGameboard(size, emptyCellValue='',winLen = 0){
         return lines;
     })();
 
+    let getSize = function(){
+        return size;
+    }
+
     /* Move methods */
     const _isMoveAllowed = function(row,column){
         return  0 <= row && row < size &&
@@ -164,7 +168,7 @@ function createGameboard(size, emptyCellValue='',winLen = 0){
         return gameboard[row][column];
     };
 
-    const deactivatedMove = function(row,column,currentTurn){
+    const unmarkMove = function(row,column,currentTurn){
         if (gameboard[row][column].getCellPlayer()==currentTurn){
             gameboard[row][column].resetCellPlayer();
             numberOfEmptyCells++;
@@ -251,7 +255,7 @@ function createGameboard(size, emptyCellValue='',winLen = 0){
         return null;
     }
 
-    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,deactivatedMove,getTerminalCondition};
+    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,unmarkMove,getTerminalCondition, getSize};
 }
 
 // This factory function handles the gameboard's cell functionality
@@ -323,7 +327,46 @@ function createPlayer(id, name, value){
         score += amount;
     };
 
-    return {getPlayerId, getPlayerName, getPlayerValue, getPlayerScore, resetPlayerScore, incrementPlayerScoreBy};
+    const isHuman = function(){
+        return true;
+    };
+
+    return {getPlayerId, getPlayerName, getPlayerValue, getPlayerScore, resetPlayerScore, incrementPlayerScoreBy, isHuman};
+}
+
+function createAIPlayer(id, name="AI", value){
+    let player = createPlayer(id, name, value);
+
+    // Override isHuman method
+    const isHuman = function(){
+        return false;
+    };
+
+    let getRandomMove = function(gameboard){
+        // todo: use a list of empty cells
+        let size = gameboard.getSize();
+        while (true){
+            let r = commonUtilities.randomInt(0,size-1);
+            let c = commonUtilities.randomInt(0,size-1);
+            let cell = gameboard.makeMove(r,c,player);
+            if(cell){
+                // Restore the cell
+                gameboard.unmarkMove(r,c,player);
+                return cell.getCellId();
+            }
+        }
+    }
+
+    let getBestMove = function(gameboard){
+        // todo: minmax  
+    }
+
+    let getAIMove = function(gameboard){
+        return getRandomMove(gameboard);
+    }
+
+    //isHuman is overwritten: return it after ...player
+    return {getAIMove, ...player, isHuman};
 }
 
 function createTerminalCondition(player, winningCells){
@@ -346,7 +389,7 @@ function createTerminalCondition(player, winningCells){
 }
 
 // This factory function handles the flow of the game
-function gameController(size,player1Name='Player 1', player2Name='Player 2', extendedMode=false, winLen=0) {
+function gameController(size,playersName= {x: 'Player 1', o: 'Player 2'}, playersIsHuman={x: false, o: false}, extendedMode=false, winLen=0) {
 
     const emptyCellValue = " ";
 
@@ -355,21 +398,29 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2', ext
     // Eg, in a 3x3 board, you can put at most 3 marks per playerl
     // If a mark is set in a gameboard where there are already 'size' marks of the same type, the
     // one placed first is removed and a new one is put in another spot. Then, in the gameboard remain
-    // only the most recents ones. To do this, we need to save the current activeCells (activeCells array).
-    let activeCells;
-    let deactivatedCell;
-    // To cover both cases, you just need to check when the number of activeCells is equal to the maximum
-    // allowed, and in that case, deactivate the cell in activeCells array that has been set first, ie, 
-    // activeCells[0]
-    // Classic mode: max size*size active cells including both players (ie, all of the cells)
-    // Extended mode: at most 2*size active cells including both players
-    let maxActiveCells = extendedMode ? 2*size : size*size;
+    // only the most recents ones. To do this, we need to save the current markedCells (markedCells array).
+    let markedCells;
+    let cellToUnmark;
+    // To cover both cases, you just need to check when the number of markedCells is equal to the maximum
+    // allowed, and in that case, unmark the cell in markedCells array that has been set first, ie, 
+    // markedCells[0]
+    // Classic mode: max size*size marked cells including both players (ie, all of the cells)
+    // Extended mode: at most 2*size marked cells including both players
+    let maxMarkedCells = extendedMode ? 2*size : size*size;
 
     if (winLen==0)
         winLen = size;
 
     // Create players
-    const players = [createPlayer(0,player1Name,'x'), createPlayer(1,player2Name,'o')];
+    const players = [];
+    for (sym in playersName){
+        if (playersIsHuman[sym]){
+            players.push(createPlayer(players.length,playersName[sym],sym.toString()));
+        } else {
+            players.push(createAIPlayer(players.length,playersName[sym],sym.toString()));
+        }
+    }
+
     let currentPlayerIdx = 0;
 
     let roundWinner;
@@ -404,42 +455,49 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2', ext
     const initRound = function(){
         roundWinner = undefined;
         currentPlayerIdx = commonUtilities.randomInt(0,1);
-        activeCells = [];
-        deactivatedCell=null;
+        markedCells = [];
+        cellToUnmark=null;
         gameboard.resetGameboard();
     };
 
-    // A function to get the cell that has been deactivated, to be used, eg, to update the DOM by the displayController
-    const getDeactivatedCell = function(){
-        return deactivatedCell;
+    // A function to get the cell that has been unmarkedd, to be used, eg, to update the DOM by the displayController
+    const getCellToUnmark = function(){
+        return cellToUnmark;
     };
 
-    const handleCellDeactivation = function(){
-        if (activeCells.length == maxActiveCells){
-            deactivatedCell = activeCells.shift();
-            gameboard.deactivatedMove(deactivatedCell.getCellRow(),deactivatedCell.getCellColumn(),getCurrentPlayer());
+    const handleCellUnmark = function(){
+        if (markedCells.length == maxMarkedCells){
+            cellToUnmark = markedCells.shift();
+            gameboard.unmarkMove(cellToUnmark.getCellRow(),cellToUnmark.getCellColumn(),getCurrentPlayer());
         } else {
-            deactivatedCell = null;
+            cellToUnmark = null;
         }
     };
 
-    const saveActivationCell = function(cell){
-        activeCells.push(cell);
+    const _saveMarkedCell = function(cell){
+        markedCells.push(cell);
     };
 
+    const getAIMove = function(){
+        // Just a wrapper of AI player method
+        let player = getCurrentPlayer();
+        if (player.isHuman())
+            return null;
+        return player.getAIMove(gameboard);
+    }
+
     const playMove = function(row, column){
-        // Check whether a cell must be deactivated and do it if possible
-        handleCellDeactivation();
+        // Check whether a cell must be unmarkedd and do it if possible
+        handleCellUnmark();
 
         // try to make the move
         let cell = gameboard.makeMove(row,column,getCurrentPlayer());
         if(!cell)
             return -1; // continue game, invalid move
 
-        // Add the current cell  where a mark is set to the activeCells array
-        saveActivationCell(cell);
+        // Add the current cell  where a mark is set to the markedCells array
+        _saveMarkedCell(cell);
         
-
         let terminalCondition = gameboard.getTerminalCondition();
         if (terminalCondition){
             // check if there is a valid winner
@@ -454,8 +512,6 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2', ext
                 return 2; // games ends with a tie
             }
         }
-
-
 
         // change player
         _changeCurrentPlayer();
@@ -523,16 +579,17 @@ function gameController(size,player1Name='Player 1', player2Name='Player 2', ext
 
     // playConsoleGame();
     
-    return {getCurrentPlayer, getPlayers,initRound, playMove, playConsoleGame, getGameWinnerPlayer, getRoundWinnerPlayer,getDeactivatedCell};
-
+    return {getCurrentPlayer, getPlayers,initRound, playMove, playConsoleGame, getGameWinnerPlayer, getRoundWinnerPlayer,getCellToUnmark,getAIMove};
 }
 
 // This factory function handles the display of the game in the DOM --> IIFE (module pattern), as we need a single instance
-const dispalyController = (function() {
+const displayController = (function() {
+    let AIMoveDelayMs = 1200;
     let gameboardSize = 3;
     let gameboardWinLen = 3;
     let extendedMode = false;
-    let playerName = {};
+    let playersName = {};
+    let playersIsHuman = {x: true, o: false}; // todo: select from input
     let game = null;
 
     // DOM cache
@@ -763,7 +820,7 @@ const dispalyController = (function() {
 
     const startGameDOM = function(){
         // Create a new game
-        game = gameController(gameboardSize,playerName.x,playerName.o,extendedMode,gameboardWinLen);
+        game = gameController(gameboardSize,playersName,playersIsHuman,extendedMode,gameboardWinLen);
 
         // Initialize players score on playerInfoDiv
         setAllPlayersInfoScore();
@@ -790,18 +847,37 @@ const dispalyController = (function() {
         // Reset the game outcome info
         resetRoundOutcomeDiv();
 
-        // Highlight the current player info div
-        setPlayerInfoCurrentPlayer();
-
         // Add event listener to the click events on the gameboard
         gameboardDiv.addEventListener('click',playMoveDOM);
 
         // Temporary fix to disable context menu to appear on prolonged touch or right-mouse click
         // https://stackoverflow.com/questions/36668147/disable-mobile-longpress-context-menu-on-specific-elements?noredirect=1&lq=1
         gameboardDiv.addEventListener('contextmenu',contextMenuCallback ,true);
+
+        nextMoveDOM();
     };
 
+const nextMoveDOM = function(){
+    // Highlight the current player info div
+    setPlayerInfoCurrentPlayer();
+
+    console.log(game.getCurrentPlayer().getPlayerName());
+    if (!game.getCurrentPlayer().isHuman()){ 
+        let cellToMove = game.getAIMove();
+    
+        console.log('AI next move: ', cellToMove);
+        setTimeout(
+            playMoveDOM, //function
+            AIMoveDelayMs, // delay
+            {target: gameboardDiv.childNodes[cellToMove]} // arguments of function
+        );
+    }
+    // else: wait for player click on cell, after which playMoveDOM callback is called
+};
+
     const endRoundDOM = function(moveOutcome){
+        resetPlayerInfoCurrentPlayer();
+
         if (moveOutcome == 1){
             // The current player wins
             roundWinHandler();
@@ -844,10 +920,10 @@ const dispalyController = (function() {
         // Try to do the move
         let moveOutcome = game.playMove(row,column);
 
-        // Deactivated a cell (this depends on the modality of the game: this happens in extended mode)
-        let deactivatedCell = game.getDeactivatedCell();
-        if (deactivatedCell){
-            removeClassFromCellDOM(deactivatedCell,currentPlayerValue);
+        // Unmark a cell (this depends on the modality of the game: this happens in extended mode)
+        let cellToUnmark = game.getCellToUnmark();
+        if (cellToUnmark){
+            removeClassFromCellDOM(cellToUnmark,currentPlayerValue);
         }
 
         // Invalid move: ignore it
@@ -859,11 +935,9 @@ const dispalyController = (function() {
 
         // Possibly end the round
         if (moveOutcome>0){
-            resetPlayerInfoCurrentPlayer();
             endRoundDOM(moveOutcome);
         }else{
-            // Highlight the current player info div
-            setPlayerInfoCurrentPlayer();
+            nextMoveDOM();
         }
     };
 
@@ -871,8 +945,8 @@ const dispalyController = (function() {
     const getPlayersNamesFromSettings = function(){
         for (sym in playerNameInput){
             let playerValue = playerNameInput[sym].value;
-            playerName[sym] = playerValue.length>0? playerValue : playerNameInput[sym].placeholder;
-            playerInfoName[sym].textContent = playerName[sym]
+            playersName[sym] = playerValue.length>0? playerValue : playerNameInput[sym].placeholder;
+            playerInfoName[sym].textContent = playersName[sym]
         }
     };
     const getGameboardSizeFromSettings = function(){

@@ -155,7 +155,7 @@
     --settings-input-border-size-sel: 0.25rem;
     --settings-input-border-col-sel: var(--col-x-light); 
 
-    --settings-input-focus-visible-outline-col: var(--col-light-grey);
+    --settings-input-focus-visible-outline-col: var(--col-x-dark);
 
     --settings-input-height: calc(2 * (var(--settings-input-padding) + var(--settings-input-border-size) + var(--settings-input-border-size-sel)) + var(--settings-input-fontsize) * var(--txt-lineheight));
 
@@ -492,6 +492,9 @@ header button{
 .radio-input-fieldset input:not(:checked)+label{
     transform:          scale(var(--settings-input-placeholder-scale));
 }
+.radio-input-fieldset input:hover+label{
+    font-weight: bold;
+}
 .radio-input-fieldset input:checked+label{
     background-color: var(--settings-input-bg-col-sel);
     color:            var(--settings-input-col-sel);
@@ -812,9 +815,11 @@ header button{
     will-change: transform; 
 }
 
-/* Disable click events when the round ends */
+/* Disable click events when the round ends, or on AI turn*/
 .playing-div:has(.round-outcome-div.win) .gameboard,
-.playing-div:has(.round-outcome-div.tie) .gameboard{
+.playing-div:has(.round-outcome-div.tie) .gameboard,
+.playing-div:has(.player-info.current-player.ai) .gameboard{
+/* .gameboard.ai-turn{ */
     pointer-events: none;
 }
 
