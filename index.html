@@ -25,6 +25,16 @@
         <div class="start-new-game-div">
             <div class='settings-div'>
                 <div class="input-div">
+                    <label for="input-num-of-players">players</label>
+                    <fieldset id="input-num-of-players" class="radio-input-fieldset">
+                        <input type="radio" value="1" id="input-num-of-players-1" name="input-num-of-players" checked>
+                        <label for="input-num-of-players-1">1</label>
+                        <input type="radio" value="2" id="input-num-of-players-2" name="input-num-of-players">
+                        <label for="input-num-of-players-2">2</label>
+                    </fieldset>
+                </div>
+
+                <div class="input-div">
                     <label for="input-player-x-name">player <div class="icon-mask x"></div></label>
                     <input id="input-player-x-name" type="text" placeholder="Player 1" maxlength="12">
                 </div>
@@ -73,7 +83,7 @@
                 <div class="player-name x">Alice</div>
                 <div class="player-score x"></div>
             </div>
-            <div class="player-info o ai">
+            <div class="player-info o">
                 <div class="player-icon icon-mask o"></div>
                 <div class="player-name o">Bob</div>
                 <div class="player-score o"></div>

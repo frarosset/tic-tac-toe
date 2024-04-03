@@ -373,18 +373,22 @@ header button{
 
 .start-new-game-div .settings-div{
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-areas: 
-        "player-x-name"
-        "player-o-name"
-        "gameboard-size"
-        "extended-mode";
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+        "num-of-players extended-mode"
+        "player-x-name player-x-name"
+        "player-o-name player-o-name"
+        "gameboard-size gameboard-size";
+        /* "extended-mode"; */
 
     align-items: center;
     justify-content: center;
     gap: var(--settings-gap-ver) var(--settings-gap-hor);
 }
 
+.input-div:has(#input-gameboard-num-of-players){
+    grid-area: num-of-players;
+}
 .input-div:has(#input-player-x-name){
     grid-area: player-x-name;
 }
@@ -819,7 +823,6 @@ header button{
 .playing-div:has(.round-outcome-div.win) .gameboard,
 .playing-div:has(.round-outcome-div.tie) .gameboard,
 .playing-div:has(.player-info.current-player.ai) .gameboard{
-/* .gameboard.ai-turn{ */
     pointer-events: none;
 }
 

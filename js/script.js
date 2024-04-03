@@ -589,7 +589,7 @@ const displayController = (function() {
     let gameboardWinLen = 3;
     let extendedMode = false;
     let playersName = {};
-    let playersIsHuman = {x: true, o: false}; // todo: select from input
+    let playersIsHuman = {};
     let game = null;
 
     // DOM cache
@@ -614,6 +614,7 @@ const displayController = (function() {
 
     const playerNameInput = {x: startNewGameDiv.querySelector('#input-player-x-name'),
                              o: startNewGameDiv.querySelector('#input-player-o-name')};
+    const numOfPlayersInput = startNewGameDiv.querySelector('#input-num-of-players');
     const gameboardSizeInput = startNewGameDiv.querySelector('#input-gameboard-size'); 
     const extendedModeInput = startNewGameDiv.querySelector('#input-gameboard-extended-mode');
     
@@ -621,7 +622,6 @@ const displayController = (function() {
     // Resize observer, to adapt the gameboard size
     // see https://web.dev/articles/resize-observer
     const gameboardResizeObserver = new ResizeObserver(setGameboardSizeDOM);
-
 
     // Gameboard creation, e.g.,
     // <div class="gameboard">
@@ -946,7 +946,20 @@ const nextMoveDOM = function(){
         for (sym in playerNameInput){
             let playerValue = playerNameInput[sym].value;
             playersName[sym] = playerValue.length>0? playerValue : playerNameInput[sym].placeholder;
-            playerInfoName[sym].textContent = playersName[sym]
+            playerInfoName[sym].textContent = playersName[sym];
+        }
+    };
+
+    const getHumanPlayersFromSettings = function(){
+        // Check whether player O is human or AI
+        let numOfPlayers = DOMUtilities.getCheckedRadioValueAmongDescendants(numOfPlayersInput);
+        if (numOfPlayers==1){
+            playersIsHuman = {x: true, o: false};
+        } else {
+            playersIsHuman = {x: true, o: true};
+        }
+        for (sym in playerInfoDiv){
+            playerInfoDiv[sym].classList.toggle('ai',!playersIsHuman[sym]);
         }
     };
     const getGameboardSizeFromSettings = function(){
@@ -966,6 +979,7 @@ const nextMoveDOM = function(){
         startNewGameDiv.classList.toggle('game-on',true);
 
         getPlayersNamesFromSettings();
+        getHumanPlayersFromSettings();
         getGameboardSizeFromSettings();
         getGameboardWinLen();
         getExtendedModeFromSettings();
