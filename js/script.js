@@ -615,6 +615,7 @@ const displayController = (function() {
     const playerNameInput = {x: startNewGameDiv.querySelector('#input-player-x-name'),
                              o: startNewGameDiv.querySelector('#input-player-o-name')};
     const numOfPlayersInput = startNewGameDiv.querySelector('#input-num-of-players');
+    const numOfPlayersInputRadioBtns = startNewGameDiv.querySelectorAll('#input-num-of-players input');
     const gameboardSizeInput = startNewGameDiv.querySelector('#input-gameboard-size'); 
     const extendedModeInput = startNewGameDiv.querySelector('#input-gameboard-extended-mode');
     
@@ -950,6 +951,13 @@ const nextMoveDOM = function(){
         }
     };
 
+    const setAIplayerName = function(){
+        // Check whether player O is human or AI
+        let numOfPlayers = DOMUtilities.getCheckedRadioValueAmongDescendants(numOfPlayersInput);
+        let oIsAiPlayer = numOfPlayers==1;
+        playerNameInput.o.disabled = oIsAiPlayer;
+        playerNameInput.o.value = oIsAiPlayer ? 'Novice AI' : '';
+    };
     const getHumanPlayersFromSettings = function(){
         // Check whether player O is human or AI
         let numOfPlayers = DOMUtilities.getCheckedRadioValueAmongDescendants(numOfPlayersInput);
@@ -975,6 +983,7 @@ const nextMoveDOM = function(){
 
     const startNewGame = function(){
         startNewGameBtn.removeEventListener('click',startNewGame);
+        numOfPlayersInputRadioBtns.forEach(input => input.removeEventListener('change',setAIplayerName));     
         backBtn.addEventListener('click',endGameAfterRound);
         startNewGameDiv.classList.toggle('game-on',true);
 
@@ -990,6 +999,7 @@ const nextMoveDOM = function(){
     const endGame = function(){
         backBtn.removeEventListener('click',endGameAfterRound);
         startNewGameBtn.addEventListener('click',startNewGame);
+        numOfPlayersInputRadioBtns.forEach(input => input.addEventListener('change',setAIplayerName));     
         startNewGameDiv.classList.toggle('game-on',false);
     };
 
@@ -1013,8 +1023,10 @@ const nextMoveDOM = function(){
 
         // Initialize the DOM
         resetRoundOutcomeDiv();
+        setAIplayerName();
         
-        startNewGameBtn.addEventListener('click',startNewGame);     
+        startNewGameBtn.addEventListener('click',startNewGame);
+        numOfPlayersInputRadioBtns.forEach(input => input.addEventListener('change',setAIplayerName));
     })();
 
 })();

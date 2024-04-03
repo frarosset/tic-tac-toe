@@ -379,7 +379,6 @@ header button{
         "player-x-name player-x-name"
         "player-o-name player-o-name"
         "gameboard-size gameboard-size";
-        /* "extended-mode"; */
 
     align-items: center;
     justify-content: center;
@@ -509,7 +508,6 @@ header button{
     font-weight: bold;
     border: var(--settings-input-border-size-sel) solid var(--settings-input-border-col-sel);
 }
-
 
 /* || Main - Playing View*/
 
