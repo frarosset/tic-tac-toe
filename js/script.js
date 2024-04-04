@@ -20,7 +20,12 @@ const commonUtilities = (function(){
         return Math.floor(Math.random() * (max - min + 1)) + min;
     };
 
-    return {randomInt};
+    const randomItemInArray = function(array) {
+        let randomIdx = randomInt(0,array.length-1);
+        return array[randomIdx];
+    };
+
+    return {randomInt,randomItemInArray};
 })();
 
 // Disable CSS transitions on window resize
@@ -271,7 +276,27 @@ function createGameboard(size, emptyCellValue='',winLen = 0){
         return null;
     }
 
-    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,getEmptyCells,unmarkMove,getTerminalCondition, getSize};
+    // Gameboard scoring
+
+    let getPotentialWinScoreAfterMove = function(cell,player){
+        let score = 0;
+
+        let terminalCondition;
+        // Check if the player can win (temporarly marking the cell)
+        makeMove(cell.getCellRow(),cell.getCellColumn(),player);
+
+        terminalCondition = getTerminalCondition();
+        if (terminalCondition && terminalCondition.getPlayer()){
+            // the winner is necessarily the player
+            score = 1; // win
+        }
+
+        unmarkMove(cell.getCellRow(),cell.getCellColumn(),player);
+
+        return score;
+    }
+
+    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,getEmptyCells,unmarkMove,getTerminalCondition, getSize, getPotentialWinScoreAfterMove};
 }
 
 // This factory function handles the gameboard's cell functionality
@@ -352,29 +377,94 @@ function createPlayer(id, name, value){
 
 function createAIPlayer(id, name="AI", value){
     let player = createPlayer(id, name, value);
+    let opponent = null;
 
     // Override isHuman method
     const isHuman = function(){
         return false;
     };
 
+    function setOpponent(opponentToSet){
+        opponent = opponentToSet;
+    };
+
+
     let getRandomMove = function(gameboard){
-        // todo: use a list of empty cells
-        let emptyCells = gameboard.getEmptyCells();
-        let randomIdx = commonUtilities.randomInt(0,emptyCells.size-1);
-        return [...emptyCells.keys()][randomIdx];
+        // Select a random cell among the empty ones
+        let emptyCellsId = [...gameboard.getEmptyCells().keys()]; 
+        return commonUtilities.randomItemInArray(emptyCellsId);
     }
+
+    let getReactiveWinMove = function(gameboard){
+        // If the ai user can win now, make the move to win,
+        // else, make a random move.
+        let emptyCells = [...gameboard.getEmptyCells().values()];
+
+        let winningCells = [];
+        
+
+        emptyCells.forEach((cell) => {
+            // Check if the ai user can win
+            if (gameboard.getPotentialWinScoreAfterMove(cell,player))
+                winningCells.push(cell);
+        });
+
+        if (winningCells.length)
+            return commonUtilities.randomItemInArray(winningCells).getCellId();
+        else 
+            return getRandomMove(gameboard);
+    };
+
+    let getReactiveWinAndBlockMove = function(gameboard){
+        // If the ai user can win now, make the move to win,
+        // else if the opponent can win on the next move, make the move to block it,
+        // else, make a random move.
+        let emptyCells = [...gameboard.getEmptyCells().values()];
+
+        let blockingCells = [];
+        let winningCells = [];
+        
+
+        emptyCells.forEach((cell) => {
+            // Check if the ai user can win
+            if (gameboard.getPotentialWinScoreAfterMove(cell,player))
+                winningCells.push(cell);
+
+            // Check if the opponent can win
+            if (gameboard.getPotentialWinScoreAfterMove(cell,opponent))
+                blockingCells.push(cell);
+        });
+
+        if (winningCells.length){
+            return commonUtilities.randomItemInArray(winningCells).getCellId();
+        } else if (blockingCells.length){
+            return commonUtilities.randomItemInArray(blockingCells).getCellId();
+        } else 
+            return getRandomMove(gameboard);
+    };
 
     let getBestMove = function(gameboard){
         // todo: minmax  
-    }
+    };
 
+    let skillness = 2;
     let getAIMove = function(gameboard){
-        return getRandomMove(gameboard);
-    }
+        switch (skillness){
+            case 0:
+                // totally random move
+                return getRandomMove(gameboard);
+            case 1:
+                // reactive player: immediate win or random move:
+                return getReactiveWinMove(gameboard);
+            case 2:
+                // reactive player: immediate win or immediate block or random move
+                return getReactiveWinAndBlockMove(gameboard);
+
+        }
+    };
 
     //isHuman is overwritten: return it after ...player
-    return {getAIMove, ...player, isHuman};
+    return {...player,getAIMove, setOpponent, isHuman};
 }
 
 function createTerminalCondition(player, winningCells){
@@ -428,6 +518,11 @@ function gameController(size,playersName= {x: 'Player 1', o: 'Player 2'}, player
             players.push(createAIPlayer(players.length,playersName[sym],sym.toString()));
         }
     }
+    // Set opponents for ai
+    if (!players[0].isHuman())
+        players[0].setOpponent(players[1]);
+    if (!players[1].isHuman())
+        players[1].setOpponent(players[0]);
 
     let currentPlayerIdx = 0;
 
