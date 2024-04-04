@@ -375,7 +375,7 @@ function createPlayer(id, name, value){
     return {getPlayerId, getPlayerName, getPlayerValue, getPlayerScore, resetPlayerScore, incrementPlayerScoreBy, isHuman};
 }
 
-function createAIPlayer(id, name="AI", value){
+function createAIPlayer(id, name="AI", value, skillLevel){
     let player = createPlayer(id, name, value);
     let opponent = null;
 
@@ -447,9 +447,8 @@ function createAIPlayer(id, name="AI", value){
         // todo: minmax  
     };
 
-    let skillness = 2;
     let getAIMove = function(gameboard){
-        switch (skillness){
+        switch (skillLevel){
             case 0:
                 // totally random move
                 return getRandomMove(gameboard);
@@ -487,7 +486,7 @@ function createTerminalCondition(player, winningCells){
 }
 
 // This factory function handles the flow of the game
-function gameController(size,playersName= {x: 'Player 1', o: 'Player 2'}, playersIsHuman={x: false, o: false}, extendedMode=false, winLen=0) {
+function gameController(size,playersName= {x: 'Player 1', o: 'Player 2'}, playersIsHuman={x: false, o: false}, AISkillLevel={x: null, o: null}, extendedMode=false, winLen=0) {
 
     const emptyCellValue = " ";
 
@@ -515,7 +514,7 @@ function gameController(size,playersName= {x: 'Player 1', o: 'Player 2'}, player
         if (playersIsHuman[sym]){
             players.push(createPlayer(players.length,playersName[sym],sym.toString()));
         } else {
-            players.push(createAIPlayer(players.length,playersName[sym],sym.toString()));
+            players.push(createAIPlayer(players.length,playersName[sym],sym.toString(),AISkillLevel[sym]));
         }
     }
     // Set opponents for ai
@@ -693,6 +692,7 @@ const displayController = (function() {
     let extendedMode = false;
     let playersName = {};
     let playersIsHuman = {};
+    let AISkillLevel = {};
     let game = null;
 
     // DOM cache
@@ -719,6 +719,7 @@ const displayController = (function() {
                              o: startNewGameDiv.querySelector('#input-player-o-name')};
     const numOfPlayersInput = startNewGameDiv.querySelector('#input-num-of-players');
     const numOfPlayersInputRadioBtns = startNewGameDiv.querySelectorAll('#input-num-of-players input');
+    const AISkillLevelInput = startNewGameDiv.querySelector('#input-ai-skill-level'); 
     const gameboardSizeInput = startNewGameDiv.querySelector('#input-gameboard-size'); 
     const extendedModeInput = startNewGameDiv.querySelector('#input-gameboard-extended-mode');
     
@@ -924,7 +925,7 @@ const displayController = (function() {
 
     const startGameDOM = function(){
         // Create a new game
-        game = gameController(gameboardSize,playersName,playersIsHuman,extendedMode,gameboardWinLen);
+        game = gameController(gameboardSize,playersName,playersIsHuman,AISkillLevel,extendedMode,gameboardWinLen);
 
         // Initialize players score on playerInfoDiv
         setAllPlayersInfoScore();
@@ -961,22 +962,22 @@ const displayController = (function() {
         nextMoveDOM();
     };
 
-const nextMoveDOM = function(){
-    // Highlight the current player info div
-    setPlayerInfoCurrentPlayer();
+    const nextMoveDOM = function(){
+        // Highlight the current player info div
+        setPlayerInfoCurrentPlayer();
 
-    if (!game.getCurrentPlayer().isHuman()){ 
-        let cellToMove = game.getAIMove();
-    
-        console.log('AI next move: ', cellToMove);
-        setTimeout(
-            playMoveDOM, //function
-            AIMoveDelayMs, // delay
-            {target: gameboardDiv.childNodes[cellToMove]} // arguments of function
-        );
-    }
-    // else: wait for player click on cell, after which playMoveDOM callback is called
-};
+        if (!game.getCurrentPlayer().isHuman()){ 
+            let cellToMove = game.getAIMove();
+        
+            console.log('AI next move: ', cellToMove);
+            setTimeout(
+                playMoveDOM, //function
+                AIMoveDelayMs, // delay
+                {target: gameboardDiv.childNodes[cellToMove]} // arguments of function
+            );
+        }
+        // else: wait for player click on cell, after which playMoveDOM callback is called
+    };
 
     const endRoundDOM = function(moveOutcome){
         resetPlayerInfoCurrentPlayer();
@@ -1053,12 +1054,14 @@ const nextMoveDOM = function(){
         }
     };
 
+    const AIplayerNames = ['Novice AI','Beginner AI','Intermediate AI'];
     const setAIplayerName = function(){
         // Check whether player O is human or AI
         let numOfPlayers = DOMUtilities.getCheckedRadioValueAmongDescendants(numOfPlayersInput);
         let oIsAiPlayer = numOfPlayers==1;
+        let AISkillLevel = parseInt(AISkillLevelInput.value);
         playerNameInput.o.disabled = oIsAiPlayer;
-        playerNameInput.o.value = oIsAiPlayer ? 'Novice AI' : '';
+        playerNameInput.o.value = oIsAiPlayer ? AIplayerNames[AISkillLevel] : '';
     };
     const getHumanPlayersFromSettings = function(){
         // Check whether player O is human or AI
@@ -1072,6 +1075,16 @@ const nextMoveDOM = function(){
             playerInfoDiv[sym].classList.toggle('ai',!playersIsHuman[sym]);
         }
     };
+    const getAISkillLevelFromSettings = function(){
+        // Check whether player O is human or AI
+        let numOfPlayers = DOMUtilities.getCheckedRadioValueAmongDescendants(numOfPlayersInput);
+        if (numOfPlayers==1){
+            AISkillLevel = {x: null, o: parseInt(AISkillLevelInput.value)};
+        } else {
+            AISkillLevel = {x: null, o: null};
+        }
+    }
+
     const getGameboardSizeFromSettings = function(){
         gameboardSize = parseInt(DOMUtilities.getCheckedRadioValueAmongDescendants(gameboardSizeInput));
         document.documentElement.style.setProperty('--gameboard-size', gameboardSize);
@@ -1085,12 +1098,14 @@ const nextMoveDOM = function(){
 
     const startNewGame = function(){
         startNewGameBtn.removeEventListener('click',startNewGame);
-        numOfPlayersInputRadioBtns.forEach(input => input.removeEventListener('change',setAIplayerName));     
+        numOfPlayersInputRadioBtns.forEach(input => input.removeEventListener('change',setAIplayerName));
+        AISkillLevelInput.removeEventListener('change',setAIplayerName);    
         backBtn.addEventListener('click',endGameAfterRound);
         startNewGameDiv.classList.toggle('game-on',true);
 
         getPlayersNamesFromSettings();
         getHumanPlayersFromSettings();
+        getAISkillLevelFromSettings();
         getGameboardSizeFromSettings();
         getGameboardWinLen();
         getExtendedModeFromSettings();
@@ -1101,7 +1116,8 @@ const nextMoveDOM = function(){
     const endGame = function(){
         backBtn.removeEventListener('click',endGameAfterRound);
         startNewGameBtn.addEventListener('click',startNewGame);
-        numOfPlayersInputRadioBtns.forEach(input => input.addEventListener('change',setAIplayerName));     
+        numOfPlayersInputRadioBtns.forEach(input => input.addEventListener('change',setAIplayerName));
+        AISkillLevelInput.addEventListener('change',setAIplayerName);
         startNewGameDiv.classList.toggle('game-on',false);
     };
 
@@ -1129,6 +1145,7 @@ const nextMoveDOM = function(){
         
         startNewGameBtn.addEventListener('click',startNewGame);
         numOfPlayersInputRadioBtns.forEach(input => input.addEventListener('change',setAIplayerName));
+        AISkillLevelInput.addEventListener('change',setAIplayerName);
     })();
 
 })();

@@ -91,6 +91,7 @@
     --player-info-gap-score:2px;
     --player-info-gap-icon: var(--player-info-padding);
 
+
     --gameboard-gap:            2vmin;
     --gameboard-padding:        0px;
     --gameboard-cell-padding:   10%;
@@ -163,6 +164,9 @@
     --settings-input-placeholder-col:   var(--col-light-grey);
 
     --settings-input-radio-fieldset-label-width: 3em;
+
+    --settings-input-range-height: calc(var(--settings-label-fontsize)/4*3);
+    --settings-input-range-thumb-height: calc(var(--settings-label-fontsize)/4*6);
 
     /* Shadows */
     /* --outset-shadow: 2px 2px 8px var(--col-accent-medium);
@@ -419,6 +423,17 @@ header button{
     align-items: center;
     justify-content: center;
     gap: var(--settings-input-label-gap);
+    width: 100%;
+}
+
+.start-new-game-div .settings-div .input-div.input-div-hor{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--settings-input-label-gap);
+    padding-top: calc((var(--settings-input-range-thumb-height) - var(--settings-input-range-height)) / 2 );
+    padding-bottom: calc((var(--settings-input-range-thumb-height) - var(--settings-input-range-height)) / 2 );
 }
 
 .start-new-game-div .settings-div .input-div>label{
@@ -440,6 +455,10 @@ header button{
 .start-new-game-div .settings-div .input-div>label .icon-mask:before{
     width: var(--settings-label-fontsize);
     height: var(--settings-label-fontsize);
+}
+
+.start-new-game-div .settings-div .input-div.input-div-hor input{
+    flex: 1;
 }
 
 /* Input styles: text input */
@@ -465,6 +484,56 @@ header button{
     font-weight: normal;
     font-style: italic;
 }
+
+/* Input styles: range input */
+
+input[type="range"]::-webkit-slider-thumb,
+input[type="range"]::-moz-range-thumb,
+input[type="range"]::-ms-thumb{}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: var(--settings-input-range-height);
+    border-radius: var(--settings-input-range-height);
+    cursor: pointer; 
+}
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: var(--settings-input-range-height);
+    border-radius: var(--settings-input-range-height);
+    cursor: pointer;
+    border: none;
+    background: var(--settings-input-bg-col);
+}
+input[type="range"]::-moz-range-track {
+    width: 100%;
+    height: var(--settings-input-range-height);
+    border-radius: var(--settings-input-range-height);
+    cursor: pointer;
+    border: none;
+    background: var(--settings-input-bg-col);
+}
+input[type="range"]::-ms-track {
+    width: 100%;
+    height: var(--settings-input-range-height);
+    border-radius: var(--settings-input-range-height);
+    cursor: pointer;
+    border: none;
+    background: var(--settings-input-bg-col);
+}
+input[type="range"]::-webkit-slider-thumb {
+    height: var(--settings-input-range-thumb-height);
+    width: var(--settings-input-range-thumb-height);
+    border-radius: 50%;
+    cursor: pointer;
+    -webkit-appearance: none;
+    background: var(--settings-input-bg-col-sel);
+    outline: var(--focus-visible-outline-size) solid var(--settings-input-outline-col-sel);
+    outline-offset: -1px;
+    border: var(--settings-input-border-size-sel) solid var(--settings-input-border-col-sel);
+    margin-top: calc(var(--settings-input-range-height) / 2 -  var(--settings-input-range-thumb-height) / 2 );
+ }
 
 /* Input styles: radio fieldset input */
 .radio-input-fieldset{
