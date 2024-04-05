@@ -545,6 +545,10 @@ input[type="range"]::-webkit-slider-thumb {
     margin-top: calc(var(--settings-input-range-height) / 2 -  var(--settings-input-range-thumb-height) / 2 );
  }
 
+ .input-div-ai-skill-level:has(#input-ai-skill-level:disabled) {
+    visibility: hidden;
+}
+
 /* Input styles: radio fieldset input */
 .radio-input-fieldset{
     display:            flex;

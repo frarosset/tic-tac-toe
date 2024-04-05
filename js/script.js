@@ -1063,6 +1063,7 @@ const displayController = (function() {
         let oIsAiPlayer = numOfPlayers==1;
         let AISkillLevel = parseInt(AISkillLevelInput.value);
         playerNameInput.o.disabled = oIsAiPlayer;
+        AISkillLevelInput.disabled = !oIsAiPlayer;
         playerNameInput.o.value = oIsAiPlayer ? AIplayerNames[AISkillLevel] : '';
     };
     const getHumanPlayersFromSettings = function(){
