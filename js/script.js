@@ -288,7 +288,7 @@ function createGameboard(size, emptyCellValue='',winLen = 0){
         terminalCondition = getTerminalCondition();
         if (terminalCondition && terminalCondition.getPlayer()){
             // the winner is necessarily the player
-            score = 1; // win
+            score = terminalCondition.getAssignedPoints(); // win
         }
 
         unmarkMove(cell.getCellRow(),cell.getCellColumn(),player);
@@ -696,9 +696,11 @@ const displayController = (function() {
     let game = null;
 
     // DOM cache
+    const mainDiv = document.querySelector('main');
     const startNewGameDiv = document.querySelector('main .start-new-game-div');
     const startNewGameBtn = document.querySelector('main .start-new-game-btn');
     const backBtn = document.querySelector('header .back-btn');
+    const infoBtn = document.querySelector('header .info-btn');
 
     const playerInfoDiv =   {x: document.querySelector('.player-info.x'),
                              o: document.querySelector('.player-info.o')};
@@ -1096,12 +1098,24 @@ const displayController = (function() {
         gameboardWinLen = Math.min(gameboardSize, 4);
     };
 
+    const showInfoDiv = function(){
+        mainDiv.classList.toggle('info-on',true);
+        backBtn.addEventListener('click',hideInfoDiv);
+        infoBtn.removeEventListener('click',showInfoDiv);
+    };
+    const hideInfoDiv = function(){
+        mainDiv.classList.toggle('info-on',false);
+        backBtn.removeEventListener('click',hideInfoDiv);
+        infoBtn.addEventListener('click',showInfoDiv);
+    };
+
     const startNewGame = function(){
         startNewGameBtn.removeEventListener('click',startNewGame);
         numOfPlayersInputRadioBtns.forEach(input => input.removeEventListener('change',setAIplayerName));
-        AISkillLevelInput.removeEventListener('change',setAIplayerName);    
+        AISkillLevelInput.removeEventListener('input',setAIplayerName);
+        infoBtn.removeEventListener('click',showInfoDiv);    
         backBtn.addEventListener('click',endGameAfterRound);
-        startNewGameDiv.classList.toggle('game-on',true);
+        mainDiv.classList.toggle('game-on',true);
 
         getPlayersNamesFromSettings();
         getHumanPlayersFromSettings();
@@ -1114,11 +1128,12 @@ const displayController = (function() {
     };
 
     const endGame = function(){
+        infoBtn.addEventListener('click',showInfoDiv);    
         backBtn.removeEventListener('click',endGameAfterRound);
         startNewGameBtn.addEventListener('click',startNewGame);
         numOfPlayersInputRadioBtns.forEach(input => input.addEventListener('change',setAIplayerName));
-        AISkillLevelInput.addEventListener('change',setAIplayerName);
-        startNewGameDiv.classList.toggle('game-on',false);
+        AISkillLevelInput.addEventListener('input',setAIplayerName);
+        mainDiv.classList.toggle('game-on',false);
     };
 
     const endGameAfterRound = function(){
@@ -1144,8 +1159,9 @@ const displayController = (function() {
         setAIplayerName();
         
         startNewGameBtn.addEventListener('click',startNewGame);
+        infoBtn.addEventListener('click',showInfoDiv);
         numOfPlayersInputRadioBtns.forEach(input => input.addEventListener('change',setAIplayerName));
-        AISkillLevelInput.addEventListener('change',setAIplayerName);
+        AISkillLevelInput.addEventListener('input',setAIplayerName);
     })();
 
 })();

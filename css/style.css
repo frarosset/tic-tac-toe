@@ -28,14 +28,18 @@
     --gameboard-cell-bg-col-active: var(--col-dark-grey);   
     --gameboard-cell-bg-col-marked: var(--col-dark-grey);   
     --round-outcome-bg-col:         var(--col-dark-grey);
+    --info-bg-col: var(--col-white);
 
     /* Colors (text/icons)*/
     --col-txt:                          var(--col-white);
+    --col-txt-alt:                      var(--col-black);
     --marker-col:                       transparent;
     --gameboard-cell-border-col-hover:  var(--col-dark-grey);
     --gameboard-cell-border-col-active: var(--col-light-grey);
     --focus-visible-outline-col:        var(--col-white);
     --round-outcome-border-col:         var(--col-light-grey);
+    --info-col:                         var(--col-txt-alt);
+    --info-cnt-border-col:              var(--col-light-grey);
 
    /* Maximum width (including margin) */
     --max-width: min(1440px, 100%);
@@ -72,6 +76,9 @@
     --main-gap-hor:      1rem;
     --main-gap-ver:      4vh;
     --player-info-margin-tb: 2vmin;
+
+    --info-gap: 0.75rem;
+    --info-padding: 1rem;
 
     --game-logo-icon-len: var(--header-h1-fontsize);
 
@@ -127,7 +134,7 @@
     --button-bottom-border-active:      2px;
     --button-radius:                    calc(var(--gameboard-radius) / 1);
     --button-padding:                   calc(var(--button-radius) / 2);
-    --button-width:                     max(max-content,8em);
+    --button-width:                     5rem;
     --button-bottom-border-color:       var(--col-o-dark);
     --button-bottom-border-color-alt:   var(--col-x-dark);
     --button-bg-color:                  var(--col-o-light);
@@ -136,6 +143,8 @@
     --button-color-alt:                 var(--col-black);
     --button-height: calc(2 * var(--button-padding) + var(--button-fontsize) * var(--txt-lineheight)  
                      + var(--button-bottom-border-hover) + var(--button-border));
+
+    --play-button-width:            15rem;   
 
     /* Settings input */
     --settings-gap-ver:             3vh;
@@ -299,7 +308,7 @@ button{
     color: var(--button-color);
     border-radius: var(--button-radius);
     padding: var(--button-padding);
-    width: var(--button-width);
+    min-width: var(--button-width);
     margin-top: calc(var(--button-bottom-border-hover) - var(--button-bottom-border));
     font-size: var(--button-fontsize);
     font-weight: bold;
@@ -353,7 +362,11 @@ h1{
     font-size: var(--header-h1-fontsize);
 }
 
-body:has(.start-new-game-div:not(.game-on)) .back-btn{
+body:has(main.info-on) .info-btn,
+body:has(main.game-on) .info-btn{
+    display: none;
+}
+body:has(main:not(.game-on):not(.info-on)) .back-btn{
     display: none;
 }
 
@@ -371,7 +384,8 @@ header button{
     --button-fontsize: var(--settings-btn-fontsize);
     --button-padding: calc(var(--button-fontsize) / 3);
 }
-.start-new-game-div.game-on{
+main.info-on .start-new-game-div,
+main.game-on .start-new-game-div{
     display: none;
 }
 
@@ -410,9 +424,9 @@ header button{
     display: flex;
     align-items: center;
 }
-.start-new-game-div .note-div{
-    text-align: center;
-    text-wrap: balance;
+
+.start-new-game-div button{
+    --button-width: var(--play-button-width);
 }
 
 /* Input styles: input div container with label*/
@@ -486,12 +500,8 @@ header button{
 }
 
 /* Input styles: range input */
-
-input[type="range"]::-webkit-slider-thumb,
-input[type="range"]::-moz-range-thumb,
-input[type="range"]::-ms-thumb{}
-
 input[type="range"] {
+    appearance: none;
     -webkit-appearance: none;
     width: 100%;
     height: var(--settings-input-range-height);
@@ -578,6 +588,81 @@ input[type="range"]::-webkit-slider-thumb {
     border: var(--settings-input-border-size-sel) solid var(--settings-input-border-col-sel);
 }
 
+/* || Main - info VIEW*/
+main:not(.info-on) .info-div{
+    display: none;
+}
+
+.info-div{
+    height: 100%;
+    display: grid;
+    align-content: center;
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0,0.8fr) repeat(4,min-content) minmax(0,3fr);
+    grid-template-areas:
+        "title"
+        "cnt1"
+        "cnt2a"
+        "cnt2b"
+        "cnt3"
+        "final-text";
+    gap: var(--info-padding);
+}
+
+@media (orientation: landscape) and (min-aspect-ratio: 1.6){
+    .info-div{
+        grid-template-columns: 1fr 0.5fr 0.5fr;
+        grid-template-rows: minmax(0,1fr) repeat(2,min-content) minmax(0,1fr);
+        grid-template-areas:
+            "title title title"
+            "cnt1 cnt2a cnt2b"
+            "cnt1 cnt3 cnt3"
+            "final-text final-text final-text";
+    }
+}
+
+.info-div h2{
+    grid-area: title;
+    align-self: center;
+    text-align: center;
+}
+.info-cnt-1{
+    grid-area: cnt1;
+}
+.info-cnt-2{
+    grid-area: cnt2;
+}
+.info-cnt-3{
+    grid-area: cnt3;
+}
+.info-div p.final-text{
+    grid-area: final-text;
+    align-self: center;
+    color: var(--col-txt);
+    text-align: center;
+}
+
+.info-cnt{
+    padding: var(--info-padding);
+    background-color: var(--info-bg-col);
+    border-radius: var(--gameboard-radius);
+    display: flex;
+    flex-direction: column;
+    gap: var(--info-gap);
+    border: 2px solid var(--info-cnt-border-col);
+}
+
+.info-div p{
+    text-wrap: balance;
+    text-align: left;
+    color: var(--info-col);
+}
+
+.info-div strong{
+    font-weight: bold;
+}
+
+
 /* || Main - Playing View*/
 
 .playing-div{
@@ -602,7 +687,7 @@ input[type="range"]::-webkit-slider-thumb {
     transition-delay: calc(var(--round-outcome-animation-duration) / 2);
 }
 
-.start-new-game-div:not(.game-on) + .playing-div{
+main:not(.game-on) .playing-div{
     display: none;
 }
 
