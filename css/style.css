@@ -185,6 +185,7 @@
     /* Animations on hover / active / ...*/
     --cell-transition-duration: 1s;
     --winning-player-animation-duration: 1s;
+    --button-animation-duration: 1s;
     --current-player-animation-duration: 0.5s;
     --current-player-animation-displ-up: calc(var(--player-info-margin-tb) / 3);
     --current-player-animation-displ-down: calc(-1 * var(--current-player-animation-displ-up));
@@ -337,11 +338,31 @@ button.alt{
     outline: var(--focus-visible-outline-size) solid var(--focus-visible-outline-col);
  }
 
+ @keyframes startNewGameBtnAnimation {
+    0%{
+        transform: scale(1);
+    }
+    100%{
+        transform: scale(1.05);
+    }
+}
+button:not(.alt){
+    animation-duration: var(--button-animation-duration);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-name: startNewGameBtnAnimation;
+    animation-timing-function: ease-in-out;
+    will-change: transform; 
+}
+
 
 /* || Header */
 header{
     display: flex;
     justify-content: space-between;
+    position: sticky;
+    top: 0px;
+    background-color: var(--bg-col);
 }
 
 .game-title-div{
