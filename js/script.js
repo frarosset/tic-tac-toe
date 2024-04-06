@@ -10,7 +10,47 @@ const DOMUtilities = (function(){
         return ascendentElement.querySelector("input[type=radio]:checked").value;
     };
 
-    return {removeDescendants,getCheckedRadioValueAmongDescendants};
+    // from: https://stackoverflow.com/a/143889
+    // Determines if the passed element is overflowing its bounds,
+    // either vertically or horizontally.
+    // Will temporarily modify the "overflow" style to detect this
+    // if necessary.
+    const _checkOverflow = function(el){
+        let curOverflow = el.style.overflow;
+
+        if ( !curOverflow || curOverflow === "visible" )
+            el.style.overflow = "hidden";
+
+        let isOverflowing = el.clientWidth < el.scrollWidth 
+                            || el.clientHeight < el.scrollHeight;
+        // console.log(el.clientWidth, el.scrollWidth, el.clientHeight, el.scrollHeight)
+        el.style.overflow = curOverflow;
+
+        return isOverflowing;
+    }
+    const _checkEllipsis = function(el){
+        return el.offsetWidth < el.scrollWidth;
+    }    
+
+    const fitFontSize = function(elem, defaultFontSize='',delta=0.9){
+        // Initialize the fontSize, if the initial value is provided
+        if (defaultFontSize)
+            elem.style.fontSize = defaultFontSize;
+        let fontSize = getComputedStyle(elem).getPropertyValue('font-size');
+        let fontSizeVal,fontSizeUnit; 
+        [fontSizeVal,fontSizeUnit] = _splitCSSUnits(fontSize);
+
+        while (_checkEllipsis(elem) && fontSizeVal>8){
+            fontSizeVal *= delta;
+            elem.style.fontSize = fontSizeVal + fontSizeUnit;
+        }
+    }
+
+    const _splitCSSUnits = function(CSSAttrVal){
+        return [CSSAttrVal.match(/[\d.]+/)[0],CSSAttrVal.match(/[^\d.]+/)[0]];
+    }
+
+    return {removeDescendants,getCheckedRadioValueAmongDescendants, fitFontSize};
 })();
 
 const commonUtilities = (function(){
@@ -711,6 +751,7 @@ const displayController = (function() {
     const gameboardCntDiv = document.querySelector('main .gameboard-cnt');
     const gameboardDiv = gameboardCntDiv.querySelector('.gameboard');
     const roundOutcomeDiv = document.querySelector('main .round-outcome-div');
+    const roundOutcomeTextDiv = roundOutcomeDiv.querySelector('.round-outcome-text');
     const winnerPlayerSpan = roundOutcomeDiv.querySelector('main .winner-player');
     const winnerComboValSpan = roundOutcomeDiv.querySelector('main .winner-combo-val'); 
     const winnerComboExtraPointsSpan = roundOutcomeDiv.querySelector('main .winner-combo-extra-points'); 
@@ -724,7 +765,9 @@ const displayController = (function() {
     const AISkillLevelInput = startNewGameDiv.querySelector('#input-ai-skill-level'); 
     const gameboardSizeInput = startNewGameDiv.querySelector('#input-gameboard-size'); 
     const extendedModeInput = startNewGameDiv.querySelector('#input-gameboard-extended-mode');
-    
+
+    let playerNamesFontSize = getComputedStyle(document.documentElement,null).getPropertyValue('--player-info-name-fontsize');
+    let roundOutcomeFontSize = getComputedStyle(document.documentElement,null).getPropertyValue('--round-outcome-text-fontsize');
 
     // Resize observer, to adapt the gameboard size
     // see https://web.dev/articles/resize-observer
@@ -1110,6 +1153,12 @@ const displayController = (function() {
         infoBtn.addEventListener('click',showInfoDiv);
     };
 
+    const adaptSizeBasedOnPlayerNames = function(){
+        DOMUtilities.fitFontSize(playerInfoName.x, playerNamesFontSize,0.9);
+        DOMUtilities.fitFontSize(playerInfoName.o, playerNamesFontSize,0.9);
+        DOMUtilities.fitFontSize(roundOutcomeTextDiv, roundOutcomeFontSize,0.9);
+    }
+
     const startNewGame = function(){
         startNewGameBtn.removeEventListener('click',startNewGame);
         numOfPlayersInputRadioBtns.forEach(input => input.removeEventListener('change',setAIplayerName));
@@ -1147,6 +1196,7 @@ const displayController = (function() {
         //let sizes = gameboardCntDiv.getBoundingClientRect();
         let sizes = entry[0].contentRect;
         gameboardDiv.classList.toggle('larger-width-than-height',sizes.width>=sizes.height);
+        adaptSizeBasedOnPlayerNames();
     };
 
     // Initailize a new game immediately

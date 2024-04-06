@@ -717,6 +717,7 @@ main:not(.info-on) .info-div{
     align-self: center;
     color: var(--col-txt);
     text-align: center;
+    font-variant: normal;
 }
 
 .info-cnt{
@@ -882,6 +883,12 @@ main:not(.game-on) .playing-div{
     grid-area: name;
     font-size: var(--player-info-name-fontsize);
     text-align: center;
+    /* to adapt fontsize */
+    line-height: calc(var(--player-info-name-fontsize) * var(--txt-lineheight));
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 100%;
 }
 
 .player-info .player-score{
@@ -1156,6 +1163,12 @@ main:not(.game-on) .playing-div{
     flex: 2;
     display: none; /* becomes flex in certain conditions (see below) */
     align-items: center;
+    /* to adapt fontsize */
+    line-height: calc(var(--round-outcome-text-fontsize) * var(--txt-lineheight));
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 100%;  
 }
 .round-outcome-div .round-outcome-subtext{
     font-size: var(--round-outcome-subtext-fontsize);
