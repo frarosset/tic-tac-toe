@@ -28,7 +28,8 @@
     --gameboard-cell-bg-col-active: var(--col-dark-grey);   
     --gameboard-cell-bg-col-marked: var(--col-dark-grey);   
     --round-outcome-bg-col:         var(--col-dark-grey);
-    --info-bg-col: var(--col-white);
+    --info-bg-col:                  var(--col-dark-grey);
+    --settings-box-bg-color:        var(--col-dark-grey);
 
     /* Colors (text/icons)*/
     --col-txt:                          var(--col-white);
@@ -38,8 +39,10 @@
     --gameboard-cell-border-col-active: var(--col-light-grey);
     --focus-visible-outline-col:        var(--col-white);
     --round-outcome-border-col:         var(--col-light-grey);
-    --info-col:                         var(--col-txt-alt);
-    --info-cnt-border-col:              var(--col-light-grey);
+    --info-col:                         var(--col-txt);
+
+    --info-col-strong: var(--col-white);
+    --info-col-strong-highlight: var(--col-o-light);
 
    /* Maximum width (including margin) */
     --max-width: min(1440px, 100%);
@@ -79,6 +82,7 @@
 
     --info-gap: 0.75rem;
     --info-padding: 1rem;
+    --settings-box-padding: 0.5rem;
 
     --game-logo-icon-len: var(--header-h1-fontsize);
 
@@ -147,8 +151,8 @@
     --play-button-width:            15rem;   
 
     /* Settings input */
-    --settings-gap-ver:             3vh;
-    --settings-gap-hor:             3vw;
+    --settings-gap-ver:             3vmin;
+    --settings-gap-hor:             3vmin;
     --settings-label-fontsize:      1rem;
     --settings-input-label-gap:     max(calc(2*var(--focus-visible-outline-size)),0.2rem);
 
@@ -404,6 +408,7 @@ header button{
     justify-content: center;
     --button-fontsize: var(--settings-btn-fontsize);
     --button-padding: calc(var(--button-fontsize) / 3);
+    gap: var(--settings-gap-ver);
 }
 main.info-on .start-new-game-div,
 main.game-on .start-new-game-div{
@@ -424,7 +429,7 @@ main.game-on .start-new-game-div{
 @media (orientation: landscape) and (min-aspect-ratio: 1.2){
     .start-new-game-div .settings-div{
         flex: 0;
-        width: 90%;
+        min-width: 70%;
         justify-items: center;
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -451,9 +456,24 @@ main.game-on .start-new-game-div{
     grid-template-areas:
         "player-x-name"
         "player-o-name";
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     gap: var(--settings-gap-ver) var(--settings-gap-hor);
+}
+
+.start-new-game-div .settings-gameplay-div,
+.start-new-game-div .settings-players-div{
+    background-color: var(--settings-box-bg-color);
+    padding: var(--settings-box-padding);
+    border-radius: var(--gameboard-radius);
+}
+.start-new-game-div .settings-gameplay-div{
+    padding-bottom: calc(var(--settings-box-padding) + var(--settings-input-label-gap));
+}
+@media (orientation: landscape) and (min-aspect-ratio: 1.2){
+    .start-new-game-div .settings-gameplay-div{
+        padding-bottom: calc(var(--settings-box-padding) + var(--settings-input-range-thumb-height) + var(--settings-input-label-gap) + var(--focus-visible-outline-size));
+    }
 }
 
 .input-div:has(#input-gameboard-num-of-players){
@@ -706,17 +726,23 @@ main:not(.info-on) .info-div{
     display: flex;
     flex-direction: column;
     gap: var(--info-gap);
-    border: 2px solid var(--info-cnt-border-col);
 }
 
 .info-div p{
     text-wrap: balance;
     text-align: left;
+    font-variant: small-caps;
     color: var(--info-col);
 }
 
 .info-div strong{
     font-weight: bold;
+    font-variant: normal;
+    color: var(--info-col-strong);
+}
+.info-div strong.highlight{
+    font-weight: bold;
+    color: var(--info-col-strong-highlight);
 }
 
 
