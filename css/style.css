@@ -390,14 +390,46 @@ main.game-on .start-new-game-div{
 }
 
 .start-new-game-div .settings-div{
+    flex: 2;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+        "settings-gameplay"
+        "settings-players";
+    align-items: start;
+    justify-content: center;
+    gap: var(--settings-gap-ver) var(--settings-gap-hor);
+}
+@media (orientation: landscape) and (min-aspect-ratio: 1.2){
+    .start-new-game-div .settings-div{
+        flex: 0;
+        width: 90%;
+        justify-items: center;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            "settings-gameplay settings-players";
+    }
+}
+
+.start-new-game-div .settings-gameplay-div{
+    grid-area: settings-gameplay;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
-        "num-of-players extended-mode"
-        "player-x-name player-x-name"
-        "player-o-name player-o-name"
-        "gameboard-size gameboard-size";
-
+        "gameboard-size gameboard-size"
+        "num-of-players extended-mode";
+    align-items: center;
+    justify-content: center;
+    gap: var(--settings-gap-ver) var(--settings-gap-hor);
+}
+.start-new-game-div .settings-players-div{
+    grid-area: settings-players;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+        "player-x-name"
+        "player-o-name";
     align-items: center;
     justify-content: center;
     gap: var(--settings-gap-ver) var(--settings-gap-hor);

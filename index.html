@@ -25,53 +25,56 @@
     <main>
         <div class="start-new-game-div">
             <div class='settings-div'>
-                <div class="input-div">
-                    <label for="input-num-of-players">players</label>
-                    <fieldset id="input-num-of-players" class="radio-input-fieldset">
-                        <input type="radio" value="1" id="input-num-of-players-1" name="input-num-of-players" checked>
-                        <label for="input-num-of-players-1">1</label>
-                        <input type="radio" value="2" id="input-num-of-players-2" name="input-num-of-players">
-                        <label for="input-num-of-players-2">2</label>
-                    </fieldset>
-                </div>
-
-                <div class="input-div">
-                    <label for="input-player-x-name">player <div class="icon-mask x"></div></label>
-                    <input id="input-player-x-name" type="text" placeholder="Player 1" maxlength="12">
-                </div>
-                <div class="input-div">
-                    <label for="input-player-o-name">player <div class="icon-mask o"></div></label>
-                    <input id="input-player-o-name" type="text" placeholder="Player 2" maxlength="12">
-                    <div class="input-div input-div-hor input-div-ai-skill-level">
-                        <label for="input-ai-skill-level">skill level</label>
-                        <input id="input-ai-skill-level" type="range" min=0 max=2 step=1 value=2>
+                <div class="settings-gameplay-div">
+                    <div class="input-div">
+                        <label for="input-gameboard-size">gameboard size</label>
+                        <fieldset id="input-gameboard-size" class="radio-input-fieldset">
+                            <input type="radio" value="3" id="input-gameboard-size-3x3" name="input-gameboard-size" checked>
+                            <label for="input-gameboard-size-3x3">3×3</label>
+                            <input type="radio" value="4" id="input-gameboard-size-4x4" name="input-gameboard-size">
+                            <label for="input-gameboard-size-4x4">4×4</label>
+                            <input type="radio" value="5" id="input-gameboard-size-5x5" name="input-gameboard-size">
+                            <label for="input-gameboard-size-5x5">5×5</label>
+                            <input type="radio" value="6" id="input-gameboard-size-6x6" name="input-gameboard-size">
+                            <label for="input-gameboard-size-6x6">6×6</label>
+                        </fieldset>
+                    </div>
+    
+                    <div class="input-div">
+                        <label for="input-num-of-players">players</label>
+                        <fieldset id="input-num-of-players" class="radio-input-fieldset">
+                            <input type="radio" value="1" id="input-num-of-players-1" name="input-num-of-players" checked>
+                            <label for="input-num-of-players-1">1</label>
+                            <input type="radio" value="2" id="input-num-of-players-2" name="input-num-of-players">
+                            <label for="input-num-of-players-2">2</label>
+                        </fieldset>
+                    </div>
+    
+                    <div class="input-div">
+                        <label for="input-gameboard-extended-mode">extended mode</label>
+                        <fieldset id="input-gameboard-extended-mode" class="radio-input-fieldset">
+                            <input type="radio" value="0" id="input-gameboard-extended-mode-false" name="input-gameboard-extended-mode" checked>
+                            <label for="input-gameboard-extended-mode-false">no</label>
+                            <input type="radio" value="1" id="input-gameboard-extended-mode-true" name="input-gameboard-extended-mode">
+                            <label for="input-gameboard-extended-mode-true">yes</label>
+                        </fieldset>
                     </div>
                 </div>
 
-                <div class="input-div">
-                    <label for="input-gameboard-size">gameboard size</label>
-                    <fieldset id="input-gameboard-size" class="radio-input-fieldset">
-                        <input type="radio" value="3" id="input-gameboard-size-3x3" name="input-gameboard-size" checked>
-                        <label for="input-gameboard-size-3x3">3×3</label>
-                        <input type="radio" value="4" id="input-gameboard-size-4x4" name="input-gameboard-size">
-                        <label for="input-gameboard-size-4x4">4×4</label>
-                        <input type="radio" value="5" id="input-gameboard-size-5x5" name="input-gameboard-size">
-                        <label for="input-gameboard-size-5x5">5×5</label>
-                        <input type="radio" value="6" id="input-gameboard-size-6x6" name="input-gameboard-size">
-                        <label for="input-gameboard-size-6x6">6×6</label>
-                    </fieldset>
+                <div class="settings-players-div">
+                    <div class="input-div">
+                        <label for="input-player-x-name">player <div class="icon-mask x"></div></label>
+                        <input id="input-player-x-name" type="text" placeholder="Player 1" maxlength="12">
+                    </div>
+                    <div class="input-div">
+                        <label for="input-player-o-name">player <div class="icon-mask o"></div></label>
+                        <input id="input-player-o-name" type="text" placeholder="Player 2" maxlength="12">
+                        <div class="input-div input-div-hor input-div-ai-skill-level">
+                            <label for="input-ai-skill-level">skill level</label>
+                            <input id="input-ai-skill-level" type="range" min=0 max=2 step=1 value=2>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="input-div">
-                    <label for="input-gameboard-extended-mode">extended mode</label>
-                    <fieldset id="input-gameboard-extended-mode" class="radio-input-fieldset">
-                        <input type="radio" value="0" id="input-gameboard-extended-mode-false" name="input-gameboard-extended-mode" checked>
-                        <label for="input-gameboard-extended-mode-false">no</label>
-                        <input type="radio" value="1" id="input-gameboard-extended-mode-true" name="input-gameboard-extended-mode">
-                        <label for="input-gameboard-extended-mode-true">yes</label>
-                    </fieldset>
-                </div>
-
             </div>
             <div class='button-div'>
                 <button class="start-new-game-btn">PLAY</button>
