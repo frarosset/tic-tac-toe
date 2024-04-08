@@ -200,6 +200,10 @@ function createGameboard(size, emptyCellValue='',winLen = 0){
         return size;
     }
 
+    let getWinLen = function(){
+        return winLen;
+    }
+
     /* Move methods */
     const _isMoveAllowed = function(row,column){
         return  0 <= row && row < size &&
@@ -401,7 +405,7 @@ if (score) console.log('ForkScore',player.isHuman()?'(Opponent)':'(AI)',cell.get
         return forkingCells.length>0 ? forkingCells : potentialWinCells;
     };
 
-    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,getEmptyCells,unmarkMove,getTerminalCondition, getSize, getAllPotentialWinScoreAfterMove, getAllPotentialForkScoreAfterMove};
+    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,getEmptyCells,unmarkMove,getTerminalCondition, getSize, getWinLen, getAllPotentialWinScoreAfterMove, getAllPotentialForkScoreAfterMove};
 }
 
 // This factory function handles the gameboard's cell functionality
@@ -491,7 +495,15 @@ function createAIPlayer(id, name="AI", value, skillLevel){
 
     function setOpponent(opponentToSet){
         opponent = opponentToSet;
+        minMaxTurnInfo.min.player = opponentToSet;
     };
+
+    const baseScore = 100;
+    const minMaxTurnInfo = {
+        max: {player: player, fcn: Math.max, worstScore: -baseScore},
+        min: {player: opponent,   fcn: Math.min, worstScore:  baseScore}
+    };
+    let minMaxNodesMap = new Map();
 
 
     let getRandomMove = function(gameboard){
@@ -547,9 +559,89 @@ function createAIPlayer(id, name="AI", value, skillLevel){
         return getRandomMove(gameboard);
     };
 
-    let getBestMove = function(gameboard){
-        // todo: minmax  
-    };
+
+    // getBestMove use minmax algorithm the find the optimal best move
+    // such move is sub-optimal if a maxDepth is specified
+    // The implementation is based on: https://alialaa.com/blog/tic-tac-toe-js-minimax
+    let getBestMove = function(gameboard, maxDepth=-1, isMaximizing=true, depth=0){
+        // On MAIN CALL (ie, at depth 0, and not on recursion call)
+        if (depth==0){
+            minMaxNodesMap.clear();
+            console.log({maxDepth}); // todo: limit depth
+        }
+
+        // Ending condition: either there is a winner, or the board is full, or the max depth is reached
+        // Return the heuristic value of this gameboard 
+        let terminalCondition = gameboard.getTerminalCondition();
+        if (terminalCondition){
+            let winningPlayer = terminalCondition.getPlayer();
+            if (!winningPlayer){
+                // no winner, but the gameboard is full: tie
+                return 0;
+            } else if (winningPlayer.getPlayerValue() === value){
+                // The winner is this AI player (maximizing player)
+                return baseScore - depth;
+            } else {
+                // The winner is the opponent (minimizer player)
+                return -baseScore + depth;
+            }
+        } else if (depth===maxDepth){
+            // The gameboard has no winner and is not full,
+            // but the maximum depth of the exploration tree is reached
+            //console.log('maxdepth')
+            return 0; // todo: heuristic
+        }
+        
+        //-------------------------------------------------------------------------------
+        
+        // Get info on the current turn: this avoids duplicating code for minimizing and maximizing players
+        let currentTurnInfo = isMaximizing ? minMaxTurnInfo.max : minMaxTurnInfo.min;
+
+        //Initialize best to the lowest (MAX player) / highest (MIN player) possible value
+        let best = currentTurnInfo.worstScore;
+        
+        // Loop through all empty cells
+        let emptyCellsArr = [...gameboard.getEmptyCells().values()];
+    
+        emptyCellsArr.forEach((cell) => {
+            let r = cell.getCellRow();
+            let c = cell.getCellColumn();
+
+            // The move is always valid
+            gameboard.makeMove(r,c,currentTurnInfo.player);
+
+            //Recursively call getBestMove with the other player (using !isMaximizing) and depth incremented by 1
+            const nodeValue = getBestMove(gameboard, maxDepth, !isMaximizing, depth + 1);
+
+            //Updating best value using Math.max (MAX player) / Math.min (MIN player)
+            //The correct function is retrieved from currentTurnInfo.fcn
+            best = currentTurnInfo.fcn(best, nodeValue);
+
+            //if (depth <2) {gameboard.printGameboard();console.log(best,nodeValue)};
+
+            // Restore the cell
+            gameboard.unmarkMove(r,c,currentTurnInfo.player);
+
+            // On MAIN CALL: map each heuristic value with the cell the AI would move
+            if (depth == 0) {
+                if (minMaxNodesMap.has(nodeValue))
+                    minMaxNodesMap.get(nodeValue).push(cell.getCellId())
+                else
+                    minMaxNodesMap.set(nodeValue, [cell.getCellId()]);
+            }
+        });
+  
+        //-------------------------------------------------------------------------------
+
+        // On MAIN CALL: return the index of the best move (or a random one, if there are multiple of them)
+        if (depth == 0) {
+            let bestMoves = minMaxNodesMap.get(best);
+            console.log({allScores: [...minMaxNodesMap.keys()],best,bestMoves});
+            return commonUtilities.randomItemInArray(bestMoves);
+        }
+        // On RECURSIVE call: return the heuristic value for next calculation
+        return best;
+    }
 
     let getAIMove = function(gameboard){
         // skillLevel 0. Novice AI, totally random move
@@ -558,8 +650,18 @@ function createAIPlayer(id, name="AI", value, skillLevel){
         // skillLevel 3. Phases: todo
         // skillLevel 4. Proficient AI, proactive player: immediate win or immediate block or fork or random move
         // skillLevel 5. Advanced AI, proactive player: immediate win or immediate block or fork or block fork or random move
+        // skillLevel 6. Expert AI, uses minmax with depth limited to winLen to make it not perfect and beatable.
+        // skillLevel 7. Master AI, uses minmax with full depth (at least for the 3x3 grid... 
+        //               on larger boards the max depth might be reduced for computational reasons).
+        //               In optimal conditions (when using full depth), it is unbeatable.
+        
         if (skillLevel <=5)
             return getHeuristicMove_skillLevelFrom0to5(gameboard,skillLevel);
+        else if (skillLevel==6)
+            return getBestMove(gameboard,gameboard.getWinLen());
+        else
+            return getBestMove(gameboard);
+
     };
 
     return {...player,getAIMove, setOpponent};
