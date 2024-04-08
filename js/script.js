@@ -333,23 +333,75 @@ function createGameboard(size, emptyCellValue='',winLen = 0){
 
         unmarkMove(cell.getCellRow(),cell.getCellColumn(),player);
 
+if (score) console.log('WinScore',player.isHuman()?'(Opponent)':'(AI)', cell.getCellId(),score); // debug
+
         return score;
     };
 
-    const getAllPotentialWinScoreAfterMove = function(player){
+    let getPotentialForkScoreAfterMove = function(cell,player){
+        // Make the move (temporarly marking the cell)
+        makeMove(cell.getCellRow(),cell.getCellColumn(),player);
+
+        // Check if the ai user could win on next move, to see if some immediate win are generated
+        // Score: number of winning combinations after a move
+        // - A 1 score, is a potential win on the next turn of the player, 
+        //   that however can be blocked by the opponent in the turn in between
+        // - A >1 score, is a certain win on the next turn of the player,
+        //   beacause the opponent can only block one of them in the turn in between
+             
+        let score = getAllPotentialWinScoreAfterMove(player).length;
+
+        unmarkMove(cell.getCellRow(),cell.getCellColumn(),player);
+
+if (score) console.log('ForkScore',player.isHuman()?'(Opponent)':'(AI)',cell.getCellId(),score); // debug
+
+        return score;
+    };
+
+    const getAllPotentialWinScoreAfterMove = function(player, getBestScoreOnly=false){
         let winningCells = [];
         let emptyCellsArr = [...emptyCells.values()];
+        let bestScore = 1; // a 0 score is not a win
     
         emptyCellsArr.forEach((cell) => {
             // Check if the player can win
-            if (getPotentialWinScoreAfterMove(cell,player))
+            let  score = getPotentialWinScoreAfterMove(cell,player);
+            
+            // reset the cells if a better score is found
+            if (getBestScoreOnly){
+                if(score>bestScore){
+                    bestScore = score;
+                    winningCells = [cell];
+                } else if (score==bestScore){
+                    winningCells.push(cell);
+                }
+            } else if (score>0){
                 winningCells.push(cell);
+            }
         });
-    
         return winningCells;
     };
 
-    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,getEmptyCells,unmarkMove,getTerminalCondition, getSize, getPotentialWinScoreAfterMove, getAllPotentialWinScoreAfterMove};
+    const getAllPotentialForkScoreAfterMove = function(player, getForkScoreOnly=false){
+        let potentialWinCells = []; // with score=1, see getPotentialForkScoreAfterMove
+        let forkingCells = []; // with score>1
+        let emptyCellsArr = [...emptyCells.values()];
+    
+        emptyCellsArr.forEach((cell) => {
+            let  score = getPotentialForkScoreAfterMove(cell,player);
+            // Check if the player can fork
+            if (score==1 && !getForkScoreOnly)
+                potentialWinCells.push(cell);
+            else if (score>1)
+                forkingCells.push(cell);
+        });
+
+        // if there are forking cells, return their array to secure a win, 
+        // otherwise, return the array of potential win cells (in 2 moves), which are not a guarantee though
+        return forkingCells.length>0 ? forkingCells : potentialWinCells;
+    };
+
+    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,getEmptyCells,unmarkMove,getTerminalCondition, getSize, getAllPotentialWinScoreAfterMove, getAllPotentialForkScoreAfterMove};
 }
 
 // This factory function handles the gameboard's cell functionality
@@ -433,7 +485,7 @@ function createAIPlayer(id, name="AI", value, skillLevel){
     let opponent = null;
 
     // Override isHuman method
-    const isHuman = function(){
+    player.isHuman = function(){
         return false;
     };
 
@@ -453,7 +505,7 @@ function createAIPlayer(id, name="AI", value, skillLevel){
         // else, make a random move.
 
         // Check if the ai user can win
-        let winningCells = gameboard.getAllPotentialWinScoreAfterMove(player);
+        let winningCells = gameboard.getAllPotentialWinScoreAfterMove(player,true); // get best score
         if (winningCells.length)
             return commonUtilities.randomItemInArray(winningCells).getCellId();
 
@@ -467,15 +519,71 @@ function createAIPlayer(id, name="AI", value, skillLevel){
         // else, make a random move.
 
         // Check if the ai user can win
-        let winningCells = gameboard.getAllPotentialWinScoreAfterMove(player);
+        let winningCells = gameboard.getAllPotentialWinScoreAfterMove(player,true); // get best score move
         if (winningCells.length)
             return commonUtilities.randomItemInArray(winningCells).getCellId();
 
         // Check if the opponent can win
-        let blockingCells = gameboard.getAllPotentialWinScoreAfterMove(opponent);
+        let blockingCells = gameboard.getAllPotentialWinScoreAfterMove(opponent,true); // get best score move
         if (blockingCells.length)
             return commonUtilities.randomItemInArray(blockingCells).getCellId();
        
+        // else, return a random move       
+        return getRandomMove(gameboard);
+    };
+
+    let getProactiveWinAndBlockAndForkMove = function(gameboard){
+        // If the ai user can win now, make the move to win,
+        // else if the opponent can win on the next move, make the move to block it,
+        // else if the ai can create a fork opportunity, create it
+        // else, make a random move.
+
+        // Check if the ai user can win
+        let winningCells = gameboard.getAllPotentialWinScoreAfterMove(player,true); // get best score
+        if (winningCells.length)
+            return commonUtilities.randomItemInArray(winningCells).getCellId();
+
+        // Check if the opponent can win
+        let blockingCells = gameboard.getAllPotentialWinScoreAfterMove(opponent,true); // get best score
+        if (blockingCells.length)
+            return commonUtilities.randomItemInArray(blockingCells).getCellId();
+
+        // Check if the ai can fork
+        let forkingCells = gameboard.getAllPotentialForkScoreAfterMove(player);
+        if (forkingCells.length)
+            return commonUtilities.randomItemInArray(forkingCells).getCellId();
+       
+        // else, return a random move       
+        return getRandomMove(gameboard);
+    };
+
+    let getProactiveWinAndBlockAndForkAndBlockForkMove = function(gameboard){
+        // If the ai user can win now, make the move to win,
+        // else if the opponent can win on the next move, make the move to block it,
+        // else if the ai can create a fork opportunity, create it
+        // else if the opponent can create a fork opportunity, block it
+        // else, make a random move.
+
+        // Check if the ai user can win
+        let winningCells = gameboard.getAllPotentialWinScoreAfterMove(player,true); // get best score
+        if (winningCells.length)
+            return commonUtilities.randomItemInArray(winningCells).getCellId();
+            
+        // Check if the opponent can win
+        let blockingCells = gameboard.getAllPotentialWinScoreAfterMove(opponent,true); // get best score
+        if (blockingCells.length)
+            return commonUtilities.randomItemInArray(blockingCells).getCellId();
+
+        // Check if the ai can fork
+        let forkingCells = gameboard.getAllPotentialForkScoreAfterMove(player);
+        if (forkingCells.length)
+            return commonUtilities.randomItemInArray(forkingCells).getCellId();
+
+        // Check if the opponent can fork
+        let forkingBlockCells = gameboard.getAllPotentialForkScoreAfterMove(opponent);
+        if (forkingBlockCells.length)
+            return commonUtilities.randomItemInArray(forkingBlockCells).getCellId();
+
         // else, return a random move       
         return getRandomMove(gameboard);
     };
@@ -487,20 +595,33 @@ function createAIPlayer(id, name="AI", value, skillLevel){
     let getAIMove = function(gameboard){
         switch (skillLevel){
             case 0:
-                // totally random move
+                console.log('Novice')
+                // Novice AI, totally random move
                 return getRandomMove(gameboard);
             case 1:
-                // reactive player: immediate win or random move:
+                console.log('Beginner')
+                // Beginner AI, reactive player: immediate win or random move:
                 return getReactiveWinMove(gameboard);
             case 2:
-                // reactive player: immediate win or immediate block or random move
+                console.log('Intermediate')
+                // Intermediate AI, reactive player: immediate win or immediate block or random move
                 return getReactiveWinAndBlockMove(gameboard);
+
+            case 3:
+                // todo
+            case 4:
+                console.log('Proficient')
+                // proactive player: immediate win or immediate block or fork or random move
+                return getProactiveWinAndBlockAndForkMove(gameboard);
+            case 5:
+                console.log('Advanced')
+                // proactive player: immediate win or immediate block or fork or block fork or random move
+                return getProactiveWinAndBlockAndForkAndBlockForkMove(gameboard);
 
         }
     };
 
-    //isHuman is overwritten: return it after ...player
-    return {...player,getAIMove, setOpponent, isHuman};
+    return {...player,getAIMove, setOpponent};
 }
 
 function createTerminalCondition(player, winningCells){
@@ -1096,7 +1217,7 @@ const displayController = (function() {
         }
     };
 
-    const AIplayerNames = ['Novice AI','Beginner AI','Intermediate AI'];
+    const AIplayerNames = ['Novice AI','Beginner AI','Intermediate AI','Experienced AI*','Proficient AI*', 'Advanced AI*', 'Expert AI*', 'Master AI*'];
     const setAIplayerName = function(){
         // Check whether player O is human or AI
         let numOfPlayers = DOMUtilities.getCheckedRadioValueAmongDescendants(numOfPlayersInput);
