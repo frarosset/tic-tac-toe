@@ -559,6 +559,20 @@ function createAIPlayer(id, name="AI", value, skillLevel){
         return getRandomMove(gameboard);
     };
 
+    let _getMinMaxMaxDepth = function(gameboard){
+        let maxNodesToExplore = 500000;
+        let numOfEmptyCells = gameboard.getEmptyCells().size;
+        let nextNumOfEmptyCells = numOfEmptyCells;
+        let nextNodesToExplore = numOfEmptyCells;
+        //console.log({nextNumOfEmptyCells,nextNodesToExplore});
+        while (nextNodesToExplore < maxNodesToExplore && nextNumOfEmptyCells>1){
+            nextNumOfEmptyCells--;
+            nextNodesToExplore *= nextNumOfEmptyCells;
+            //console.log({nextNumOfEmptyCells,nextNodesToExplore});
+        }
+        maxDepth = numOfEmptyCells - nextNumOfEmptyCells + 1;
+        return maxDepth;
+    }   
 
     // getBestMove use minmax algorithm the find the optimal best move
     // such move is sub-optimal if a maxDepth is specified
@@ -567,7 +581,10 @@ function createAIPlayer(id, name="AI", value, skillLevel){
         // On MAIN CALL (ie, at depth 0, and not on recursion call)
         if (depth==0){
             minMaxNodesMap.clear();
-            console.log({maxDepth}); // todo: limit depth
+            //console.log({maxDepth});
+            let maxDepthLim = _getMinMaxMaxDepth(gameboard);
+            maxDepth = maxDepth>=0 ? Math.min(maxDepthLim,maxDepth) : maxDepthLim;
+            console.log({maxDepth});
         }
 
         // Ending condition: either there is a winner, or the board is full, or the max depth is reached
@@ -588,7 +605,7 @@ function createAIPlayer(id, name="AI", value, skillLevel){
         } else if (depth===maxDepth){
             // The gameboard has no winner and is not full,
             // but the maximum depth of the exploration tree is reached
-            //console.log('maxdepth')
+            // console.log('maxdepth')
             return 0; // todo: heuristic
         }
         
