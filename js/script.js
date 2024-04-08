@@ -342,7 +342,7 @@ if (score) console.log('WinScore',player.isHuman()?'(Opponent)':'(AI)', cell.get
         // Make the move (temporarly marking the cell)
         makeMove(cell.getCellRow(),cell.getCellColumn(),player);
 
-        // Check if the ai user could win on next move, to see if some immediate win are generated
+        // Check if the ai player could win on next move, to see if some immediate win are generated
         // Score: number of winning combinations after a move
         // - A 1 score, is a potential win on the next turn of the player, 
         //   that however can be blocked by the opponent in the turn in between
@@ -500,91 +500,50 @@ function createAIPlayer(id, name="AI", value, skillLevel){
         return commonUtilities.randomItemInArray(emptyCellsId);
     }
 
-    let getReactiveWinMove = function(gameboard){
-        // If the ai user can win now, make the move to win,
-        // else, make a random move.
+    let getHeuristicMove_skillLevelFrom0to5 = function(gameboard,skillLevel){
+        // Heuristic chosen moves phases:
+        // [1] If the ai player can win now, make the move to win [REACTIVE MOVE],
+        // [2] else if the opponent can win on the next move, make the move to block it [REACTIVE MOVE],
+        // [3] else if the ai can create a fork opportunity, create it [PROACTIVE MOVE],
+        // [4] else if the opponent can create a fork opportunity, block it [PROACTIVE MOVE],
+        // [5] else, make a random move .
+        //
+        // skillLevel 0. Phases: 5
+        // skillLevel 1. Phases: 1 > 5
+        // skillLevel 2. Phases: 1 > 2 > 5
+        // skillLevel 3. Phases: todo
+        // skillLevel 4. Phases: 1 > 2 > 3 > 5
+        // skillLevel 5. Phases: 1 > 2 > 3 > 4 > 5
 
-        // Check if the ai user can win
-        let winningCells = gameboard.getAllPotentialWinScoreAfterMove(player,true); // get best score
-        if (winningCells.length)
-            return commonUtilities.randomItemInArray(winningCells).getCellId();
-
-        // else, return a random move       
-        return getRandomMove(gameboard);
-    };
-
-    let getReactiveWinAndBlockMove = function(gameboard){
-        // If the ai user can win now, make the move to win,
-        // else if the opponent can win on the next move, make the move to block it,
-        // else, make a random move.
-
-        // Check if the ai user can win
-        let winningCells = gameboard.getAllPotentialWinScoreAfterMove(player,true); // get best score move
-        if (winningCells.length)
-            return commonUtilities.randomItemInArray(winningCells).getCellId();
-
-        // Check if the opponent can win
-        let blockingCells = gameboard.getAllPotentialWinScoreAfterMove(opponent,true); // get best score move
-        if (blockingCells.length)
-            return commonUtilities.randomItemInArray(blockingCells).getCellId();
-       
-        // else, return a random move       
-        return getRandomMove(gameboard);
-    };
-
-    let getProactiveWinAndBlockAndForkMove = function(gameboard){
-        // If the ai user can win now, make the move to win,
-        // else if the opponent can win on the next move, make the move to block it,
-        // else if the ai can create a fork opportunity, create it
-        // else, make a random move.
-
-        // Check if the ai user can win
-        let winningCells = gameboard.getAllPotentialWinScoreAfterMove(player,true); // get best score
-        if (winningCells.length)
-            return commonUtilities.randomItemInArray(winningCells).getCellId();
-
-        // Check if the opponent can win
-        let blockingCells = gameboard.getAllPotentialWinScoreAfterMove(opponent,true); // get best score
-        if (blockingCells.length)
-            return commonUtilities.randomItemInArray(blockingCells).getCellId();
-
-        // Check if the ai can fork
-        let forkingCells = gameboard.getAllPotentialForkScoreAfterMove(player);
-        if (forkingCells.length)
-            return commonUtilities.randomItemInArray(forkingCells).getCellId();
-       
-        // else, return a random move       
-        return getRandomMove(gameboard);
-    };
-
-    let getProactiveWinAndBlockAndForkAndBlockForkMove = function(gameboard){
-        // If the ai user can win now, make the move to win,
-        // else if the opponent can win on the next move, make the move to block it,
-        // else if the ai can create a fork opportunity, create it
-        // else if the opponent can create a fork opportunity, block it
-        // else, make a random move.
-
-        // Check if the ai user can win
-        let winningCells = gameboard.getAllPotentialWinScoreAfterMove(player,true); // get best score
-        if (winningCells.length)
-            return commonUtilities.randomItemInArray(winningCells).getCellId();
+        if (skillLevel>=1){
+            // Phase 1: Check if the ai player can win
+            let winningCells = gameboard.getAllPotentialWinScoreAfterMove(player,true); // get best score move
+            if (winningCells.length)
+                return commonUtilities.randomItemInArray(winningCells).getCellId();
             
-        // Check if the opponent can win
-        let blockingCells = gameboard.getAllPotentialWinScoreAfterMove(opponent,true); // get best score
-        if (blockingCells.length)
-            return commonUtilities.randomItemInArray(blockingCells).getCellId();
+            if (skillLevel>=2){    
+                // Phase 2: Check if the opponent can win
+                let blockingCells = gameboard.getAllPotentialWinScoreAfterMove(opponent,true); // get best score move
+                if (blockingCells.length)
+                    return commonUtilities.randomItemInArray(blockingCells).getCellId();
 
-        // Check if the ai can fork
-        let forkingCells = gameboard.getAllPotentialForkScoreAfterMove(player);
-        if (forkingCells.length)
-            return commonUtilities.randomItemInArray(forkingCells).getCellId();
+                if (skillLevel>=4){
+                    // Phase 3: Check if the ai can fork
+                    let forkingCells = gameboard.getAllPotentialForkScoreAfterMove(player);
+                    if (forkingCells.length)
+                        return commonUtilities.randomItemInArray(forkingCells).getCellId();
 
-        // Check if the opponent can fork
-        let forkingBlockCells = gameboard.getAllPotentialForkScoreAfterMove(opponent);
-        if (forkingBlockCells.length)
-            return commonUtilities.randomItemInArray(forkingBlockCells).getCellId();
+                    if (skillLevel>=5){    
+                        // Phase 4: Check if the opponent can fork
+                        let forkingBlockCells = gameboard.getAllPotentialForkScoreAfterMove(opponent);
+                        if (forkingBlockCells.length)
+                            return commonUtilities.randomItemInArray(forkingBlockCells).getCellId();
+                    }
+                }
+            }
+        }
 
-        // else, return a random move       
+        // Phase 5: else, return a random move       
         return getRandomMove(gameboard);
     };
 
@@ -593,32 +552,14 @@ function createAIPlayer(id, name="AI", value, skillLevel){
     };
 
     let getAIMove = function(gameboard){
-        switch (skillLevel){
-            case 0:
-                console.log('Novice')
-                // Novice AI, totally random move
-                return getRandomMove(gameboard);
-            case 1:
-                console.log('Beginner')
-                // Beginner AI, reactive player: immediate win or random move:
-                return getReactiveWinMove(gameboard);
-            case 2:
-                console.log('Intermediate')
-                // Intermediate AI, reactive player: immediate win or immediate block or random move
-                return getReactiveWinAndBlockMove(gameboard);
-
-            case 3:
-                // todo
-            case 4:
-                console.log('Proficient')
-                // proactive player: immediate win or immediate block or fork or random move
-                return getProactiveWinAndBlockAndForkMove(gameboard);
-            case 5:
-                console.log('Advanced')
-                // proactive player: immediate win or immediate block or fork or block fork or random move
-                return getProactiveWinAndBlockAndForkAndBlockForkMove(gameboard);
-
-        }
+        // skillLevel 0. Novice AI, totally random move
+        // skillLevel 1. Beginner AI, reactive player: immediate win or random move
+        // skillLevel 2. Intermediate AI, reactive player: immediate win or immediate block or random move
+        // skillLevel 3. Phases: todo
+        // skillLevel 4. Proficient AI, proactive player: immediate win or immediate block or fork or random move
+        // skillLevel 5. Advanced AI, proactive player: immediate win or immediate block or fork or block fork or random move
+        if (skillLevel <=5)
+            return getHeuristicMove_skillLevelFrom0to5(gameboard,skillLevel);
     };
 
     return {...player,getAIMove, setOpponent};
@@ -1217,7 +1158,7 @@ const displayController = (function() {
         }
     };
 
-    const AIplayerNames = ['Novice AI','Beginner AI','Intermediate AI','Experienced AI*','Proficient AI*', 'Advanced AI*', 'Expert AI*', 'Master AI*'];
+    const AIplayerNames = ['Novice AI','Beginner AI','Intermediate AI','Experienced AI*','Proficient AI', 'Advanced AI', 'Expert AI*', 'Master AI*'];
     const setAIplayerName = function(){
         // Check whether player O is human or AI
         let numOfPlayers = DOMUtilities.getCheckedRadioValueAmongDescendants(numOfPlayersInput);
