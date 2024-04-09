@@ -500,8 +500,12 @@ function createAIPlayer(id, name="AI", value, skillLevel){
 
     const baseScore = 100;
     const minMaxTurnInfo = {
-        max: {player: player, fcn: Math.max, worstScore: -baseScore},
-        min: {player: opponent,   fcn: Math.min, worstScore:  baseScore}
+        max: {player: player,   fcn: Math.max, worstScore: -baseScore,
+              updateAlfaBeta: (best, alpha, beta) => [Math.max(alpha, best), beta],
+              getAlfaBetaCondition: (best, alpha, beta) => (best>=beta)},
+        min: {player: opponent, fcn: Math.min, worstScore:  baseScore, 
+              updateAlfaBeta: (best, alpha, beta) => [alpha, Math.min(beta, best)],
+              getAlfaBetaCondition: (best, alpha, beta) => (best<=alpha)}
     };
     let minMaxNodesMap = new Map();
 
@@ -575,17 +579,75 @@ function createAIPlayer(id, name="AI", value, skillLevel){
     }   
 
     // getBestMove use minmax algorithm the find the optimal best move
-    // such move is sub-optimal if a maxDepth is specified
+    // Such move is sub-optimal if a maxDepth smaller than the maximum depth is specified
     // The implementation is based on: https://alialaa.com/blog/tic-tac-toe-js-minimax
-    let getBestMove = function(gameboard, maxDepth=-1, isMaximizing=true, depth=0){
-        // On MAIN CALL (ie, at depth 0, and not on recursion call)
-        if (depth==0){
-            minMaxNodesMap.clear();
-            //console.log({maxDepth});
-            let maxDepthLim = _getMinMaxMaxDepth(gameboard);
-            maxDepth = maxDepth>=0 ? Math.min(maxDepthLim,maxDepth) : maxDepthLim;
-            console.log({maxDepth});
+    // Also, alpha-beta pruning is implemented to improve performance.
+    // See, eg, https://towardsdatascience.com/algorithms-revisited-part-7-decision-trees-alpha-beta-pruning-9b711b6bf109
+    // As getBestMove returns the best move, alpha-beta pruning is not performed at depth 0 (=on main call), to avoid losing solutions
+    // Then, a recursive method  minMaxSearch() is implemented, to handle the alpha-beta pruning (indeed,
+    // in that case, only the gameboard score is important)
+    // see https://stackoverflow.com/questions/31429974/alphabeta-pruning-alpha-equals-or-greater-than-beta-why-equals
+    // The implementation of the alpha-beta pruning is based on: https://github.com/aimacode/aima-java/blob/AIMA3e/aima-core/src/main/java/aima/core/search/adversarial/AlphaBetaSearch.java#L66
+
+    let getBestMove = function(gameboard, maxDepth=-1){
+        // MAIN CALL (ie, at depth 0, and not on recursion call)
+
+        // Init nodesMap
+        minMaxNodesMap.clear();
+
+        // Get max search depth
+        let maxDepthLim = _getMinMaxMaxDepth(gameboard);
+        maxDepth = maxDepth>=0 ? Math.min(maxDepthLim,maxDepth) : maxDepthLim;
+        console.log({maxDepth});
+
+        const depth = 0; // current depth
+        //-------------------------------------------------------------------------------
+        
+        // Get info on the current turn: this avoids duplicating code for minimizing and maximizing players
+        const isMaximizing = true;
+        const currentTurnInfo = minMaxTurnInfo.max;
+
+        //Initialize best to the lowest (MAX player) / highest (MIN player) possible value
+        let best = currentTurnInfo.worstScore;
+        const alpha = minMaxTurnInfo.max.worstScore;
+        const beta = minMaxTurnInfo.min.worstScore;
+        
+        // Loop through all empty cells
+        let emptyCellsArr = [...gameboard.getEmptyCells().values()];
+        for (let cell of emptyCellsArr){ 
+            let r = cell.getCellRow();
+            let c = cell.getCellColumn();
+
+            // The move is always valid
+            gameboard.makeMove(r,c,currentTurnInfo.player);
+
+            //Recursively call minMaxSearch with the other player (using !isMaximizing) and depth incremented by 1
+            const nodeValue = minMaxSearch(gameboard, maxDepth, !isMaximizing, depth + 1, alpha, beta);
+
+            //Updating best value using Math.max (MAX player) / Math.min (MIN player)
+            //The correct function is retrieved from currentTurnInfo.fcn
+            best = currentTurnInfo.fcn(best, nodeValue);
+            // gameboard.printGameboard();console.log(best,nodeValue);
+
+            // Restore the cell
+            gameboard.unmarkMove(r,c,currentTurnInfo.player);
+            
+            // On MAIN CALL: map each heuristic value with the cell the AI would move
+            if (minMaxNodesMap.has(nodeValue))
+                minMaxNodesMap.get(nodeValue).push(cell.getCellId())
+            else
+                minMaxNodesMap.set(nodeValue, [cell.getCellId()]);
         }
+  
+        //-------------------------------------------------------------------------------
+
+        // On MAIN CALL: return the index of the best move (or a random one, if there are multiple of them)
+        let bestMoves = minMaxNodesMap.get(best);
+        console.log([...minMaxNodesMap.keys()],best,bestMoves);
+        return commonUtilities.randomItemInArray(bestMoves);
+    }
+
+    let minMaxSearch = function(gameboard, maxDepth=-1, isMaximizing=true, depth=0, alpha=minMaxTurnInfo.max.worstScore, beta=minMaxTurnInfo.min.worstScore){
 
         // Ending condition: either there is a winner, or the board is full, or the max depth is reached
         // Return the heuristic value of this gameboard 
@@ -605,7 +667,6 @@ function createAIPlayer(id, name="AI", value, skillLevel){
         } else if (depth===maxDepth){
             // The gameboard has no winner and is not full,
             // but the maximum depth of the exploration tree is reached
-            // console.log('maxdepth')
             return 0; // todo: heuristic
         }
         
@@ -614,13 +675,12 @@ function createAIPlayer(id, name="AI", value, skillLevel){
         // Get info on the current turn: this avoids duplicating code for minimizing and maximizing players
         let currentTurnInfo = isMaximizing ? minMaxTurnInfo.max : minMaxTurnInfo.min;
 
-        //Initialize best to the lowest (MAX player) / highest (MIN player) possible value
+        //Initialize best to the lowest (MAX player) / highest (MIN player) possible value for this gameboard
         let best = currentTurnInfo.worstScore;
         
         // Loop through all empty cells
         let emptyCellsArr = [...gameboard.getEmptyCells().values()];
-    
-        emptyCellsArr.forEach((cell) => {
+        for (let cell of emptyCellsArr){ 
             let r = cell.getCellRow();
             let c = cell.getCellColumn();
 
@@ -628,7 +688,7 @@ function createAIPlayer(id, name="AI", value, skillLevel){
             gameboard.makeMove(r,c,currentTurnInfo.player);
 
             //Recursively call getBestMove with the other player (using !isMaximizing) and depth incremented by 1
-            const nodeValue = getBestMove(gameboard, maxDepth, !isMaximizing, depth + 1);
+            const nodeValue = minMaxSearch(gameboard, maxDepth, !isMaximizing, depth + 1, alpha, beta);
 
             //Updating best value using Math.max (MAX player) / Math.min (MIN player)
             //The correct function is retrieved from currentTurnInfo.fcn
@@ -639,23 +699,24 @@ function createAIPlayer(id, name="AI", value, skillLevel){
             // Restore the cell
             gameboard.unmarkMove(r,c,currentTurnInfo.player);
 
-            // On MAIN CALL: map each heuristic value with the cell the AI would move
-            if (depth == 0) {
-                if (minMaxNodesMap.has(nodeValue))
-                    minMaxNodesMap.get(nodeValue).push(cell.getCellId())
-                else
-                    minMaxNodesMap.set(nodeValue, [cell.getCellId()]);
+            // ------------------------------
+
+            // Alpha-beta pruning
+            // alpha: best value for the maximizer at that level or below. The higher the better. 
+            // beta:  best value for the minimizer at that level or below. The lower the better.
+            // The actual expressions based on max or min player are retrieved from currentTurnInfo
+            if (currentTurnInfo.getAlfaBetaCondition(best, alpha, beta)){ //(alpha >= beta
+                //console.log('Cutoff at ',depth,'/',maxDepth, {alpha,best,beta,isMaximizing});
+                break; // cutoff
             }
-        });
+
+            //console.log({alpha,beta,isMaximizing,depth});
+            [alpha, beta] = currentTurnInfo.updateAlfaBeta(best, alpha, beta);
+            //console.log({alpha,beta});
+        }
   
         //-------------------------------------------------------------------------------
 
-        // On MAIN CALL: return the index of the best move (or a random one, if there are multiple of them)
-        if (depth == 0) {
-            let bestMoves = minMaxNodesMap.get(best);
-            console.log({allScores: [...minMaxNodesMap.keys()],best,bestMoves});
-            return commonUtilities.randomItemInArray(bestMoves);
-        }
         // On RECURSIVE call: return the heuristic value for next calculation
         return best;
     }
