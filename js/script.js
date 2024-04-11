@@ -196,6 +196,27 @@ function createGameboard(size, emptyCellValue='',winLen = 0){
         return lines;
     })();
 
+    let gameboardSubLines = (function(){
+        let subLines = [];
+                   
+        // for each line
+        for (line of gameboardLines){
+            //console.log(`Line: [${line.map(cell => cell.getCellId())}]`);
+    
+            // for each possible subline (there are more than one when winLen<size)
+            for (let i=0; i<line.length-winLen+1; i++){
+                let subLine = line.slice(i,i+winLen);
+                subLines.push(subLine);
+                //console.log(`  subline: [${subLine.map(cell => cell.getCellId())}]`);
+            }
+        }
+        return subLines;
+    })();
+
+
+
+
+
     let getSize = function(){
         return size;
     }
@@ -405,7 +426,69 @@ if (score) console.log('ForkScore',player.isHuman()?'(Opponent)':'(AI)',cell.get
         return forkingCells.length>0 ? forkingCells : potentialWinCells;
     };
 
-    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,getEmptyCells,unmarkMove,getTerminalCondition, getSize, getWinLen, getAllPotentialWinScoreAfterMove, getAllPotentialForkScoreAfterMove};
+    // -------------------------------------------------------------------
+
+    // Gameboard heuristic score
+    // The following 3 methods implement the heuristic score of the current gameboard.
+    // The heuristic score is based on: https://stackoverflow.com/questions/77446399/how-to-properly-implement-minimax-ai-for-tic-tac-toe
+    // For each line (row, column, diagonal), consider the winning opportunities, ie, lines in which no opponent mark is set.
+    // For each winning opportunity line, cound the number of marks of the current player in there.
+    // Then, the heuristic score (for a given player) is the sum of the square of these values.
+    // The overall gameboard heuristic score is the heuristic score of the current player minus the one of the opponent.
+    // Note that empty lines are ignored, as they are opportunities for both players.
+    // Also, note that if winLen<size, there can be more than one 'sub-line' in each line, so each of them is considered as a separate one.
+
+    const getLineHeuristicScoreForPlayer = function(line, player){
+        let playerVal = player.getPlayerValue();
+        //let str = `      sl: [${line.map(cell => cell.getCellValue())}]`;
+
+        // Get the number of marked cells
+        let numOfMarkedCellsForPotentialWin = 0;
+        for (let cell of line){
+            let cellVal = cell.getCellValue();
+
+            if (cellVal==playerVal) // player mark
+                numOfMarkedCellsForPotentialWin++;
+            else if (cellVal != emptyCellValue){ // opponent mark: no win in this line
+                //console.log(str,' --> NONE');
+                return null;
+            }
+        }
+        //console.log(str,' --> ', numOfMarkedCellsForPotentialWin);
+        return numOfMarkedCellsForPotentialWin;
+    };
+    const getGameboardHeuristicScoreForPlayer = function(player){
+        let score=0;
+        // This score sums the score of all the winning opportunities of the player
+        // A winning opportunity is a line in which no opponent mark is set
+
+        // If winLen==size, the lines are equal to the subLines
+        // If winLen<size, a winning opportunity can occur in each subline (there are 1+ of them in each line)
+        // for each subline
+        for (subLine of gameboardSubLines){
+            //console.log(`    SubLine: [${subLine.map(cell => cell.getCellId())}] = [${subLine.map(cell => cell.getCellValue())}]  ==> ${player.getPlayerValue()}`);
+            
+            let subLineScore = getLineHeuristicScoreForPlayer(subLine, player);
+
+            // The score is null if there is an opponent mark in the subLine
+            if (!subLineScore){
+                continue;
+            }
+            score += subLineScore**2;
+
+            //console.log('    SUBLINESCORE:',subLineScore,subLineScore**2);
+        }
+        //console.log(`  GAMEBOARD SCORE (${player.getPlayerName()}): ${score}`);
+        return score;
+    };
+    const getGameboardHeuristicScore = function(player,opponent){
+        // This is the overall score that takes into account both the player and the opponent winning opportunities
+        let score = getGameboardHeuristicScoreForPlayer(player) - getGameboardHeuristicScoreForPlayer(opponent);
+        //console.log(`GAMEBOARD SCORE (TOT): ${score}\n`);
+        return score;
+    };
+
+    return {makeMove, resetGameboard, printGameboard,getArrayOfLinesOfEqualCells,noEmptyCells,getEmptyCells,unmarkMove,getTerminalCondition, getSize, getWinLen, getAllPotentialWinScoreAfterMove, getAllPotentialForkScoreAfterMove,getGameboardHeuristicScore};
 }
 
 // This factory function handles the gameboard's cell functionality
@@ -498,7 +581,7 @@ function createAIPlayer(id, name="AI", value, skillLevel){
         minMaxTurnInfo.min.player = opponentToSet;
     };
 
-    const baseScore = 100;
+    const baseScore = 10**9; // a value sufficiently high such that is is higher than any possible heuristic value for a non-terminal state
     const minMaxTurnInfo = {
         max: {player: player,   fcn: Math.max, worstScore: -baseScore,
               updateAlfaBeta: (best, alpha, beta) => [Math.max(alpha, best), beta],
@@ -611,7 +694,7 @@ function createAIPlayer(id, name="AI", value, skillLevel){
         let best = currentTurnInfo.worstScore;
         const alpha = minMaxTurnInfo.max.worstScore;
         const beta = minMaxTurnInfo.min.worstScore;
-        
+// gameboard.getGameboardHeuristicScore(player,opponent);      
         // Loop through all empty cells
         let emptyCellsArr = [...gameboard.getEmptyCells().values()];
         for (let cell of emptyCellsArr){ 
@@ -648,7 +731,6 @@ function createAIPlayer(id, name="AI", value, skillLevel){
     }
 
     let minMaxSearch = function(gameboard, maxDepth=-1, isMaximizing=true, depth=0, alpha=minMaxTurnInfo.max.worstScore, beta=minMaxTurnInfo.min.worstScore){
-
         // Ending condition: either there is a winner, or the board is full, or the max depth is reached
         // Return the heuristic value of this gameboard 
         let terminalCondition = gameboard.getTerminalCondition();
@@ -667,7 +749,9 @@ function createAIPlayer(id, name="AI", value, skillLevel){
         } else if (depth===maxDepth){
             // The gameboard has no winner and is not full,
             // but the maximum depth of the exploration tree is reached
-            return 0; // todo: heuristic
+            // The the heuristic vale  is unknown yet: use an heuristic
+            //console.log(isMaximizing);gameboard.printGameboard();
+            return gameboard.getGameboardHeuristicScore(player,opponent); // 0
         }
         
         //-------------------------------------------------------------------------------

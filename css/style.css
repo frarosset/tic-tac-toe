@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Questrial&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Questrial&family=Exo+2&display=swap');
 
 :root,
 ::backdrop {
@@ -48,7 +48,7 @@
     --max-width: min(1440px, 100%);
 
     /* Font family */
-    --main-font: 'Century Gothic', 'Questrial', sans-serif;
+    --main-font: 'Century Gothic', "Exo 2",'Questrial', sans-serif;
 
     /* Font sizes */
     /* Fluid font size: see https://matthewjamestaylor.com/responsive-font-size*/
