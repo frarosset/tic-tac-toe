@@ -462,8 +462,7 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
   // Note that empty lines are ignored, as they are opportunities for both players.
   // Also, note that if winLen<size, there can be more than one 'sub-line' in each line, so each of them is considered as a separate one.
 
-  const getLineHeuristicScoreForPlayer = function (line, player) {
-    let playerVal = player.getPlayerValue();
+  const getLineHeuristicSquaredScoreForPlayer = function (line, playerVal) {
     //let str = `      sl: [${line.map(cell => cell.getCellValue())}]`;
 
     // Get the number of marked cells
@@ -477,14 +476,16 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
       else if (cellVal != emptyCellValue) {
         // opponent mark: no win in this line
         //console.log(str,' --> NONE');
-        return null;
+        return 0;
       }
     }
     //console.log(str,' --> ', numOfMarkedCellsForPotentialWin);
-    return numOfMarkedCellsForPotentialWin;
+    return numOfMarkedCellsForPotentialWin ** 2;
   };
+
   const getGameboardHeuristicScoreForPlayer = function (player) {
     let score = 0;
+    let playerVal = player.getPlayerValue();
     // This score sums the score of all the winning opportunities of the player
     // A winning opportunity is a line in which no opponent mark is set
 
@@ -494,19 +495,12 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
     for (subLine of gameboardSubLines) {
       //console.log(`    SubLine: [${subLine.map(cell => cell.getCellId())}] = [${subLine.map(cell => cell.getCellValue())}]  ==> ${player.getPlayerValue()}`);
 
-      let subLineScore = getLineHeuristicScoreForPlayer(subLine, player);
-
-      // The score is null if there is an opponent mark in the subLine
-      if (!subLineScore) {
-        continue;
-      }
-      score += subLineScore ** 2;
-
-      //console.log('    SUBLINESCORE:',subLineScore,subLineScore**2);
+      score += getLineHeuristicSquaredScoreForPlayer(subLine, playerVal);
     }
     //console.log(`  GAMEBOARD SCORE (${player.getPlayerName()}): ${score}`);
     return score;
   };
+
   const getGameboardHeuristicScore = function (player, opponent) {
     // This is the overall score that takes into account both the player and the opponent winning opportunities
     let score =
@@ -766,7 +760,7 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
     let best = currentTurnInfo.worstScore;
     const alpha = minMaxTurnInfo.max.worstScore;
     const beta = minMaxTurnInfo.min.worstScore;
-    // gameboard.getGameboardHeuristicScore(player,opponent);
+
     // Loop through all empty cells
     let emptyCellsArr = [...gameboard.getEmptyCells().values()];
     for (let cell of emptyCellsArr) {
