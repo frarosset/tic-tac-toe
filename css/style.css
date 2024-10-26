@@ -776,9 +776,8 @@ main:not(.info-on) .info-div {
 }
 
 .info-div p {
-  text-wrap: balance;
+  text-wrap: pretty;
   text-align: left;
-  font-variant: small-caps;
   color: var(--info-col);
 }
 
