@@ -1,1249 +1,1292 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Questrial&family=Exo+2&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&family=Questrial&family=Exo+2&display=swap");
 
 :root,
 ::backdrop {
-    /* Colors (palette)*/
-    --col-black:     #0b132b;
-    --col-dark-grey: #1c2541;
-    --col-light-grey:#3a506b;
-    --col-white:     #ecebe4;
+  /* Colors (palette)*/
+  --col-black: #0b132b;
+  --col-dark-grey: #1c2541;
+  --col-light-grey: #3a506b;
+  --col-white: #ecebe4;
 
-    --col-x:         #009ddc;
-    --col-o:         #efa00b;
+  --col-x: #009ddc;
+  --col-o: #efa00b;
 
-    --col-dark:     #a6a6a8; 
-    --col-light:    #cecece;
-    --col-x-dark:   #6d9dc5;
-    --col-x-light:  #8ecae6;
-    --col-o-dark:   #d17b0f;
-    --col-o-light:  #ffc600;
-    /* #6d9dc5,  ddd1c7*/
+  --col-dark: #a6a6a8;
+  --col-light: #cecece;
+  --col-x-dark: #6d9dc5;
+  --col-x-light: #8ecae6;
+  --col-o-dark: #d17b0f;
+  --col-o-light: #ffc600;
+  /* #6d9dc5,  ddd1c7*/
 
-    /* Colors (background)*/
-    --bg-col:                       var(--col-black);
-    --player-info-bg-col:           var(--col-dark-grey);
-    --gameboard-bg-col:             var(--col-black);
-    --gameboard-cell-bg-col:        var(--col-light-grey);
-    --gameboard-cell-bg-col-hover:  var(--col-dark-grey);
-    --gameboard-cell-bg-col-active: var(--col-dark-grey);   
-    --gameboard-cell-bg-col-marked: var(--col-dark-grey);   
-    --round-outcome-bg-col:         var(--col-dark-grey);
-    --info-bg-col:                  var(--col-dark-grey);
-    --settings-box-bg-color:        var(--col-dark-grey);
+  /* Colors (background)*/
+  --bg-col: var(--col-black);
+  --player-info-bg-col: var(--col-dark-grey);
+  --gameboard-bg-col: var(--col-black);
+  --gameboard-cell-bg-col: var(--col-light-grey);
+  --gameboard-cell-bg-col-hover: var(--col-dark-grey);
+  --gameboard-cell-bg-col-active: var(--col-dark-grey);
+  --gameboard-cell-bg-col-marked: var(--col-dark-grey);
+  --round-outcome-bg-col: var(--col-dark-grey);
+  --info-bg-col: var(--col-dark-grey);
+  --settings-box-bg-color: var(--col-dark-grey);
 
-    /* Colors (text/icons)*/
-    --col-txt:                          var(--col-white);
-    --col-txt-alt:                      var(--col-black);
-    --marker-col:                       transparent;
-    --gameboard-cell-border-col-hover:  var(--col-dark-grey);
-    --gameboard-cell-border-col-active: var(--col-light-grey);
-    --focus-visible-outline-col:        var(--col-white);
-    --round-outcome-border-col:         var(--col-light-grey);
-    --info-col:                         var(--col-txt);
+  /* Colors (text/icons)*/
+  --col-txt: var(--col-white);
+  --col-txt-alt: var(--col-black);
+  --marker-col: transparent;
+  --gameboard-cell-border-col-hover: var(--col-dark-grey);
+  --gameboard-cell-border-col-active: var(--col-light-grey);
+  --focus-visible-outline-col: var(--col-white);
+  --round-outcome-border-col: var(--col-light-grey);
+  --info-col: var(--col-txt);
 
-    --info-col-strong: var(--col-white);
-    --info-col-strong-highlight: var(--col-o-light);
+  --info-col-strong: var(--col-white);
+  --info-col-strong-highlight: var(--col-o-light);
 
-   /* Maximum width (including margin) */
-    --max-width: min(1440px, 100%);
+  /* Maximum width (including margin) */
+  --max-width: min(1440px, 100%);
 
-    /* Font family */
-    --main-font: 'Century Gothic', "Exo 2",'Questrial', sans-serif;
+  /* Font family */
+  --main-font: "Century Gothic", "Exo 2", "Questrial", sans-serif;
 
-    /* Font sizes */
-    /* Fluid font size: see https://matthewjamestaylor.com/responsive-font-size*/
-    /* The base (body) text is in the range [16px-25px] and depends on the viewport size */
-    /* It must not depend only on vh/vw/vmin only, for allowing zoom for accessibility*/
-    /* In the link the suggested formula is: calc(15px + 0.390625vw)*/
-    /* In body, 1rem=16px, then 15px=0.9375rem and 25px=1.5625rem */
-    /* The other font sized are relative to this base font */
-    --txt-fontsize:               clamp(1rem,calc(0.9375rem + 0.390625vmin),1.5625rem);
-    --txt-lineheight:             1;
-    --header-h1-fontsize:         1rem;
-    --player-info-name-fontsize:  1rem;
-    --player-info-score-fontsize: 2rem;
-    --player-info-icon-len:       2rem;
+  /* Font sizes */
+  /* Fluid font size: see https://matthewjamestaylor.com/responsive-font-size*/
+  /* The base (body) text is in the range [16px-25px] and depends on the viewport size */
+  /* It must not depend only on vh/vw/vmin only, for allowing zoom for accessibility*/
+  /* In the link the suggested formula is: calc(15px + 0.390625vw)*/
+  /* In body, 1rem=16px, then 15px=0.9375rem and 25px=1.5625rem */
+  /* The other font sized are relative to this base font */
+  --txt-fontsize: clamp(1rem, calc(0.9375rem + 0.390625vmin), 1.5625rem);
+  --txt-lineheight: 1;
+  --header-h1-fontsize: 1rem;
+  --player-info-name-fontsize: 1rem;
+  --player-info-score-fontsize: 2rem;
+  --player-info-icon-len: 2rem;
 
-    --settings-btn-fontsize:            2rem;
-    --header-btn-fontsize:              1rem;
-    --round-outcome-btn-fontsize:       1rem;
-    --round-outcome-text-fontsize:      1.5rem;
-    --round-outcome-subtext-fontsize:   0.8rem;
+  --settings-btn-fontsize: 2rem;
+  --header-btn-fontsize: 1rem;
+  --round-outcome-btn-fontsize: 1rem;
+  --round-outcome-text-fontsize: 1.5rem;
+  --round-outcome-subtext-fontsize: 0.8rem;
 
-    /* Text clamping: number of lines */
+  /* Text clamping: number of lines */
 
-    /*Margins, gaps and paddings (+widths)*/
-    --header-ud-padding: 2vh;
-    --main-ud-padding:   4vh;
-    --main-lr-padding:   5vmin;
-    --main-gap-hor:      1rem;
-    --main-gap-ver:      4vh;
-    --player-info-margin-tb: 2vmin;
+  /*Margins, gaps and paddings (+widths)*/
+  --header-ud-padding: 2vh;
+  --main-ud-padding: 4vh;
+  --main-lr-padding: 5vmin;
+  --main-gap-hor: 1rem;
+  --main-gap-ver: 4vh;
+  --player-info-margin-tb: 2vmin;
 
-    --info-gap: 0.75rem;
-    --info-padding: 1rem;
-    --settings-box-padding: 0.5rem;
+  --info-gap: 0.75rem;
+  --info-padding: 1rem;
+  --settings-box-padding: 0.5rem;
 
-    --game-logo-icon-len: var(--header-h1-fontsize);
+  --game-logo-icon-len: var(--header-h1-fontsize);
 
-    /* LAYOUT1: when screen AR<1.2
+  /* LAYOUT1: when screen AR<1.2
        LAYOUT 2: when screen 1.2<=AR<1.6
        LAYOUT 3: when screen AR>=1.6
     */
-    --player-info-max-width-layout1: 100%;
-    --player-info-max-width-layout2: 12rem;
-    --player-info-max-width-layout3: var(--player-info-max-width-layout2);
-    /* --player-info-col-width-layout1: 100%; /*not used */
-    --player-info-col-width-layout2: 0.5fr; 
-    --player-info-col-width-layout3: 0.75fr;
+  --player-info-max-width-layout1: 100%;
+  --player-info-max-width-layout2: 12rem;
+  --player-info-max-width-layout3: var(--player-info-max-width-layout2);
+  /* --player-info-col-width-layout1: 100%; /*not used */
+  --player-info-col-width-layout2: 0.5fr;
+  --player-info-col-width-layout3: 0.75fr;
 
-    --player-info-border:   4px;
-    --player-info-padding:  0.5rem;
-    --player-info-gap-score:2px;
-    --player-info-gap-icon: var(--player-info-padding);
+  --player-info-border: 4px;
+  --player-info-padding: 0.5rem;
+  --player-info-gap-score: 2px;
+  --player-info-gap-icon: var(--player-info-padding);
 
+  --gameboard-gap: 2vmin;
+  --gameboard-padding: 0px;
+  --gameboard-cell-padding: 10%;
+  --round-outcome-gap: 2vmin;
+  --round-outcome-padding: 2vmin;
+  --round-outcome-btns-gap: 2rem;
+  --round-outcome-border-top: 1.5vh;
 
-    --gameboard-gap:            2vmin;
-    --gameboard-padding:        0px;
-    --gameboard-cell-padding:   10%;
-    --round-outcome-gap:        2vmin;
-    --round-outcome-padding:    2vmin;
-    --round-outcome-btns-gap:   2rem;
-    --round-outcome-border-top: 1.5vh;
+  --active-cell-scale: 0.25;
+  --not-winning-cell-mark-scale: 0.75;
 
-    --active-cell-scale:            0.25;
-    --not-winning-cell-mark-scale:  0.75;
+  --gameboard-cell-border: 0px;
 
-    --gameboard-cell-border:        0px;
+  --focus-visible-outline-size: 4px;
 
-    --focus-visible-outline-size: 4px;
+  --round-outcome-height: calc(
+    var(--round-outcome-text-fontsize) * var(--txt-lineheight) +
+      var(--round-outcome-subtext-fontsize) * var(--txt-lineheight) + 2 *
+      var(--round-outcome-padding) + 2 * var(--round-outcome-gap) +
+      var(--button-height)
+  );
 
-    --round-outcome-height: calc(var(--round-outcome-text-fontsize) * var(--txt-lineheight) 
-    + var(--round-outcome-subtext-fontsize) * var(--txt-lineheight)
-    + 2 *  var(--round-outcome-padding) + 2 * var(--round-outcome-gap)
-    + var(--button-height));
+  /* Radius */
 
-    /* Radius */
+  --gameboard-radius: 20px;
+  --gameboard-cell-radius: 5px;
+  --gameboard-cell-radius-hover: 30px;
+  --gameboard-cell-radius-active: 20px;
 
-    --gameboard-radius:             20px;
-    --gameboard-cell-radius:        5px;
-    --gameboard-cell-radius-hover:  30px;
-    --gameboard-cell-radius-active: 20px;
+  /* Buttons */
+  --button-fontsize: 1.5rem; /*default: might be overwritten*/
+  --button-border: 0px;
+  --button-bottom-border: 5px;
+  --button-bottom-border-hover: 8px; /* this must be the largest*/
+  --button-bottom-border-active: 2px;
+  --button-radius: calc(var(--gameboard-radius) / 1);
+  --button-padding: calc(var(--button-radius) / 2);
+  --button-width: 5rem;
+  --button-bottom-border-color: var(--col-o-dark);
+  --button-bottom-border-color-alt: var(--col-x-dark);
+  --button-bg-color: var(--col-o-light);
+  --button-bg-color-alt: var(--col-x-light);
+  --button-color: var(--col-black);
+  --button-color-alt: var(--col-black);
+  --button-height: calc(
+    2 * var(--button-padding) + var(--button-fontsize) * var(--txt-lineheight) +
+      var(--button-bottom-border-hover) + var(--button-border)
+  );
 
-    /* Buttons */
-    --button-fontsize:                  1.5rem; /*default: might be overwritten*/
-    --button-border:                    0px;
-    --button-bottom-border:             5px;
-    --button-bottom-border-hover:       8px; /* this must be the largest*/
-    --button-bottom-border-active:      2px;
-    --button-radius:                    calc(var(--gameboard-radius) / 1);
-    --button-padding:                   calc(var(--button-radius) / 2);
-    --button-width:                     5rem;
-    --button-bottom-border-color:       var(--col-o-dark);
-    --button-bottom-border-color-alt:   var(--col-x-dark);
-    --button-bg-color:                  var(--col-o-light);
-    --button-bg-color-alt:              var(--col-x-light);
-    --button-color:                     var(--col-black);
-    --button-color-alt:                 var(--col-black);
-    --button-height: calc(2 * var(--button-padding) + var(--button-fontsize) * var(--txt-lineheight)  
-                     + var(--button-bottom-border-hover) + var(--button-border));
+  --play-button-width: 15rem;
 
-    --play-button-width:            15rem;   
+  /* Settings input */
+  --settings-gap-ver: 3vmin;
+  --settings-gap-hor: 3vmin;
+  --settings-label-fontsize: 1rem;
+  --settings-input-label-gap: max(
+    calc(2 * var(--focus-visible-outline-size)),
+    0.2rem
+  );
 
-    /* Settings input */
-    --settings-gap-ver:             3vmin;
-    --settings-gap-hor:             3vmin;
-    --settings-label-fontsize:      1rem;
-    --settings-input-label-gap:     max(calc(2*var(--focus-visible-outline-size)),0.2rem);
+  --settings-input-fontsize: 1.4rem;
+  --settings-input-padding: 0.3rem;
+  --settings-input-border-size: 0px;
+  --settings-input-radius: var(--gameboard-radius);
+  --settings-input-border-col: var(--col-light-grey);
+  --settings-input-col: var(--col-black);
+  --settings-input-bg-col: var(--col-white);
+  --settings-input-col-sel: var(--col-black);
+  --settings-input-bg-col-sel: var(--col-x-dark); /*var(--col-dark-grey);*/
+  --settings-input-outline-col-sel: var(
+    --col-x-dark
+  ); /*var(--col-light-grey);*/
+  --settings-input-border-size-sel: 0.25rem;
+  --settings-input-border-col-sel: var(--col-x-light);
 
-    --settings-input-fontsize:      1.4rem;
-    --settings-input-padding:       0.3rem;
-    --settings-input-border-size:   0px;
-    --settings-input-radius:        var(--gameboard-radius);
-    --settings-input-border-col:    var(--col-light-grey);
-    --settings-input-col:           var(--col-black);
-    --settings-input-bg-col:        var(--col-white);
-    --settings-input-col-sel:       var(--col-black);
-    --settings-input-bg-col-sel:    var(--col-x-dark);  /*var(--col-dark-grey);*/
-    --settings-input-outline-col-sel:var(--col-x-dark); /*var(--col-light-grey);*/
-    --settings-input-border-size-sel: 0.25rem;
-    --settings-input-border-col-sel: var(--col-x-light); 
+  --settings-input-focus-visible-outline-col: var(--col-x-dark);
 
-    --settings-input-focus-visible-outline-col: var(--col-x-dark);
+  --settings-input-height: calc(
+    2 *
+      (
+        var(--settings-input-padding) + var(--settings-input-border-size) +
+          var(--settings-input-border-size-sel)
+      ) + var(--settings-input-fontsize) * var(--txt-lineheight)
+  );
 
-    --settings-input-height: calc(2 * (var(--settings-input-padding) + var(--settings-input-border-size) + var(--settings-input-border-size-sel)) + var(--settings-input-fontsize) * var(--txt-lineheight));
+  --settings-input-placeholder-scale: 0.7;
+  --settings-input-placeholder-col: var(--col-light-grey);
 
-    --settings-input-placeholder-scale: 0.7;
-    --settings-input-placeholder-col:   var(--col-light-grey);
+  --settings-input-radio-fieldset-label-width: 3em;
 
-    --settings-input-radio-fieldset-label-width: 3em;
+  --settings-input-range-height: calc(var(--settings-label-fontsize) / 4 * 3);
+  --settings-input-range-thumb-height: calc(
+    var(--settings-label-fontsize) / 4 * 6
+  );
 
-    --settings-input-range-height: calc(var(--settings-label-fontsize)/4*3);
-    --settings-input-range-thumb-height: calc(var(--settings-label-fontsize)/4*6);
-
-    /* Shadows */
-    /* --outset-shadow: 2px 2px 8px var(--col-accent-medium);
+  /* Shadows */
+  /* --outset-shadow: 2px 2px 8px var(--col-accent-medium);
     --outset-shadow-btn-active: 2px 2px 5px var(--col-accent-medium);
     --inset-shadow: 2px 2px 2px var(--col-accent-light) inset; */
 
-    /* Animations on hover / active / ...*/
-    --cell-transition-duration: 1s;
-    --winning-player-animation-duration: 1s;
-    --button-animation-duration: 1s;
-    --current-player-animation-duration: 0.5s;
-    --current-player-animation-displ-up: calc(var(--player-info-margin-tb) / 3);
-    --current-player-animation-displ-down: calc(-1 * var(--current-player-animation-displ-up));
+  /* Animations on hover / active / ...*/
+  --cell-transition-duration: 1s;
+  --winning-player-animation-duration: 1s;
+  --button-animation-duration: 1s;
+  --current-player-animation-duration: 0.5s;
+  --current-player-animation-displ-up: calc(var(--player-info-margin-tb) / 3);
+  --current-player-animation-displ-down: calc(
+    -1 * var(--current-player-animation-displ-up)
+  );
 
-    --round-outcome-animation-delay: 0.5s;
-    --round-outcome-animation-duration: 0.5s;
+  --round-outcome-animation-delay: 0.5s;
+  --round-outcome-animation-duration: 0.5s;
 
-    /* Other info */
-    --gameboard-size: 3;
+  /* Other info */
+  --gameboard-size: 3;
 }
 
 ::backdrop {
-    background-color: var(--col-black);
-    opacity: 0.75;
+  background-color: var(--col-black);
+  opacity: 0.75;
 }
 
 html {
-    background-color: var(--bg-col);
-    color: var(--col-txt);
-    font-family: var(--main-font), sans-serif;
-    font-weight: 400;
-    font-size: var(--txt-fontsize);
-    line-height: var(--txt-lineheight);
+  background-color: var(--bg-col);
+  color: var(--col-txt);
+  font-family: var(--main-font), sans-serif;
+  font-weight: 400;
+  font-size: var(--txt-fontsize);
+  line-height: var(--txt-lineheight);
 }
 
 *,
 *:before,
-*:after{
-    font-family: inherit;
-    font-size: inherit; /* 100% */
-    line-height: inherit;
-    color: inherit;
-    box-sizing: border-box;
-    padding: 0;
-    margin: 0;
-    vertical-align: baseline;
-    user-select: none;
+*:after {
+  font-family: inherit;
+  font-size: inherit; /* 100% */
+  line-height: inherit;
+  color: inherit;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  vertical-align: baseline;
+  user-select: none;
 }
 
-
 body {
-    margin: 0 auto;
-    height: 100vh;  /*it is assumed the same for <html>*/
-    height: 100dvh; /* if supported */
-    
-    /* if you want to allow scroll: */
-    /* min-height: 100vh; */
-    /* height: 100%; */
-    
-    width: 100%;
-    /* or max-width -- this avoids horizontal scroll bars */
-    
-    touch-action: manipulation; /* disable double tap to zoom on some browsers*/
+  margin: 0 auto;
+  height: 100vh; /*it is assumed the same for <html>*/
+  height: 100dvh; /* if supported */
+
+  /* if you want to allow scroll: */
+  /* min-height: 100vh; */
+  /* height: 100%; */
+
+  width: 100%;
+  /* or max-width -- this avoids horizontal scroll bars */
+
+  touch-action: manipulation; /* disable double tap to zoom on some browsers*/
 }
 
 body.stop-transitions * {
-    transition: none !important;
+  transition: none !important;
 }
 
 /*****************************************************/
 
 /* || Generic */
 
-body{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* || Main and Header blocks */
 
 header,
-main{
-    width: 100%;
-    max-width: var(--max-width);
-    margin: 0 auto;
+main {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
 }
 
-header{
-    padding: var(--header-ud-padding) var(--main-lr-padding);
+header {
+  padding: var(--header-ud-padding) var(--main-lr-padding);
 }
 
-main{
-    padding: var(--main-ud-padding) var(--main-lr-padding);
-    flex:1;
-    height: 100%;
+main {
+  padding: var(--main-ud-padding) var(--main-lr-padding);
+  flex: 1;
+  height: 100%;
 
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 /* || Generic icon mask: specify bg color, size and  mask-image*/
 
-.icon-mask::before{
-    display: inline-block;
-    content:"";
-    width: var(--icon-len); 
-    height: var(--icon-len); 
-    background-size: var(--icon-len) var(--icon-len);
-    background-color: var(--icon-col);
-    mask-size: contain;
-    mask-repeat: no-repeat;
-    mask-position: center;
+.icon-mask::before {
+  display: inline-block;
+  content: "";
+  width: var(--icon-len);
+  height: var(--icon-len);
+  background-size: var(--icon-len) var(--icon-len);
+  background-color: var(--icon-col);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
 }
 
 /* Generic Marker colors */
-.x{
-    --marker-col: var(--col-x);
+.x {
+  --marker-col: var(--col-x);
 }
-.o{
-    --marker-col: var(--col-o);
+.o {
+  --marker-col: var(--col-o);
 }
 
 /* || Generic buttons */
-button{
-    border: none;
-    outline: none;
-    border: var(--button-border) solid var(--button-bottom-border-color);
-    border-bottom: var(--button-bottom-border) solid var(--button-bottom-border-color);
-    background-color: var(--button-bg-color);
-    color: var(--button-color);
-    border-radius: var(--button-radius);
-    padding: var(--button-padding);
-    min-width: var(--button-width);
-    margin-top: calc(var(--button-bottom-border-hover) - var(--button-bottom-border));
-    font-size: var(--button-fontsize);
-    font-weight: bold;
+button {
+  border: none;
+  outline: none;
+  border: var(--button-border) solid var(--button-bottom-border-color);
+  border-bottom: var(--button-bottom-border) solid
+    var(--button-bottom-border-color);
+  background-color: var(--button-bg-color);
+  color: var(--button-color);
+  border-radius: var(--button-radius);
+  padding: var(--button-padding);
+  min-width: var(--button-width);
+  margin-top: calc(
+    var(--button-bottom-border-hover) - var(--button-bottom-border)
+  );
+  font-size: var(--button-fontsize);
+  font-weight: bold;
 }
 
-button.alt{
-    --button-bottom-border-color: var(--button-bottom-border-color-alt);
-    --button-bg-color: var(--button-bg-color-alt);
-    --button-color: var(--button-color-alt);
+button.alt {
+  --button-bottom-border-color: var(--button-bottom-border-color-alt);
+  --button-bg-color: var(--button-bg-color-alt);
+  --button-color: var(--button-color-alt);
 }
 
-@media not all and (hover: none){
-    /* when hover is supported */
-    button:hover{
-        border-bottom-width: var(--button-bottom-border-hover);
-        margin-top: 0px; 
-    }
- }
-
- button:active{
-    border-bottom-width: var(--button-bottom-border-active);
-    margin-top: calc(var(--button-bottom-border-hover) - var(--button-bottom-border-active));
- }
-
- button:focus-visible{
-    outline: var(--focus-visible-outline-size) solid var(--focus-visible-outline-col);
- }
-
- @keyframes startNewGameBtnAnimation {
-    0%{
-        transform: scale(1);
-    }
-    100%{
-        transform: scale(1.05);
-    }
-}
-button:not(.alt){
-    animation-duration: var(--button-animation-duration);
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-    animation-name: startNewGameBtnAnimation;
-    animation-timing-function: ease-in-out;
-    will-change: transform; 
+@media not all and (hover: none) {
+  /* when hover is supported */
+  button:hover {
+    border-bottom-width: var(--button-bottom-border-hover);
+    margin-top: 0px;
+  }
 }
 
+button:active {
+  border-bottom-width: var(--button-bottom-border-active);
+  margin-top: calc(
+    var(--button-bottom-border-hover) - var(--button-bottom-border-active)
+  );
+}
+
+button:focus-visible {
+  outline: var(--focus-visible-outline-size) solid
+    var(--focus-visible-outline-col);
+}
+
+@keyframes startNewGameBtnAnimation {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
+  }
+}
+button:not(.alt) {
+  animation-duration: var(--button-animation-duration);
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-name: startNewGameBtnAnimation;
+  animation-timing-function: ease-in-out;
+  will-change: transform;
+}
 
 /* || Header */
-header{
-    display: flex;
-    justify-content: space-between;
-    position: sticky;
-    top: 0px;
-    background-color: var(--bg-col);
+header {
+  display: flex;
+  justify-content: space-between;
+  position: sticky;
+  top: 0px;
+  background-color: var(--bg-col);
 }
 
-.game-title-div{
-    width: max-content;
+.game-title-div {
+  width: max-content;
 }
 
-.game-logo{
-    display: flex;
-    justify-content: space-between;
+.game-logo {
+  display: flex;
+  justify-content: space-between;
 }
 
-.game-logo .icon-mask{
-    --icon-len: var(--game-logo-icon-len);
-    --icon-col: var(--marker-col);
+.game-logo .icon-mask {
+  --icon-len: var(--game-logo-icon-len);
+  --icon-col: var(--marker-col);
 }
 
-h1{
-    font-size: var(--header-h1-fontsize);
+h1 {
+  font-size: var(--header-h1-fontsize);
 }
 
 body:has(main.info-on) .info-btn,
-body:has(main.game-on) .info-btn{
-    display: none;
+body:has(main.game-on) .info-btn {
+  display: none;
 }
-body:has(main:not(.game-on):not(.info-on)) .back-btn{
-    display: none;
+body:has(main:not(.game-on):not(.info-on)) .back-btn {
+  display: none;
 }
 
-header button{
-    --button-fontsize: var(--header-btn-fontsize);
+header button {
+  --button-fontsize: var(--header-btn-fontsize);
 }
 
 /* || Main - start new game VIEW*/
-.start-new-game-div{
-    flex:1;
-    display: flex; /* becomes none in certain conditions (see below) */
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    --button-fontsize: var(--settings-btn-fontsize);
-    --button-padding: calc(var(--button-fontsize) / 3);
-    gap: var(--settings-gap-ver);
+.start-new-game-div {
+  flex: 1;
+  display: flex; /* becomes none in certain conditions (see below) */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  --button-fontsize: var(--settings-btn-fontsize);
+  --button-padding: calc(var(--button-fontsize) / 3);
+  gap: var(--settings-gap-ver);
 }
 main.info-on .start-new-game-div,
-main.game-on .start-new-game-div{
-    display: none;
+main.game-on .start-new-game-div {
+  display: none;
 }
 
-.start-new-game-div .settings-div{
-    flex: 2;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-areas:
-        "settings-gameplay"
-        "settings-players";
-    align-items: start;
-    justify-content: center;
-    gap: var(--settings-gap-ver) var(--settings-gap-hor);
+.start-new-game-div .settings-div {
+  flex: 2;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "settings-gameplay"
+    "settings-players";
+  align-items: start;
+  justify-content: center;
+  gap: var(--settings-gap-ver) var(--settings-gap-hor);
 }
-@media (orientation: landscape) and (min-aspect-ratio: 1.2){
-    .start-new-game-div .settings-div{
-        flex: 0;
-        min-width: 70%;
-        justify-items: center;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-areas:
-            "settings-gameplay settings-players";
-    }
-}
-
-.start-new-game-div .settings-gameplay-div{
-    grid-area: settings-gameplay;
+@media (orientation: landscape) and (min-aspect-ratio: 1.2) {
+  .start-new-game-div .settings-div {
+    flex: 0;
+    min-width: 70%;
+    justify-items: center;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-areas:
-        "gameboard-size gameboard-size"
-        "num-of-players extended-mode";
-    align-items: center;
-    justify-content: center;
-    gap: var(--settings-gap-ver) var(--settings-gap-hor);
+    grid-template-areas: "settings-gameplay settings-players";
+  }
 }
-.start-new-game-div .settings-players-div{
-    grid-area: settings-players;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-areas:
-        "player-x-name"
-        "player-o-name";
-    align-items: stretch;
-    justify-content: center;
-    gap: var(--settings-gap-ver) var(--settings-gap-hor);
+
+.start-new-game-div .settings-gameplay-div {
+  grid-area: settings-gameplay;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "gameboard-size gameboard-size"
+    "num-of-players extended-mode";
+  align-items: center;
+  justify-content: center;
+  gap: var(--settings-gap-ver) var(--settings-gap-hor);
+}
+.start-new-game-div .settings-players-div {
+  grid-area: settings-players;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "player-x-name"
+    "player-o-name";
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--settings-gap-ver) var(--settings-gap-hor);
 }
 
 .start-new-game-div .settings-gameplay-div,
-.start-new-game-div .settings-players-div{
-    background-color: var(--settings-box-bg-color);
-    padding: var(--settings-box-padding);
-    border-radius: var(--gameboard-radius);
+.start-new-game-div .settings-players-div {
+  background-color: var(--settings-box-bg-color);
+  padding: var(--settings-box-padding);
+  border-radius: var(--gameboard-radius);
 }
-.start-new-game-div .settings-gameplay-div{
-    padding-bottom: calc(var(--settings-box-padding) + var(--settings-input-label-gap));
+.start-new-game-div .settings-gameplay-div {
+  padding-bottom: calc(
+    var(--settings-box-padding) + var(--settings-input-label-gap)
+  );
 }
-@media (orientation: landscape) and (min-aspect-ratio: 1.2){
-    .start-new-game-div .settings-gameplay-div{
-        padding-bottom: calc(var(--settings-box-padding) + var(--settings-input-range-thumb-height) + var(--settings-input-label-gap) + var(--focus-visible-outline-size));
-    }
-}
-
-.input-div:has(#input-gameboard-num-of-players){
-    grid-area: num-of-players;
-}
-.input-div:has(#input-player-x-name){
-    grid-area: player-x-name;
-}
-.input-div:has(#input-player-o-name){
-    grid-area: player-o-name;
-}
-.input-div:has(#input-gameboard-size){
-    grid-area: gameboard-size;
-}
-.input-div:has(#input-extended-mode){
-    grid-area: extended-mode;
+@media (orientation: landscape) and (min-aspect-ratio: 1.2) {
+  .start-new-game-div .settings-gameplay-div {
+    padding-bottom: calc(
+      var(--settings-box-padding) + var(--settings-input-range-thumb-height) +
+        var(--settings-input-label-gap) + var(--focus-visible-outline-size)
+    );
+  }
 }
 
-.start-new-game-div .button-div{
-    flex: 1;
-    display: flex;
-    align-items: center;
+.input-div:has(#input-gameboard-num-of-players) {
+  grid-area: num-of-players;
+}
+.input-div:has(#input-player-x-name) {
+  grid-area: player-x-name;
+}
+.input-div:has(#input-player-o-name) {
+  grid-area: player-o-name;
+}
+.input-div:has(#input-gameboard-size) {
+  grid-area: gameboard-size;
+}
+.input-div:has(#input-extended-mode) {
+  grid-area: extended-mode;
 }
 
-.start-new-game-div button{
-    --button-width: var(--play-button-width);
+.start-new-game-div .button-div {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.start-new-game-div button {
+  --button-width: var(--play-button-width);
 }
 
 /* Input styles: input div container with label*/
 
-.start-new-game-div .settings-div .input-div{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--settings-input-label-gap);
-    width: 100%;
+.start-new-game-div .settings-div .input-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--settings-input-label-gap);
+  width: 100%;
 }
 
-.start-new-game-div .settings-div .input-div.input-div-hor{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: var(--settings-input-label-gap);
-    padding-top: calc((var(--settings-input-range-thumb-height) - var(--settings-input-range-height)) / 2 );
-    padding-bottom: calc((var(--settings-input-range-thumb-height) - var(--settings-input-range-height)) / 2 );
+.start-new-game-div .settings-div .input-div.input-div-hor {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--settings-input-label-gap);
+  padding-top: calc(
+    (
+        var(--settings-input-range-thumb-height) -
+          var(--settings-input-range-height)
+      ) / 2
+  );
+  padding-bottom: calc(
+    (
+        var(--settings-input-range-thumb-height) -
+          var(--settings-input-range-height)
+      ) / 2
+  );
 }
 
-.start-new-game-div .settings-div .input-div>label{
-    font-variant: small-caps;
-    font-size: var(--settings-label-fontsize);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.3em;
+.start-new-game-div .settings-div .input-div > label {
+  font-variant: small-caps;
+  font-size: var(--settings-label-fontsize);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
 }
-.start-new-game-div .settings-div .input-div>label .icon-mask{
-    --icon-len: calc(0.9*var(--settings-label-fontsize));
-    --icon-col: var(--marker-col);
-    width: var(--settings-label-fontsize);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.start-new-game-div .settings-div .input-div > label .icon-mask {
+  --icon-len: calc(0.9 * var(--settings-label-fontsize));
+  --icon-col: var(--marker-col);
+  width: var(--settings-label-fontsize);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.start-new-game-div .settings-div .input-div>label .icon-mask:before{
-    width: var(--settings-label-fontsize);
-    height: var(--settings-label-fontsize);
+.start-new-game-div .settings-div .input-div > label .icon-mask:before {
+  width: var(--settings-label-fontsize);
+  height: var(--settings-label-fontsize);
 }
 
-.start-new-game-div .settings-div .input-div.input-div-hor input{
-    flex: 1;
+.start-new-game-div .settings-div .input-div.input-div-hor input {
+  flex: 1;
 }
 
 /* Input styles: text input */
-.start-new-game-div .settings-div .input-div input[type='text']{
-    border:             var(--settings-input-border-size) solid var(--settings-input-border-col);
-    background-color:   var(--settings-input-bg-col);
-    color:              var(--settings-input-col);
-    border-radius:      var(--settings-input-radius);
-    text-align:         center;
-    font-weight:        bold;
-    font-size:          var(--settings-input-fontsize);
-    display:            flex;
-    align-items:        center;
-    padding:            var(--settings-input-padding);
-    height:             var(--settings-input-height);
+.start-new-game-div .settings-div .input-div input[type="text"] {
+  border: var(--settings-input-border-size) solid
+    var(--settings-input-border-col);
+  background-color: var(--settings-input-bg-col);
+  color: var(--settings-input-col);
+  border-radius: var(--settings-input-radius);
+  text-align: center;
+  font-weight: bold;
+  font-size: var(--settings-input-fontsize);
+  display: flex;
+  align-items: center;
+  padding: var(--settings-input-padding);
+  height: var(--settings-input-height);
 }
-.start-new-game-div .settings-div .input-div input[type='text']:focus-visible{
-    outline: var(--focus-visible-outline-size) solid var(--settings-input-focus-visible-outline-col);
+.start-new-game-div .settings-div .input-div input[type="text"]:focus-visible {
+  outline: var(--focus-visible-outline-size) solid
+    var(--settings-input-focus-visible-outline-col);
 }
-.start-new-game-div .settings-div .input-div input[type='text']::placeholder{
-    color: var(--settings-input-placeholder-col);
-    transform: scale(var(--settings-input-placeholder-scale));
-    font-weight: normal;
-    font-style: italic;
+.start-new-game-div .settings-div .input-div input[type="text"]::placeholder {
+  color: var(--settings-input-placeholder-col);
+  transform: scale(var(--settings-input-placeholder-scale));
+  font-weight: normal;
+  font-style: italic;
 }
 
 /* Input styles: range input */
 input[type="range"] {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 100%;
-    height: var(--settings-input-range-height);
-    border-radius: var(--settings-input-range-height);
-    cursor: pointer; 
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: var(--settings-input-range-height);
+  border-radius: var(--settings-input-range-height);
+  cursor: pointer;
 }
 input[type="range"]::-webkit-slider-runnable-track {
-    width: 100%;
-    height: var(--settings-input-range-height);
-    border-radius: var(--settings-input-range-height);
-    cursor: pointer;
-    border: none;
-    background: var(--settings-input-bg-col);
+  width: 100%;
+  height: var(--settings-input-range-height);
+  border-radius: var(--settings-input-range-height);
+  cursor: pointer;
+  border: none;
+  background: var(--settings-input-bg-col);
 }
 input[type="range"]::-moz-range-track {
-    width: 100%;
-    height: var(--settings-input-range-height);
-    border-radius: var(--settings-input-range-height);
-    cursor: pointer;
-    border: none;
-    background: var(--settings-input-bg-col);
+  width: 100%;
+  height: var(--settings-input-range-height);
+  border-radius: var(--settings-input-range-height);
+  cursor: pointer;
+  border: none;
+  background: var(--settings-input-bg-col);
 }
 input[type="range"]::-ms-track {
-    width: 100%;
-    height: var(--settings-input-range-height);
-    border-radius: var(--settings-input-range-height);
-    cursor: pointer;
-    border: none;
-    background: var(--settings-input-bg-col);
+  width: 100%;
+  height: var(--settings-input-range-height);
+  border-radius: var(--settings-input-range-height);
+  cursor: pointer;
+  border: none;
+  background: var(--settings-input-bg-col);
 }
 input[type="range"]::-webkit-slider-thumb {
-    height: var(--settings-input-range-thumb-height);
-    width: var(--settings-input-range-thumb-height);
-    border-radius: 50%;
-    cursor: pointer;
-    -webkit-appearance: none;
-    background: var(--settings-input-bg-col-sel);
-    outline: var(--focus-visible-outline-size) solid var(--settings-input-outline-col-sel);
-    outline-offset: -1px;
-    border: var(--settings-input-border-size-sel) solid var(--settings-input-border-col-sel);
-    margin-top: calc(var(--settings-input-range-height) / 2 -  var(--settings-input-range-thumb-height) / 2 );
- }
+  height: var(--settings-input-range-thumb-height);
+  width: var(--settings-input-range-thumb-height);
+  border-radius: 50%;
+  cursor: pointer;
+  -webkit-appearance: none;
+  background: var(--settings-input-bg-col-sel);
+  outline: var(--focus-visible-outline-size) solid
+    var(--settings-input-outline-col-sel);
+  outline-offset: -1px;
+  border: var(--settings-input-border-size-sel) solid
+    var(--settings-input-border-col-sel);
+  margin-top: calc(
+    var(--settings-input-range-height) / 2 -
+      var(--settings-input-range-thumb-height) / 2
+  );
+}
 
- .input-div-ai-skill-level:has(#input-ai-skill-level:disabled) {
-    visibility: hidden;
+.input-div-ai-skill-level:has(#input-ai-skill-level:disabled) {
+  visibility: hidden;
 }
 
 /* Input styles: radio fieldset input */
-.radio-input-fieldset{
-    display:            flex;
-    justify-content:    center;
-    align-items:        center;
-    border:             var(--settings-input-border-size) solid var(--settings-input-border-col);
-    border-radius:      var(--settings-input-radius);
-    outline:            none;
-    /* gap:                var(--settings-input-padding); */
-    color:              var(--settings-input-col);
-    background-color:   var(--settings-input-bg-col);
-    font-size:          var(--settings-input-fontsize);
+.radio-input-fieldset {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: var(--settings-input-border-size) solid
+    var(--settings-input-border-col);
+  border-radius: var(--settings-input-radius);
+  outline: none;
+  /* gap:                var(--settings-input-padding); */
+  color: var(--settings-input-col);
+  background-color: var(--settings-input-bg-col);
+  font-size: var(--settings-input-fontsize);
 }
 
-.radio-input-fieldset input{
-    display: none;
+.radio-input-fieldset input {
+  display: none;
 }
 
-.radio-input-fieldset label{
-    border-radius:      calc(0.8*var(--settings-input-radius));
-    display:            flex;
-    align-items:        center;
-    justify-content:    center;
-    padding:            var(--settings-input-padding);
-    min-width:          var(--settings-input-radio-fieldset-label-width);
+.radio-input-fieldset label {
+  border-radius: calc(0.8 * var(--settings-input-radius));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--settings-input-padding);
+  min-width: var(--settings-input-radio-fieldset-label-width);
 }
-.radio-input-fieldset input:not(:checked)+label{
-    transform:          scale(var(--settings-input-placeholder-scale));
+.radio-input-fieldset input:not(:checked) + label {
+  transform: scale(var(--settings-input-placeholder-scale));
 }
-.radio-input-fieldset input:hover+label{
-    font-weight: bold;
+.radio-input-fieldset input:hover + label {
+  font-weight: bold;
 }
-.radio-input-fieldset input:checked+label{
-    background-color: var(--settings-input-bg-col-sel);
-    color:            var(--settings-input-col-sel);
-    /* flex:   calc(1 / var(--settings-input-placeholder-scale)); */
-    flex:   1;
-    outline: var(--focus-visible-outline-size) solid var(--settings-input-outline-col-sel);
-    outline-offset: -1px;
-    font-weight: bold;
-    border: var(--settings-input-border-size-sel) solid var(--settings-input-border-col-sel);
+.radio-input-fieldset input:checked + label {
+  background-color: var(--settings-input-bg-col-sel);
+  color: var(--settings-input-col-sel);
+  /* flex:   calc(1 / var(--settings-input-placeholder-scale)); */
+  flex: 1;
+  outline: var(--focus-visible-outline-size) solid
+    var(--settings-input-outline-col-sel);
+  outline-offset: -1px;
+  font-weight: bold;
+  border: var(--settings-input-border-size-sel) solid
+    var(--settings-input-border-col-sel);
 }
 
 /* || Main - info VIEW*/
-main:not(.info-on) .info-div{
-    display: none;
+main:not(.info-on) .info-div {
+  display: none;
 }
 
-.info-div{
-    height: 100%;
-    display: grid;
-    align-content: center;
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(0,0.8fr) repeat(4,min-content) minmax(0,3fr);
+.info-div {
+  height: 100%;
+  display: grid;
+  align-content: center;
+  grid-template-columns: 1fr;
+  grid-template-rows: minmax(0, 0.8fr) repeat(4, min-content) minmax(0, 3fr);
+  grid-template-areas:
+    "title"
+    "cnt1"
+    "cnt2a"
+    "cnt2b"
+    "cnt3"
+    "final-text";
+  gap: var(--info-padding);
+}
+
+@media (orientation: landscape) and (min-aspect-ratio: 1.6) {
+  .info-div {
+    grid-template-columns: 1fr 0.5fr 0.5fr;
+    grid-template-rows: minmax(0, 1fr) repeat(2, min-content) minmax(0, 1fr);
     grid-template-areas:
-        "title"
-        "cnt1"
-        "cnt2a"
-        "cnt2b"
-        "cnt3"
-        "final-text";
-    gap: var(--info-padding);
+      "title title title"
+      "cnt1 cnt2a cnt2b"
+      "cnt1 cnt3 cnt3"
+      "final-text final-text final-text";
+  }
 }
 
-@media (orientation: landscape) and (min-aspect-ratio: 1.6){
-    .info-div{
-        grid-template-columns: 1fr 0.5fr 0.5fr;
-        grid-template-rows: minmax(0,1fr) repeat(2,min-content) minmax(0,1fr);
-        grid-template-areas:
-            "title title title"
-            "cnt1 cnt2a cnt2b"
-            "cnt1 cnt3 cnt3"
-            "final-text final-text final-text";
-    }
+.info-div h2 {
+  grid-area: title;
+  align-self: center;
+  text-align: center;
+}
+.info-cnt-1 {
+  grid-area: cnt1;
+}
+.info-cnt-2 {
+  grid-area: cnt2;
+}
+.info-cnt-3 {
+  grid-area: cnt3;
+}
+.info-div p.final-text {
+  grid-area: final-text;
+  align-self: center;
+  color: var(--col-txt);
+  text-align: center;
+  font-variant: normal;
 }
 
-.info-div h2{
-    grid-area: title;
-    align-self: center;
-    text-align: center;
-}
-.info-cnt-1{
-    grid-area: cnt1;
-}
-.info-cnt-2{
-    grid-area: cnt2;
-}
-.info-cnt-3{
-    grid-area: cnt3;
-}
-.info-div p.final-text{
-    grid-area: final-text;
-    align-self: center;
-    color: var(--col-txt);
-    text-align: center;
-    font-variant: normal;
+.info-cnt {
+  padding: var(--info-padding);
+  background-color: var(--info-bg-col);
+  border-radius: var(--gameboard-radius);
+  display: flex;
+  flex-direction: column;
+  gap: var(--info-gap);
 }
 
-.info-cnt{
-    padding: var(--info-padding);
-    background-color: var(--info-bg-col);
-    border-radius: var(--gameboard-radius);
-    display: flex;
-    flex-direction: column;
-    gap: var(--info-gap);
+.info-div p {
+  text-wrap: balance;
+  text-align: left;
+  font-variant: small-caps;
+  color: var(--info-col);
 }
 
-.info-div p{
-    text-wrap: balance;
-    text-align: left;
-    font-variant: small-caps;
-    color: var(--info-col);
+.info-div strong {
+  font-weight: bold;
+  font-variant: normal;
+  color: var(--info-col-strong);
 }
-
-.info-div strong{
-    font-weight: bold;
-    font-variant: normal;
-    color: var(--info-col-strong);
+.info-div strong.highlight {
+  font-weight: bold;
+  color: var(--info-col-strong-highlight);
 }
-.info-div strong.highlight{
-    font-weight: bold;
-    color: var(--info-col-strong-highlight);
-}
-
 
 /* || Main - Playing View*/
 
-.playing-div{
-    --player-info-max-width:    var(--player-info-max-width-layout1);
+.playing-div {
+  --player-info-max-width: var(--player-info-max-width-layout1);
 
-    flex:1;
-    height: 100%;
+  flex: 1;
+  height: 100%;
 
-    display: grid;
-    
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: min-content 0px minmax(0,1fr);
-    grid-template-areas:
-        "player-x player-o"
-        "round-outcome round-outcome"
-        "gameboard gameboard";
-    gap: calc(var(--main-gap-ver)/2) var(--main-gap-hor);        
+  display: grid;
 
-    transition-property: grid-template-rows, gap;
-    transition-timing-function: ease-in-out;
-    transition-duration: var(--round-outcome-animation-delay);
-    transition-delay: calc(var(--round-outcome-animation-duration) / 2);
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: min-content 0px minmax(0, 1fr);
+  grid-template-areas:
+    "player-x player-o"
+    "round-outcome round-outcome"
+    "gameboard gameboard";
+  gap: calc(var(--main-gap-ver) / 2) var(--main-gap-hor);
+
+  transition-property: grid-template-rows, gap;
+  transition-timing-function: ease-in-out;
+  transition-duration: var(--round-outcome-animation-delay);
+  transition-delay: calc(var(--round-outcome-animation-duration) / 2);
 }
 
-main:not(.game-on) .playing-div{
-    display: none;
+main:not(.game-on) .playing-div {
+  display: none;
 }
 
 .playing-div:has(.round-outcome-div.tie),
-.playing-div:has(.round-outcome-div.win){
-    grid-template-rows: min-content var(--round-outcome-height) minmax(0,1fr);
-    gap: var(--main-gap-ver) var(--main-gap-hor);
-    transition-delay: 0s;
+.playing-div:has(.round-outcome-div.win) {
+  grid-template-rows: min-content var(--round-outcome-height) minmax(0, 1fr);
+  gap: var(--main-gap-ver) var(--main-gap-hor);
+  transition-delay: 0s;
 }
 
-@media (orientation: landscape) and (min-aspect-ratio: 1.2){   
-    .playing-div{
-        --player-info-col-width:    var(--player-info-col-width-layout2);
-        --player-info-max-width:    var(--player-info-max-width-layout2);
+@media (orientation: landscape) and (min-aspect-ratio: 1.2) {
+  .playing-div {
+    --player-info-col-width: var(--player-info-col-width-layout2);
+    --player-info-max-width: var(--player-info-max-width-layout2);
 
-        grid-template-areas:
-            "round-outcome round-outcome"
-            "player-x gameboard"
-            "player-o gameboard";
-        grid-template-columns: var(--player-info-col-width) 1fr;
-        grid-template-rows: 0px minmax(0,1fr) minmax(0,1fr);
-        gap: 0px var(--main-gap-hor);  
-    }
+    grid-template-areas:
+      "round-outcome round-outcome"
+      "player-x gameboard"
+      "player-o gameboard";
+    grid-template-columns: var(--player-info-col-width) 1fr;
+    grid-template-rows: 0px minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0px var(--main-gap-hor);
+  }
 
-    .playing-div:has(.round-outcome-div.tie),
-    .playing-div:has(.round-outcome-div.win){
-        grid-template-rows: var(--round-outcome-height) minmax(0,1fr) minmax(0,1fr);
-    }
+  .playing-div:has(.round-outcome-div.tie),
+  .playing-div:has(.round-outcome-div.win) {
+    grid-template-rows: var(--round-outcome-height) minmax(0, 1fr) minmax(
+        0,
+        1fr
+      );
+  }
 }
-@media (orientation: landscape) and (min-aspect-ratio: 1.6){   
-    .playing-div{
-        --player-info-col-width:    var(--player-info-col-width-layout3);
-        --player-info-max-width:    var(--player-info-max-width-layout3);
+@media (orientation: landscape) and (min-aspect-ratio: 1.6) {
+  .playing-div {
+    --player-info-col-width: var(--player-info-col-width-layout3);
+    --player-info-max-width: var(--player-info-max-width-layout3);
 
-        grid-template-areas:
-            "round-outcome round-outcome round-outcome"
-            "player-x gameboard player-o";
-        grid-template-columns:  var(--player-info-col-width) 1fr var(--player-info-col-width);
-        grid-template-rows: 0px minmax(0,1fr);
-        gap: 0px var(--main-gap-hor);  
-    }
+    grid-template-areas:
+      "round-outcome round-outcome round-outcome"
+      "player-x gameboard player-o";
+    grid-template-columns: var(--player-info-col-width) 1fr var(
+        --player-info-col-width
+      );
+    grid-template-rows: 0px minmax(0, 1fr);
+    gap: 0px var(--main-gap-hor);
+  }
 
-    .playing-div:has(.round-outcome-div.tie),
-    .playing-div:has(.round-outcome-div.win){
-        grid-template-rows: var(--round-outcome-height) minmax(0,1fr);
-    }
+  .playing-div:has(.round-outcome-div.tie),
+  .playing-div:has(.round-outcome-div.win) {
+    grid-template-rows: var(--round-outcome-height) minmax(0, 1fr);
+  }
 }
-
-
 
 /* || Main player info */
-.player-info{
-    background-color: var(--player-info-bg-col);
-    padding: var(--player-info-padding);
-    border: var(--player-info-border) solid var(--marker-col);
-    border-radius: var(--gameboard-radius);
-    align-self: center;
-    justify-self: center;
-    display: grid;
-    align-items: center;
-    justify-items: center;
-    margin: var(--player-info-margin-tb) 0;
-    gap: var(--player-info-gap-score) var(--player-info-gap-icon);
-    width: 100%;
-    max-width: var(--player-info-max-width);
+.player-info {
+  background-color: var(--player-info-bg-col);
+  padding: var(--player-info-padding);
+  border: var(--player-info-border) solid var(--marker-col);
+  border-radius: var(--gameboard-radius);
+  align-self: center;
+  justify-self: center;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  margin: var(--player-info-margin-tb) 0;
+  gap: var(--player-info-gap-score) var(--player-info-gap-icon);
+  width: 100%;
+  max-width: var(--player-info-max-width);
 }
 
-.player-info.x{
-    grid-area: player-x;
+.player-info.x {
+  grid-area: player-x;
+  grid-template-columns: min-content 1fr;
+  grid-template-areas:
+    "icon name"
+    "icon score";
+}
+.player-info.o {
+  grid-area: player-o;
+  grid-template-columns: 1fr min-content;
+  grid-template-areas:
+    "name icon"
+    "score icon";
+}
+
+@media (orientation: landscape) and (min-aspect-ratio: 1.2) {
+  .player-info.x {
+    align-self: end;
+  }
+  .player-info.o {
     grid-template-columns: min-content 1fr;
     grid-template-areas:
-        "icon name"
-        "icon score";
+      "icon name"
+      "icon score";
+    align-self: start;
+  }
 }
-.player-info.o{
-    grid-area: player-o;
-    grid-template-columns: 1fr  min-content;
+@media (orientation: landscape) and (min-aspect-ratio: 1.6) {
+  .player-info.x {
+    align-self: center;
+  }
+  .player-info.o {
+    grid-template-columns: 1fr min-content;
     grid-template-areas:
-        "name icon"
-        "score icon";
+      "name icon"
+      "score icon";
+    align-self: center;
+  }
 }
 
-@media (orientation: landscape) and (min-aspect-ratio: 1.2){
-    .player-info.x{
-        align-self: end;
-    }
-    .player-info.o{
-        grid-template-columns: min-content 1fr;
-        grid-template-areas:
-            "icon name"
-            "icon score";
-        align-self: start;
-    }
-}
-@media (orientation: landscape) and (min-aspect-ratio: 1.6){ 
-    .player-info.x{
-        align-self: center;
-    }
-    .player-info.o{
-        grid-template-columns: 1fr  min-content;
-        grid-template-areas:
-            "name icon"
-            "score icon";
-        align-self: center;
-    }
+.player-info .player-name {
+  grid-area: name;
+  font-size: var(--player-info-name-fontsize);
+  text-align: center;
+  /* to adapt fontsize */
+  line-height: calc(var(--player-info-name-fontsize) * var(--txt-lineheight));
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
-.player-info .player-name{
-    grid-area: name;
-    font-size: var(--player-info-name-fontsize);
-    text-align: center;
-    /* to adapt fontsize */
-    line-height: calc(var(--player-info-name-fontsize) * var(--txt-lineheight));
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    max-width: 100%;
+.player-info .player-score {
+  grid-area: score;
+  font-size: var(--player-info-score-fontsize);
+  text-align: center;
+  font-weight: bold;
 }
 
-.player-info .player-score{
-    grid-area: score;
-    font-size: var(--player-info-score-fontsize);
-    text-align: center;
-    font-weight: bold;
-}
-
-.player-info .player-icon{
-    grid-area: icon;
-    --icon-len: var(--player-info-icon-len);
-    --icon-col: var(--marker-col);
+.player-info .player-icon {
+  grid-area: icon;
+  --icon-len: var(--player-info-icon-len);
+  --icon-col: var(--marker-col);
 }
 
 /* Highlight current player */
 @keyframes currentPlayerAnimationInit {
-    from{
-        transform: translateY(0px);
-    }
-    to{
-        transform: translateY(var(--current-player-animation-displ-up));
-    }
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(var(--current-player-animation-displ-up));
+  }
 }
 @keyframes currentPlayerAnimation {
-    from{
-        transform: translateY(var(--current-player-animation-displ-up));
-    }
-    to{
-        transform: translateY(var(--current-player-animation-displ-down));
-    }
+  from {
+    transform: translateY(var(--current-player-animation-displ-up));
+  }
+  to {
+    transform: translateY(var(--current-player-animation-displ-down));
+  }
 }
-.player-info.current-player{
-    animation-duration: var(--current-player-animation-duration);
-    animation-iteration-count: 1, infinite;
-    animation-direction: normal, alternate;
-    animation-name: currentPlayerAnimationInit, currentPlayerAnimation;
-    animation-timing-function: ease-in-out;
-    will-change: transform; 
+.player-info.current-player {
+  animation-duration: var(--current-player-animation-duration);
+  animation-iteration-count: 1, infinite;
+  animation-direction: normal, alternate;
+  animation-name: currentPlayerAnimationInit, currentPlayerAnimation;
+  animation-timing-function: ease-in-out;
+  will-change: transform;
 }
 
-.player-info.current-player{
-    background-color: var(--marker-col);
+.player-info.current-player {
+  background-color: var(--marker-col);
 }
-.player-info.current-player .player-name{
-    color: var(--player-info-bg-col);
-    font-weight: bold;
+.player-info.current-player .player-name {
+  color: var(--player-info-bg-col);
+  font-weight: bold;
 }
-.player-info.current-player .player-icon{
-    --icon-col: var(--player-info-bg-col);
+.player-info.current-player .player-icon {
+  --icon-col: var(--player-info-bg-col);
 }
 
 /* || Main - gameboard */
-.gameboard-cnt{
-    grid-area: gameboard;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.gameboard-cnt {
+  grid-area: gameboard;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    width: 100%;
-    z-index: 2;
+  width: 100%;
+  z-index: 2;
 }
 
-.gameboard{
-    width: 100%;
-    aspect-ratio: 1;
-    background-color: var(--gameboard-bg-col);
-    
-    display: grid;
-    grid-template-rows: repeat(var(--gameboard-size), 1fr);
-    grid-template-columns: repeat(var(--gameboard-size), 1fr);
+.gameboard {
+  width: 100%;
+  aspect-ratio: 1;
+  background-color: var(--gameboard-bg-col);
 
-    gap: var(--gameboard-gap);
-    padding: var(--gameboard-padding);                
-    border-radius: var(--gameboard-radius);
+  display: grid;
+  grid-template-rows: repeat(var(--gameboard-size), 1fr);
+  grid-template-columns: repeat(var(--gameboard-size), 1fr);
+
+  gap: var(--gameboard-gap);
+  padding: var(--gameboard-padding);
+  border-radius: var(--gameboard-radius);
 }
 
 .gameboard,
-.gameboard *{
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+.gameboard * {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-.gameboard.larger-width-than-height{
-    width: auto;
-    height: 100%;   
+.gameboard.larger-width-than-height {
+  width: auto;
+  height: 100%;
 }
 
-.gameboard .cell-clickable-area{
-    border-radius: var(--gameboard-cell-radius);
+.gameboard .cell-clickable-area {
+  border-radius: var(--gameboard-cell-radius);
 }
-.gameboard .cell{
-    height: 100%;
-    background-color: var(--gameboard-cell-bg-col);
+.gameboard .cell {
+  height: 100%;
+  background-color: var(--gameboard-cell-bg-col);
 
-    border: var(--gameboard-cell-border) solid var(--gameboard-cell-border-col);
-    border-radius: var(--gameboard-cell-radius);
+  border: var(--gameboard-cell-border) solid var(--gameboard-cell-border-col);
+  border-radius: var(--gameboard-cell-radius);
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    padding: var(--gameboard-cell-padding);
+  padding: var(--gameboard-cell-padding);
 
-    /* Mark in the cells (x and o) */
-    --icon-len: 100%;
-    --icon-col: var(--marker-col);
+  /* Mark in the cells (x and o) */
+  --icon-len: 100%;
+  --icon-col: var(--marker-col);
 
-    transition: all var(--cell-transition-duration);
+  transition: all var(--cell-transition-duration);
 }
 
 /* Fix cells radius on vertex: you need to specify a specific class on the corner */
 /* While you could use :first-child and :last-child for the TL and BR corners, */
 /* you can't use CSS variables (--gameboard-size) within :nth-child() and ::nth-last-child() to get the remaining corners */
 .gameboard .cell.cell-tl,
-.gameboard .cell-clickable-area:has(.cell.cell-tl){
-    border-top-left-radius: var(--gameboard-radius);
+.gameboard .cell-clickable-area:has(.cell.cell-tl) {
+  border-top-left-radius: var(--gameboard-radius);
 }
 .gameboard .cell.cell-br,
-.gameboard .cell-clickable-area:has(.cell.cell-br){
-    border-bottom-right-radius: var(--gameboard-radius);
+.gameboard .cell-clickable-area:has(.cell.cell-br) {
+  border-bottom-right-radius: var(--gameboard-radius);
 }
 .gameboard .cell.cell-tr,
-.gameboard .cell-clickable-area:has(.cell.cell-tr){
-    border-top-right-radius: var(--gameboard-radius);
+.gameboard .cell-clickable-area:has(.cell.cell-tr) {
+  border-top-right-radius: var(--gameboard-radius);
 }
 .gameboard .cell.cell-bl,
-.gameboard .cell-clickable-area:has(.cell.cell-bl){
-    border-bottom-left-radius: var(--gameboard-radius);  
+.gameboard .cell-clickable-area:has(.cell.cell-bl) {
+  border-bottom-left-radius: var(--gameboard-radius);
 }
 
 .gameboard .cell.x,
 .gameboard .cell.o,
 .gameboard .cell-clickable-area:has(.cell.x),
-.gameboard .cell-clickable-area:has(.cell.o){
-    pointer-events: none;
+.gameboard .cell-clickable-area:has(.cell.o) {
+  pointer-events: none;
 }
 
 .gameboard .cell.x,
-.gameboard .cell.o{
-    background-color: var( --gameboard-cell-bg-col-marked);
+.gameboard .cell.o {
+  background-color: var(--gameboard-cell-bg-col-marked);
 }
 
 /* Highlight winning cells */
-.gameboard:has(.winning-cell) .cell:not(.winning-cell)::before{
-    transform: scale(var(--not-winning-cell-mark-scale));
+.gameboard:has(.winning-cell) .cell:not(.winning-cell)::before {
+  transform: scale(var(--not-winning-cell-mark-scale));
 }
 @keyframes winningPlayerAnimation {
-    from{
-        transform: scale(1);
-    }
-    to{
-        transform: scale(var(--not-winning-cell-mark-scale))
-    }
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(var(--not-winning-cell-mark-scale));
+  }
 }
-.gameboard .cell.winning-cell{
-    background-color: var(--marker-col);
-    --icon-col: var(--bg-col);
+.gameboard .cell.winning-cell {
+  background-color: var(--marker-col);
+  --icon-col: var(--bg-col);
 }
-.gameboard .cell.winning-cell::before{
-    animation-duration: var(--winning-player-animation-duration);
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-    animation-name: winningPlayerAnimation;
-    animation-timing-function: ease-in-out;
-    will-change: transform; 
+.gameboard .cell.winning-cell::before {
+  animation-duration: var(--winning-player-animation-duration);
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-name: winningPlayerAnimation;
+  animation-timing-function: ease-in-out;
+  will-change: transform;
 }
 
 /* Disable click events when the round ends, or on AI turn*/
 .playing-div:has(.round-outcome-div.win) .gameboard,
 .playing-div:has(.round-outcome-div.tie) .gameboard,
-.playing-div:has(.player-info.current-player.ai) .gameboard{
-    pointer-events: none;
+.playing-div:has(.player-info.current-player.ai) .gameboard {
+  pointer-events: none;
 }
 
 /* Hovering behaviour */
 /* when hover is supported */
-@media not all and (hover: none){
-    .gameboard .cell:hover{
-        /* --gameboard-cell-radius: var(--gameboard-cell-radius-hover); */
-        border-radius: var(--gameboard-cell-radius-hover);
-        --gameboard-cell-bg-col:        var(--gameboard-cell-bg-col-hover);
-        --gameboard-cell-border-col:    var(--gameboard-cell-border-col-hover);
-    }
+@media not all and (hover: none) {
+  .gameboard .cell:hover {
+    /* --gameboard-cell-radius: var(--gameboard-cell-radius-hover); */
+    border-radius: var(--gameboard-cell-radius-hover);
+    --gameboard-cell-bg-col: var(--gameboard-cell-bg-col-hover);
+    --gameboard-cell-border-col: var(--gameboard-cell-border-col-hover);
+  }
 }
 
 /* here replicate the same style as above, for devices not supporing hover */
 /* active-specific styles are overwritten */
-.gameboard .cell:active{
-    /* --gameboard-cell-radius: var(--gameboard-cell-radius-active); */
-    border-radius: var(--gameboard-cell-radius-active);
-    --gameboard-cell-bg-col: var(--gameboard-cell-bg-col-active);
-    --gameboard-cell-border-col: var(--gameboard-cell-border-col-active);
-    transform: scale(var(--active-cell-scale)); /*tofix*/
+.gameboard .cell:active {
+  /* --gameboard-cell-radius: var(--gameboard-cell-radius-active); */
+  border-radius: var(--gameboard-cell-radius-active);
+  --gameboard-cell-bg-col: var(--gameboard-cell-bg-col-active);
+  --gameboard-cell-border-col: var(--gameboard-cell-border-col-active);
+  transform: scale(var(--active-cell-scale)); /*tofix*/
 }
-
 
 /* || Main - round outcome div */
-.round-outcome-div{
-    --button-fontsize: var(--round-outcome-btn-fontsize);
+.round-outcome-div {
+  --button-fontsize: var(--round-outcome-btn-fontsize);
 
-    grid-area: round-outcome;
-    width: 100%;
-    
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
+  grid-area: round-outcome;
+  width: 100%;
 
-    background-color: var(--round-outcome-bg-col);
-    padding: var(--round-outcome-padding) 0px;
-    height: var(--round-outcome-height);
-    max-height: var(--round-outcome-height);
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 
-    display: none; /* becomes flex in certain conditions (see below) */
-    position: relative;
+  background-color: var(--round-outcome-bg-col);
+  padding: var(--round-outcome-padding) 0px;
+  height: var(--round-outcome-height);
+  max-height: var(--round-outcome-height);
 
-    opacity: 0;
+  display: none; /* becomes flex in certain conditions (see below) */
+  position: relative;
 
-    transition-property: opacity, display;
-    transition-behavior: allow-discrete;
-    transition-timing-function: ease-out;
-    transition-duration: var(--round-outcome-animation-duration);
-    transition-delay: 0s;
+  opacity: 0;
+
+  transition-property: opacity, display;
+  transition-behavior: allow-discrete;
+  transition-timing-function: ease-out;
+  transition-duration: var(--round-outcome-animation-duration);
+  transition-delay: 0s;
 }
 .round-outcome-div.tie,
-.round-outcome-div.win{
-    opacity: 1;
-    transition-timing-function: ease-in;
-    transition-delay: calc(var(--round-outcome-animation-delay) / 2);
+.round-outcome-div.win {
+  opacity: 1;
+  transition-timing-function: ease-in;
+  transition-delay: calc(var(--round-outcome-animation-delay) / 2);
 }
 
-@starting-style{
-    .round-outcome-div{
-        opacity: 0 !important;
-    } 
+@starting-style {
+  .round-outcome-div {
+    opacity: 0 !important;
+  }
 }
 
 /* https://css-tricks.com/full-width-containers-limited-width-parents/#aa-no-calc-needed */
-.round-outcome-div::before{
-    content:    "";
-    display:    block;
-    width:      100vw;
-    position:   absolute;
-    left:       50%;
-    right:      50%;
-    margin-left:  -50vw;
-    margin-right: -50vw;
-    height:     100%;
-    top:        0;
+.round-outcome-div::before {
+  content: "";
+  display: block;
+  width: 100vw;
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  height: 100%;
+  top: 0;
 
-    background-color: var(--round-outcome-bg-col);
+  background-color: var(--round-outcome-bg-col);
 
-    border-top: var(--round-outcome-border-top) solid var(--round-outcome-border-col);
+  border-top: var(--round-outcome-border-top) solid
+    var(--round-outcome-border-col);
 }
-.round-outcome-div.win::before{
-    --round-outcome-border-col: var(--marker-col);
+.round-outcome-div.win::before {
+  --round-outcome-border-col: var(--marker-col);
 }
 
 .round-outcome-div .round-outcome-text,
 .round-outcome-div .round-outcome-subtext,
-.round-outcome-div button{
-    z-index: 1;
+.round-outcome-div button {
+  z-index: 1;
 }
 
-.round-outcome-div .round-outcome-text{
-    font-variant: small-caps;
-    font-size: var(--round-outcome-text-fontsize);
-    flex: 2;
-    display: none; /* becomes flex in certain conditions (see below) */
-    align-items: center;
-    /* to adapt fontsize */
-    line-height: calc(var(--round-outcome-text-fontsize) * var(--txt-lineheight));
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    max-width: 100%;  
+.round-outcome-div .round-outcome-text {
+  font-variant: small-caps;
+  font-size: var(--round-outcome-text-fontsize);
+  flex: 2;
+  display: none; /* becomes flex in certain conditions (see below) */
+  align-items: center;
+  /* to adapt fontsize */
+  line-height: calc(var(--round-outcome-text-fontsize) * var(--txt-lineheight));
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 100%;
 }
-.round-outcome-div .round-outcome-subtext{
-    font-size: var(--round-outcome-subtext-fontsize);
-    flex: 1;
-    display: none; /* becomes flex in certain conditions (see below) */
-    align-items: flex-start;
+.round-outcome-div .round-outcome-subtext {
+  font-size: var(--round-outcome-subtext-fontsize);
+  flex: 1;
+  display: none; /* becomes flex in certain conditions (see below) */
+  align-items: flex-start;
 }
 
 .round-outcome-div:is(.win),
 .round-outcome-div:is(.tie),
 .round-outcome-div:is(.win) .round-outcome-text.win,
 .round-outcome-div:is(.tie) .round-outcome-text.tie,
-.round-outcome-div:is(.win):is(.extra) .round-outcome-subtext.extra{
-    display: flex;   
+.round-outcome-div:is(.win):is(.extra) .round-outcome-subtext.extra {
+  display: flex;
 }
 
 .round-outcome-div .winner-player,
-.winner-combo{
-    font-variant: normal;
-    font-weight: bold;
-    color: var(--marker-col);
+.winner-combo {
+  font-variant: normal;
+  font-weight: bold;
+  color: var(--marker-col);
 }
-.winner-combo{
-    font-weight: bold;
+.winner-combo {
+  font-weight: bold;
 }
 
 /* Round outcome buttons */
-.round-outcome-div .outcome-next-actions{
-    display: flex;
-    gap: var(--round-outcome-btns-gap);
- }
+.round-outcome-div .outcome-next-actions {
+  display: flex;
+  gap: var(--round-outcome-btns-gap);
+}
 
 /* https://www.svgrepo.com/svg/510273/tic-tac-toe */
-.icon-mask.o::before{
-    mask-image: url('data:image/svg+xml,<svg width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="13 2 9 9"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M17.5 4C16.1193 4 15 5.11929 15 6.5C15 7.88071 16.1193 9 17.5 9C18.8807 9 20 7.88071 20 6.5C20 5.11929 18.8807 4 17.5 4ZM13 6.5C13 4.01472 15.0147 2 17.5 2C19.9853 2 22 4.01472 22 6.5C22 8.98528 19.9853 11 17.5 11C15.0147 11 13 8.98528 13 6.5ZZ" fill="%23000"></path> </g></svg>');
+.icon-mask.o::before {
+  mask-image: url('data:image/svg+xml,<svg width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="13 2 9 9"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M17.5 4C16.1193 4 15 5.11929 15 6.5C15 7.88071 16.1193 9 17.5 9C18.8807 9 20 7.88071 20 6.5C20 5.11929 18.8807 4 17.5 4ZM13 6.5C13 4.01472 15.0147 2 17.5 2C19.9853 2 22 4.01472 22 6.5C22 8.98528 19.9853 11 17.5 11C15.0147 11 13 8.98528 13 6.5ZZ" fill="%23000"></path> </g></svg>');
 }
-.icon-mask.x::before{
-    mask-image: url('data:image/svg+xml,<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 8.99 8.99"><g stroke-width="0"></g><g stroke-linecap="round" stroke-linejoin="round"></g><path fill-rule="evenodd" clip-rule="evenodd" d="M2.293 2.293a1 1 0 0 1 1.414 0L6.5 5.086l2.793-2.793a1 1 0 0 1 1.414 1.414L7.914 6.5l2.793 2.793a1 1 0 0 1-1.414 1.414L6.5 7.914l-2.793 2.793a1 1 0 0 1-1.414-1.414L5.086 6.5 2.293 3.707a1 1 0 0 1 0-1.414" fill="%23000"></path></svg>');
+.icon-mask.x::before {
+  mask-image: url('data:image/svg+xml,<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 8.99 8.99"><g stroke-width="0"></g><g stroke-linecap="round" stroke-linejoin="round"></g><path fill-rule="evenodd" clip-rule="evenodd" d="M2.293 2.293a1 1 0 0 1 1.414 0L6.5 5.086l2.793-2.793a1 1 0 0 1 1.414 1.414L7.914 6.5l2.793 2.793a1 1 0 0 1-1.414 1.414L6.5 7.914l-2.793 2.793a1 1 0 0 1-1.414-1.414L5.086 6.5 2.293 3.707a1 1 0 0 1 0-1.414" fill="%23000"></path></svg>');
 }
 
 /* when hover is supported */
-@media not all and (hover: none){
-
+@media not all and (hover: none) {
 }
 
 /* tablet or larger, or landscape (vs portrait)*/
-@media only screen and (min-width: 768px), (orientation: landscape){
-
+@media only screen and (min-width: 768px), (orientation: landscape) {
 }
-
-
-
 
 /* || Footer */
 footer {
-    --light-grey: rgb(210, 210, 210,0.75);
-    --black: rgb(0, 0, 0);
-    --ftr-fontsize: 12px;
-    --ftr-font: 'Montserrat';
-    --ftr-padding: 5px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    background-color: var(--light-grey);
-    color: var(--black);
-    font-family: var(--ftr-font), sans-serif;
-    font-size: var(--ftr-fontsize);
-    font-weight: 400;
-    line-height: 1.2;
-    padding: var(--ftr-padding);
+  --light-grey: rgb(210, 210, 210, 0.75);
+  --black: rgb(0, 0, 0);
+  --ftr-fontsize: 12px;
+  --ftr-font: "Montserrat";
+  --ftr-padding: 5px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: var(--light-grey);
+  color: var(--black);
+  font-family: var(--ftr-font), sans-serif;
+  font-size: var(--ftr-fontsize);
+  font-weight: 400;
+  line-height: 1.2;
+  padding: var(--ftr-padding);
 }
 
 footer i {
-    font-size: 1.3em;
+  font-size: 1.3em;
 }
