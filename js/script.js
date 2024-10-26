@@ -662,7 +662,7 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
     return commonUtilities.randomItemInArray(emptyCellsId);
   };
 
-  let getHeuristicMove_skillLevelFrom0to5 = function (gameboard, skillLevel) {
+  let getHeuristicMove_skillLevelFrom0to4 = function (gameboard, skillLevel) {
     // Heuristic chosen moves phases:
     // [1] If the ai player can win now, make the move to win [REACTIVE MOVE],
     // [2] else if the opponent can win on the next move, make the move to block it [REACTIVE MOVE],
@@ -673,9 +673,8 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
     // skillLevel 0. Phases: 5
     // skillLevel 1. Phases: 1 > 5
     // skillLevel 2. Phases: 1 > 2 > 5
-    // skillLevel 3. Phases: todo
-    // skillLevel 4. Phases: 1 > 2 > 3 > 5
-    // skillLevel 5. Phases: 1 > 2 > 3 > 4 > 5
+    // skillLevel 3. Phases: 1 > 2 > 3 > 5
+    // skillLevel 4. Phases: 1 > 2 > 3 > 4 > 5
 
     if (skillLevel >= 1) {
       // Phase 1: Check if the ai player can win
@@ -695,14 +694,14 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
         if (blockingCells.length)
           return commonUtilities.randomItemInArray(blockingCells).getCellId();
 
-        if (skillLevel >= 4) {
+        if (skillLevel >= 3) {
           // Phase 3: Check if the ai can fork
           let forkingCells =
             gameboard.getAllPotentialForkScoreAfterMove(player);
           if (forkingCells.length)
             return commonUtilities.randomItemInArray(forkingCells).getCellId();
 
-          if (skillLevel >= 5) {
+          if (skillLevel >= 4) {
             // Phase 4: Check if the opponent can fork
             let forkingBlockCells =
               gameboard.getAllPotentialForkScoreAfterMove(opponent);
@@ -905,17 +904,16 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
     // skillLevel 0. Novice AI, totally random move
     // skillLevel 1. Beginner AI, reactive player: immediate win or random move
     // skillLevel 2. Intermediate AI, reactive player: immediate win or immediate block or random move
-    // skillLevel 3. Phases: todo
-    // skillLevel 4. Proficient AI, proactive player: immediate win or immediate block or fork or random move
-    // skillLevel 5. Advanced AI, proactive player: immediate win or immediate block or fork or block fork or random move
-    // skillLevel 6. Expert AI, uses minmax with depth limited to winLen to make it not perfect and beatable.
-    // skillLevel 7. Master AI, uses minmax with full depth (at least for the 3x3 grid...
+    // skillLevel 3. Proficient AI, proactive player: immediate win or immediate block or fork or random move
+    // skillLevel 4. Advanced AI, proactive player: immediate win or immediate block or fork or block fork or random move
+    // skillLevel 5. Expert AI, uses minmax with depth limited to winLen to make it not perfect and beatable.
+    // skillLevel 6. Master AI, uses minmax with full depth (at least for the 3x3 grid...
     //               on larger boards the max depth might be reduced for computational reasons).
     //               In optimal conditions (when using full depth), it is unbeatable.
 
-    if (skillLevel <= 5)
-      return getHeuristicMove_skillLevelFrom0to5(gameboard, skillLevel);
-    else if (skillLevel == 6)
+    if (skillLevel <= 4)
+      return getHeuristicMove_skillLevelFrom0to4(gameboard, skillLevel);
+    else if (skillLevel == 5)
       return getBestMove(gameboard, gameboard.getWinLen());
     else return getBestMove(gameboard);
   };
@@ -1619,11 +1617,10 @@ const displayController = (function () {
     "Novice AI",
     "Beginner AI",
     "Intermediate AI",
-    "Experienced AI*",
     "Proficient AI",
     "Advanced AI",
-    "Expert AI*",
-    "Master AI*",
+    "Expert AI",
+    "Master AI",
   ];
   const setAIplayerName = function () {
     // Check whether player O is human or AI
