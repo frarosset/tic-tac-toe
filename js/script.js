@@ -1543,11 +1543,16 @@ const displayController = (function () {
     setPlayerInfoCurrentPlayer();
 
     if (!game.getCurrentPlayer().isHuman()) {
+      const start = performance.now();
       game.getAIMove().then((cellToMove) => {
-        console.log("AI next move: ", cellToMove);
+        const elapsed = performance.now() - start;
+        const waitFor = Math.max(AIMoveDelayMs - elapsed, 0);
+        console.log(
+          `AI next move: ${cellToMove} (elaphsed: ${elapsed} ms, wait for ${waitFor} ms)`
+        );
         setTimeout(
           playMoveDOM, //function
-          AIMoveDelayMs, // delay
+          waitFor, // artificial delay
           { target: gameboardDiv.childNodes[cellToMove] } // arguments of function
         );
       });
