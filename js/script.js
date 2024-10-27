@@ -713,17 +713,27 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
   };
 
   let _getMinMaxMaxDepth = function (gameboard) {
-    let maxNodesToExplore = 500000;
+    let maxNodesToExplore = 300000;
     let numOfEmptyCells = gameboard.getEmptyCells().size;
     let nextNumOfEmptyCells = numOfEmptyCells;
     let nextNodesToExplore = numOfEmptyCells;
-    //console.log({nextNumOfEmptyCells,nextNodesToExplore});
-    while (nextNodesToExplore < maxNodesToExplore && nextNumOfEmptyCells > 1) {
-      nextNumOfEmptyCells--;
-      nextNodesToExplore *= nextNumOfEmptyCells;
-      //console.log({nextNumOfEmptyCells,nextNodesToExplore});
+    let maxDepth;
+
+    if (numOfEmptyCells <= 9) {
+      maxDepth = numOfEmptyCells;
+    } else {
+      while (
+        nextNodesToExplore < maxNodesToExplore &&
+        nextNumOfEmptyCells > 1
+      ) {
+        nextNumOfEmptyCells--;
+        nextNodesToExplore *= nextNumOfEmptyCells;
+      }
+      maxDepth = numOfEmptyCells - nextNumOfEmptyCells + 1;
     }
-    maxDepth = numOfEmptyCells - nextNumOfEmptyCells + 1;
+
+    console.log({ maxDepth, numOfEmptyCells });
+
     return maxDepth;
   };
 
