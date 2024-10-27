@@ -738,7 +738,7 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
   // see https://stackoverflow.com/questions/31429974/alphabeta-pruning-alpha-equals-or-greater-than-beta-why-equals
   // The implementation of the alpha-beta pruning is based on: https://github.com/aimacode/aima-java/blob/AIMA3e/aima-core/src/main/java/aima/core/search/adversarial/AlphaBetaSearch.java#L66
 
-  let getBestMove = function (gameboard, maxDepth = -1) {
+  let getBestMove = async function (gameboard, maxDepth = -1) {
     // MAIN CALL (ie, at depth 0, and not on recursion call)
 
     // Init nodesMap
@@ -747,7 +747,6 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
     // Get max search depth
     let maxDepthLim = _getMinMaxMaxDepth(gameboard);
     maxDepth = maxDepth >= 0 ? Math.min(maxDepthLim, maxDepth) : maxDepthLim;
-    console.log({ maxDepth });
 
     const depth = 0; // current depth
     //-------------------------------------------------------------------------------
@@ -792,13 +791,15 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
       if (minMaxNodesMap.has(nodeValue))
         minMaxNodesMap.get(nodeValue).push(cell.getCellId());
       else minMaxNodesMap.set(nodeValue, [cell.getCellId()]);
+
+      await new Promise((resolve) => setTimeout(resolve, 2));
     }
 
     //-------------------------------------------------------------------------------
 
     // On MAIN CALL: return the index of the best move (or a random one, if there are multiple of them)
     let bestMoves = minMaxNodesMap.get(best);
-    console.log([...minMaxNodesMap.keys()], best, bestMoves);
+
     return commonUtilities.randomItemInArray(bestMoves);
   };
 
@@ -852,7 +853,7 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
       // The move is always valid
       gameboard.makeMove(r, c, currentTurnInfo.player);
 
-      //Recursively call getBestMove with the other player (using !isMaximizing) and depth incremented by 1
+      //Recursively call minMaxSearch with the other player (using !isMaximizing) and depth incremented by 1
       const nodeValue = minMaxSearch(
         gameboard,
         maxDepth,
@@ -894,7 +895,7 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
     return best;
   };
 
-  let getAIMove = function (gameboard) {
+  let getAIMove = async function (gameboard) {
     // skillLevel 0. Novice AI, totally random move
     // skillLevel 1. Beginner AI, reactive player: immediate win or random move
     // skillLevel 2. Intermediate AI, reactive player: immediate win or immediate block or random move
@@ -905,11 +906,19 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
     //               on larger boards the max depth might be reduced for computational reasons).
     //               In optimal conditions (when using full depth), it is unbeatable.
 
-    if (skillLevel <= 4)
-      return getHeuristicMove_skillLevelFrom0to4(gameboard, skillLevel);
-    else if (skillLevel == 5)
-      return getBestMove(gameboard, gameboard.getWinLen());
-    else return getBestMove(gameboard);
+    // getBestMove is async and returns a Promise, resolved with the move to perform as value
+    // as this method is async, too, it returns a Promise, resolved with the move to perform as value
+    let move;
+
+    if (skillLevel <= 4) {
+      move = getHeuristicMove_skillLevelFrom0to4(gameboard, skillLevel);
+    } else if (skillLevel == 5) {
+      move = await getBestMove(gameboard, gameboard.getWinLen());
+    } else {
+      move = await getBestMove(gameboard);
+    }
+
+    return move;
   };
 
   return { ...player, getAIMove, setOpponent };
@@ -1045,11 +1054,14 @@ function gameController(
     markedCells.push(cell);
   };
 
-  const getAIMove = function () {
-    // Just a wrapper of AI player method
+  const getAIMove = async function () {
+    // Just a wrapper of AI player method, but returns a Promise, resolved with the move to perform as value
+    // getAIMove is async and returns a Promise, resolved with the move to perform as value
+
     let player = getCurrentPlayer();
     if (player.isHuman()) return null;
-    return player.getAIMove(gameboard);
+    const move = await player.getAIMove(gameboard);
+    return move;
   };
 
   const playMove = function (row, column) {
@@ -1521,14 +1533,14 @@ const displayController = (function () {
     setPlayerInfoCurrentPlayer();
 
     if (!game.getCurrentPlayer().isHuman()) {
-      let cellToMove = game.getAIMove();
-
-      console.log("AI next move: ", cellToMove);
-      setTimeout(
-        playMoveDOM, //function
-        AIMoveDelayMs, // delay
-        { target: gameboardDiv.childNodes[cellToMove] } // arguments of function
-      );
+      game.getAIMove().then((cellToMove) => {
+        console.log("AI next move: ", cellToMove);
+        setTimeout(
+          playMoveDOM, //function
+          AIMoveDelayMs, // delay
+          { target: gameboardDiv.childNodes[cellToMove] } // arguments of function
+        );
+      });
     }
     // else: wait for player click on cell, after which playMoveDOM callback is called
   };
