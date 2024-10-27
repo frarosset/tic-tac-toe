@@ -15,18 +15,6 @@ const DOMUtilities = (function () {
   // either vertically or horizontally.
   // Will temporarily modify the "overflow" style to detect this
   // if necessary.
-  const _checkOverflow = function (el) {
-    let curOverflow = el.style.overflow;
-
-    if (!curOverflow || curOverflow === "visible") el.style.overflow = "hidden";
-
-    let isOverflowing =
-      el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
-    // console.log(el.clientWidth, el.scrollWidth, el.clientHeight, el.scrollHeight)
-    el.style.overflow = curOverflow;
-
-    return isOverflowing;
-  };
   const _checkEllipsis = function (el) {
     return el.offsetWidth < el.scrollWidth;
   };
@@ -34,9 +22,11 @@ const DOMUtilities = (function () {
   const fitFontSize = function (elem, defaultFontSize = "", delta = 0.9) {
     // Initialize the fontSize, if the initial value is provided
     if (defaultFontSize) elem.style.fontSize = defaultFontSize;
-    let fontSize = getComputedStyle(elem).getPropertyValue("font-size");
-    let fontSizeVal, fontSizeUnit;
-    [fontSizeVal, fontSizeUnit] = _splitCSSUnits(fontSize);
+    const fontSize = getComputedStyle(elem).getPropertyValue("font-size");
+
+    const cssUnitsSplit = _splitCSSUnits(fontSize);
+    let fontSizeVal = cssUnitsSplit[0];
+    const fontSizeUnit = cssUnitsSplit[1];
 
     while (_checkEllipsis(elem) && fontSizeVal > 8) {
       fontSizeVal *= delta;
@@ -63,7 +53,7 @@ const commonUtilities = (function () {
   };
 
   const randomItemInArray = function (array) {
-    let randomIdx = randomInt(0, array.length - 1);
+    const randomIdx = randomInt(0, array.length - 1);
     return array[randomIdx];
   };
 
@@ -93,18 +83,19 @@ const commonUtilities = (function () {
 function createGameboard(size, emptyCellValue = "", winLen = 0) {
   if (winLen == 0) winLen = size;
 
-  let gameboard = [];
+  const gameboard = [];
   let numberOfEmptyCells = size * size;
 
   // Map(): see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
-  let emptyCells = new Map();
+  const emptyCells = new Map();
 
   // Create the empty gameboard
   for (let r = 0; r < size; r++) {
     // Add a row
     gameboard.push([]);
+
     for (let c = 0; c < size; c++) {
-      let id = r * size + c;
+      const id = r * size + c;
       // Add cells to row
       gameboard[r].push(createCell(r, c, id, emptyCellValue));
       emptyCells.set(id, gameboard[r][c]);
@@ -113,6 +104,7 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
 
   const resetGameboard = function () {
     numberOfEmptyCells = size * size;
+
     gameboard.forEach((row) => {
       row.forEach((cell) => {
         cell.resetCellPlayer();
@@ -122,8 +114,8 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
   };
 
   const printGameboard = function () {
-    let verticalLine = " | ";
-    let horizontalLine =
+    const verticalLine = " | ";
+    const horizontalLine =
       "-".repeat(size + (size - 1) * verticalLine.length) + "\n";
     let str = "";
 
@@ -135,6 +127,7 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
       });
       str += "\n";
     });
+
     console.log(str);
   };
 
@@ -144,13 +137,13 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
   };
 
   const _getColumnCells = function (column) {
-    return gameboard.map((itm, idx) => itm[column]);
+    return gameboard.map((itm) => itm[column]);
   };
 
   const _getMainDiagonalCells = function (k = 0) {
     //return gameboard.map((itm,idx) => itm[idx]); /* valid only if k=0 */
     return gameboard.reduce((arr, itm, idx) => {
-      let i = idx + k;
+      const i = idx + k;
       if (i >= 0 && i < size) {
         arr.push(itm[i]);
       }
@@ -161,7 +154,7 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
   const _getAntiDiagonalCells = function (k = 0) {
     //return gameboard.map((itm,idx) => itm[size-idx-1]); /* valid only if k=0 */
     return gameboard.reduce((arr, itm, idx) => {
-      let i = size - idx - 1 + k;
+      const i = size - idx - 1 + k;
       if (i >= 0 && i < size) {
         arr.push(itm[i]);
       }
@@ -169,8 +162,8 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
     }, []);
   };
 
-  let gameboardLines = (function () {
-    let lines = [];
+  const gameboardLines = (function () {
+    const lines = [];
 
     // Row lines
     for (let row = 0; row < size; row++) lines.push(_getRowCells(row));
@@ -179,7 +172,7 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
     for (let column = 0; column < size; column++)
       lines.push(_getColumnCells(column));
 
-    let diagN = size - winLen;
+    const diagN = size - winLen;
 
     // Main diagonal
     for (let diagK = -diagN; diagK < diagN + 1; diagK++)
@@ -189,21 +182,19 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
     for (let diagK = -diagN; diagK < diagN + 1; diagK++)
       lines.push(_getAntiDiagonalCells(diagK));
 
-    // lines.forEach(itm => {console.log(itm.map(itm => itm.getCellId()))})
-
     return lines;
   })();
 
-  let gameboardSubLines = (function () {
-    let subLines = [];
+  const gameboardSubLines = (function () {
+    const subLines = [];
 
     // for each line
-    for (line of gameboardLines) {
+    for (const line of gameboardLines) {
       //console.log(`Line: [${line.map(cell => cell.getCellId())}]`);
 
       // for each possible subline (there are more than one when winLen<size)
       for (let i = 0; i < line.length - winLen + 1; i++) {
-        let subLine = line.slice(i, i + winLen);
+        const subLine = line.slice(i, i + winLen);
         subLines.push(subLine);
         //console.log(`  subline: [${subLine.map(cell => cell.getCellId())}]`);
       }
@@ -211,11 +202,11 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
     return subLines;
   })();
 
-  let getSize = function () {
+  const getSize = function () {
     return size;
   };
 
-  let getWinLen = function () {
+  const getWinLen = function () {
     return winLen;
   };
 
@@ -240,7 +231,7 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
     }
 
     //console.log(`Gameboard:makeMove. Marking cell (${row},${column}) by user ${currentTurn}`);
-    let cell = gameboard[row][column];
+    const cell = gameboard[row][column];
     cell.setCellPlayer(currentTurn);
     numberOfEmptyCells--;
     emptyCells.delete(cell.getCellId());
@@ -249,7 +240,7 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
   };
 
   const unmarkMove = function (row, column, currentTurn) {
-    let cell = gameboard[row][column];
+    const cell = gameboard[row][column];
     if (cell.getCellPlayer() == currentTurn) {
       cell.resetCellPlayer();
       numberOfEmptyCells++;
@@ -258,13 +249,13 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
   };
 
   /* Game finished methods */
-  const _checkEqualValidCellsInLine = function (array) {
-    let firstValue = array[0].getCellValue();
-    return (
-      firstValue != emptyCellValue &&
-      array.every((itm) => itm.getCellValue() === firstValue)
-    );
-  };
+  // const _checkEqualValidCellsInLine = function (array) {
+  //   const firstValue = array[0].getCellValue();
+  //   return (
+  //     firstValue != emptyCellValue &&
+  //     array.every((itm) => itm.getCellValue() === firstValue)
+  //   );
+  // };
 
   const _checkAtLeastMEqualCellsInLine = function (array) {
     let iStart = 0;
@@ -310,12 +301,12 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
   };
 
   const getArrayOfLinesOfEqualCells = function () {
-    let linesOfEqualCells = [];
+    const linesOfEqualCells = [];
 
     // Check a winner in the lines
-    for (line of gameboardLines) {
-      let seq = _checkAtLeastMEqualCellsInLine(line);
-      // if (_checkEqualValidCellsInLine(line)){
+    for (const line of gameboardLines) {
+      const seq = _checkAtLeastMEqualCellsInLine(line);
+      // previously: seq = _checkEqualValidCellsInLine(line)
       if (seq) {
         linesOfEqualCells.push(...seq);
       }
@@ -333,7 +324,7 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
   };
 
   const getTerminalCondition = function () {
-    let equalLines = getArrayOfLinesOfEqualCells();
+    const equalLines = getArrayOfLinesOfEqualCells();
     // Gameboard has a winner
     if (equalLines.length) {
       return createTerminalCondition(
@@ -341,10 +332,12 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
         equalLines
       );
     }
+
     // Gameboard is full
     if (noEmptyCells()) {
       return createTerminalCondition(null, []);
     }
+
     // There are empty cells to fill and no winner yet
     return null;
   };
@@ -354,11 +347,10 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
   const getPotentialWinScoreAfterMove = function (cell, player) {
     let score = 0;
 
-    let terminalCondition;
     // Check if the player can win (temporarly marking the cell)
     makeMove(cell.getCellRow(), cell.getCellColumn(), player);
 
-    terminalCondition = getTerminalCondition();
+    const terminalCondition = getTerminalCondition();
     if (terminalCondition && terminalCondition.getPlayer()) {
       // the winner is necessarily the player
       score = terminalCondition.getAssignedPoints(); // win
@@ -377,7 +369,7 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
     return score;
   };
 
-  let getPotentialForkScoreAfterMove = function (cell, player) {
+  const getPotentialForkScoreAfterMove = function (cell, player) {
     // Make the move (temporarly marking the cell)
     makeMove(cell.getCellRow(), cell.getCellColumn(), player);
 
@@ -388,7 +380,7 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
     // - A >1 score, is a certain win on the next turn of the player,
     //   beacause the opponent can only block one of them in the turn in between
 
-    let score = getAllPotentialWinScoreAfterMove(player).length;
+    const score = getAllPotentialWinScoreAfterMove(player).length;
 
     unmarkMove(cell.getCellRow(), cell.getCellColumn(), player);
 
@@ -408,12 +400,12 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
     getBestScoreOnly = false
   ) {
     let winningCells = [];
-    let emptyCellsArr = [...emptyCells.values()];
+    const emptyCellsArr = [...emptyCells.values()];
     let bestScore = 1; // a 0 score is not a win
 
     emptyCellsArr.forEach((cell) => {
       // Check if the player can win
-      let score = getPotentialWinScoreAfterMove(cell, player);
+      const score = getPotentialWinScoreAfterMove(cell, player);
 
       // reset the cells if a better score is found
       if (getBestScoreOnly) {
@@ -434,12 +426,12 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
     player,
     getForkScoreOnly = false
   ) {
-    let potentialWinCells = []; // with score=1, see getPotentialForkScoreAfterMove
-    let forkingCells = []; // with score>1
-    let emptyCellsArr = [...emptyCells.values()];
+    const potentialWinCells = []; // with score=1, see getPotentialForkScoreAfterMove
+    const forkingCells = []; // with score>1
+    const emptyCellsArr = [...emptyCells.values()];
 
     emptyCellsArr.forEach((cell) => {
-      let score = getPotentialForkScoreAfterMove(cell, player);
+      const score = getPotentialForkScoreAfterMove(cell, player);
       // Check if the player can fork
       if (score == 1 && !getForkScoreOnly) potentialWinCells.push(cell);
       else if (score > 1) forkingCells.push(cell);
@@ -467,8 +459,8 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
 
     // Get the number of marked cells
     let numOfMarkedCellsForPotentialWin = 0;
-    for (let cell of line) {
-      let cellVal = cell.getCellValue();
+    for (const cell of line) {
+      const cellVal = cell.getCellValue();
 
       if (cellVal == playerVal)
         // player mark
@@ -485,14 +477,14 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
 
   const getGameboardHeuristicScoreForPlayer = function (player) {
     let score = 0;
-    let playerVal = player.getPlayerValue();
+    const playerVal = player.getPlayerValue();
     // This score sums the score of all the winning opportunities of the player
     // A winning opportunity is a line in which no opponent mark is set
 
     // If winLen==size, the lines are equal to the subLines
     // If winLen<size, a winning opportunity can occur in each subline (there are 1+ of them in each line)
     // for each subline
-    for (subLine of gameboardSubLines) {
+    for (const subLine of gameboardSubLines) {
       //console.log(`    SubLine: [${subLine.map(cell => cell.getCellId())}] = [${subLine.map(cell => cell.getCellValue())}]  ==> ${player.getPlayerValue()}`);
 
       score += getLineHeuristicSquaredScoreForPlayer(subLine, playerVal);
@@ -503,7 +495,7 @@ function createGameboard(size, emptyCellValue = "", winLen = 0) {
 
   const getGameboardHeuristicScore = function (player, opponent) {
     // This is the overall score that takes into account both the player and the opponent winning opportunities
-    let score =
+    const score =
       getGameboardHeuristicScoreForPlayer(player) -
       getGameboardHeuristicScoreForPlayer(opponent);
     //console.log(`GAMEBOARD SCORE (TOT): ${score}\n`);
@@ -618,7 +610,7 @@ function createPlayer(id, name, value) {
 }
 
 function createAIPlayer(id, name = "AI", value, skillLevel) {
-  let player = createPlayer(id, name, value);
+  const player = createPlayer(id, name, value);
   let opponent = null;
 
   // Override isHuman method
@@ -645,18 +637,18 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
       fcn: Math.min,
       worstScore: baseScore,
       updateAlfaBeta: (best, alpha, beta) => [alpha, Math.min(beta, best)],
-      getAlfaBetaCondition: (best, alpha, beta) => best <= alpha,
+      getAlfaBetaCondition: (best, alpha) => best <= alpha,
     },
   };
-  let minMaxNodesMap = new Map();
+  const minMaxNodesMap = new Map();
 
-  let getRandomMove = function (gameboard) {
+  const getRandomMove = function (gameboard) {
     // Select a random cell among the empty ones
-    let emptyCellsId = [...gameboard.getEmptyCells().keys()];
+    const emptyCellsId = [...gameboard.getEmptyCells().keys()];
     return commonUtilities.randomItemInArray(emptyCellsId);
   };
 
-  let getHeuristicMove_skillLevelFrom0to4 = function (gameboard, skillLevel) {
+  const getHeuristicMove_skillLevelFrom0to4 = function (gameboard, skillLevel) {
     // Heuristic chosen moves phases:
     // [1] If the ai player can win now, make the move to win [REACTIVE MOVE],
     // [2] else if the opponent can win on the next move, make the move to block it [REACTIVE MOVE],
@@ -672,16 +664,17 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
 
     if (skillLevel >= 1) {
       // Phase 1: Check if the ai player can win
-      let winningCells = gameboard.getAllPotentialWinScoreAfterMove(
+      const winningCells = gameboard.getAllPotentialWinScoreAfterMove(
         player,
         true
       ); // get best score move
+
       if (winningCells.length)
         return commonUtilities.randomItemInArray(winningCells).getCellId();
 
       if (skillLevel >= 2) {
         // Phase 2: Check if the opponent can win
-        let blockingCells = gameboard.getAllPotentialWinScoreAfterMove(
+        const blockingCells = gameboard.getAllPotentialWinScoreAfterMove(
           opponent,
           true
         ); // get best score move
@@ -690,14 +683,14 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
 
         if (skillLevel >= 3) {
           // Phase 3: Check if the ai can fork
-          let forkingCells =
+          const forkingCells =
             gameboard.getAllPotentialForkScoreAfterMove(player);
           if (forkingCells.length)
             return commonUtilities.randomItemInArray(forkingCells).getCellId();
 
           if (skillLevel >= 4) {
             // Phase 4: Check if the opponent can fork
-            let forkingBlockCells =
+            const forkingBlockCells =
               gameboard.getAllPotentialForkScoreAfterMove(opponent);
             if (forkingBlockCells.length)
               return commonUtilities
@@ -712,9 +705,9 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
     return getRandomMove(gameboard);
   };
 
-  let _getMinMaxMaxDepth = function (gameboard) {
-    let maxNodesToExplore = 300000;
-    let numOfEmptyCells = gameboard.getEmptyCells().size;
+  const _getMinMaxMaxDepth = function (gameboard) {
+    const maxNodesToExplore = 300000;
+    const numOfEmptyCells = gameboard.getEmptyCells().size;
     let nextNumOfEmptyCells = numOfEmptyCells;
     let nextNodesToExplore = numOfEmptyCells;
     let maxDepth;
@@ -732,7 +725,9 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
       maxDepth = numOfEmptyCells - nextNumOfEmptyCells + 1;
     }
 
-    console.log({ maxDepth, numOfEmptyCells });
+    console.log(
+      `Search tree depth. TOT: ${numOfEmptyCells} - STOP AT ${maxDepth}`
+    );
 
     return maxDepth;
   };
@@ -748,14 +743,14 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
   // see https://stackoverflow.com/questions/31429974/alphabeta-pruning-alpha-equals-or-greater-than-beta-why-equals
   // The implementation of the alpha-beta pruning is based on: https://github.com/aimacode/aima-java/blob/AIMA3e/aima-core/src/main/java/aima/core/search/adversarial/AlphaBetaSearch.java#L66
 
-  let getBestMove = async function (gameboard, maxDepth = -1) {
+  const getBestMove = async function (gameboard, maxDepth = -1) {
     // MAIN CALL (ie, at depth 0, and not on recursion call)
 
     // Init nodesMap
     minMaxNodesMap.clear();
 
     // Get max search depth
-    let maxDepthLim = _getMinMaxMaxDepth(gameboard);
+    const maxDepthLim = _getMinMaxMaxDepth(gameboard);
     maxDepth = maxDepth >= 0 ? Math.min(maxDepthLim, maxDepth) : maxDepthLim;
 
     const depth = 0; // current depth
@@ -771,10 +766,10 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
     const beta = minMaxTurnInfo.min.worstScore;
 
     // Loop through all empty cells
-    let emptyCellsArr = [...gameboard.getEmptyCells().values()];
-    for (let cell of emptyCellsArr) {
-      let r = cell.getCellRow();
-      let c = cell.getCellColumn();
+    const emptyCellsArr = [...gameboard.getEmptyCells().values()];
+    for (const cell of emptyCellsArr) {
+      const r = cell.getCellRow();
+      const c = cell.getCellColumn();
 
       // The move is always valid
       gameboard.makeMove(r, c, currentTurnInfo.player);
@@ -808,7 +803,7 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
     //-------------------------------------------------------------------------------
 
     // On MAIN CALL: return the index of the best move (or a random one, if there are multiple of them)
-    let bestMoves = minMaxNodesMap.get(best);
+    const bestMoves = minMaxNodesMap.get(best);
 
     return commonUtilities.randomItemInArray(bestMoves);
   };
@@ -823,9 +818,9 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
   ) {
     // Ending condition: either there is a winner, or the board is full, or the max depth is reached
     // Return the heuristic value of this gameboard
-    let terminalCondition = gameboard.getTerminalCondition();
+    const terminalCondition = gameboard.getTerminalCondition();
     if (terminalCondition) {
-      let winningPlayer = terminalCondition.getPlayer();
+      const winningPlayer = terminalCondition.getPlayer();
       if (!winningPlayer) {
         // no winner, but the gameboard is full: tie
         return 0;
@@ -847,7 +842,7 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
     //-------------------------------------------------------------------------------
 
     // Get info on the current turn: this avoids duplicating code for minimizing and maximizing players
-    let currentTurnInfo = isMaximizing
+    const currentTurnInfo = isMaximizing
       ? minMaxTurnInfo.max
       : minMaxTurnInfo.min;
 
@@ -855,10 +850,10 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
     let best = currentTurnInfo.worstScore;
 
     // Loop through all empty cells
-    let emptyCellsArr = [...gameboard.getEmptyCells().values()];
-    for (let cell of emptyCellsArr) {
-      let r = cell.getCellRow();
-      let c = cell.getCellColumn();
+    const emptyCellsArr = [...gameboard.getEmptyCells().values()];
+    for (const cell of emptyCellsArr) {
+      const r = cell.getCellRow();
+      const c = cell.getCellColumn();
 
       // The move is always valid
       gameboard.makeMove(r, c, currentTurnInfo.player);
@@ -905,7 +900,7 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
     return best;
   };
 
-  let getAIMove = async function (gameboard) {
+  const getAIMove = async function (gameboard) {
     // skillLevel 0. Novice AI, totally random move
     // skillLevel 1. Beginner AI, reactive player: immediate win or random move
     // skillLevel 2. Intermediate AI, reactive player: immediate win or immediate block or random move
@@ -935,7 +930,7 @@ function createAIPlayer(id, name = "AI", value, skillLevel) {
 }
 
 function createTerminalCondition(player, winningCells) {
-  let assignedPoints = winningCells.length;
+  const assignedPoints = winningCells.length;
 
   // Game / win status
   const getPlayer = function () {
@@ -977,13 +972,13 @@ function gameController(
   // markedCells[0]
   // Classic mode: max size*size marked cells including both players (ie, all of the cells)
   // Extended mode: at most 2*size marked cells including both players
-  let maxMarkedCells = extendedMode ? 2 * size : size * size;
+  const maxMarkedCells = extendedMode ? 2 * size : size * size;
 
   if (winLen == 0) winLen = size;
 
   // Create players
   const players = [];
-  for (sym in playersName) {
+  for (const sym in playersName) {
     if (playersIsHuman[sym]) {
       players.push(
         createPlayer(players.length, playersName[sym], sym.toString())
@@ -1068,24 +1063,24 @@ function gameController(
     // Just a wrapper of AI player method, but returns a Promise, resolved with the move to perform as value
     // getAIMove is async and returns a Promise, resolved with the move to perform as value
 
-    let player = getCurrentPlayer();
+    const player = getCurrentPlayer();
     if (player.isHuman()) return null;
     const move = await player.getAIMove(gameboard);
     return move;
   };
 
   const playMove = function (row, column) {
-    // Check whether a cell must be unmarkedd and do it if possible
+    // Check whether a cell must be unmarked and do it if possible
     handleCellUnmark();
 
     // try to make the move
-    let cell = gameboard.makeMove(row, column, getCurrentPlayer());
+    const cell = gameboard.makeMove(row, column, getCurrentPlayer());
     if (!cell) return -1; // continue game, invalid move
 
     // Add the current cell  where a mark is set to the markedCells array
     _saveMarkedCell(cell);
 
-    let terminalCondition = gameboard.getTerminalCondition();
+    const terminalCondition = gameboard.getTerminalCondition();
     if (terminalCondition) {
       // check if there is a valid winner
       if (terminalCondition.getPlayer()) {
@@ -1116,16 +1111,16 @@ function gameController(
     while (true) {
       // Get info on the move to perform
       gameboard.printGameboard();
-      let currentPlayerName = getCurrentPlayer().getPlayerName();
-      let currentPlayerValue = getCurrentPlayer().getPlayerValue();
+      const currentPlayerName = getCurrentPlayer().getPlayerName();
+      const currentPlayerValue = getCurrentPlayer().getPlayerValue();
       console.log(`${currentPlayerName}'s turn [${currentPlayerValue}].`);
-      let input = prompt(
+      const input = prompt(
         `${currentPlayerName}'s turn [${currentPlayerValue}].\n\nInsert the selected cell index as "row,column:"\n(recall that row and column indices starts from 0)`
       );
-      [row, column] = input.split(",").map((itm) => parseInt(itm.trim()));
+      const [row, column] = input.split(",").map((itm) => parseInt(itm.trim()));
 
       // Perform the move
-      let moveOutcome = playMove(row, column); // 0,-1: the round continues, 1: a player wins, 2: it's a tie
+      const moveOutcome = playMove(row, column); // 0,-1: the round continues, 1: a player wins, 2: it's a tie
 
       // Possibly end the round
       if (moveOutcome > 0) {
@@ -1134,7 +1129,7 @@ function gameController(
 
         if (moveOutcome == 1) {
           // there is a winner
-          let assignedPoints = roundWinner.getAssignedPoints();
+          const assignedPoints = roundWinner.getAssignedPoints();
           console.log(
             `${roundWinner.getPlayer().getPlayerName()} wins this round${
               assignedPoints > 1
@@ -1180,7 +1175,7 @@ function gameController(
     console.log(`Game ended!\n`);
 
     // Print the final game result
-    let gameWinnerPlayer = getGameWinnerPlayer();
+    const gameWinnerPlayer = getGameWinnerPlayer();
     if (gameWinnerPlayer)
       console.log(`${gameWinnerPlayer.getPlayerName()} WINS!`);
     else console.log(`No winner! It's a tie.`);
@@ -1202,12 +1197,12 @@ function gameController(
 }
 
 // This factory function handles the display of the game in the DOM --> IIFE (module pattern), as we need a single instance
-const displayController = (function () {
-  let AIMoveDelayMs = 1200;
+(function displayController() {
+  const AIMoveDelayMs = 1200;
   let gameboardSize = 3;
   let gameboardWinLen = 3;
   let extendedMode = false;
-  let playersName = {};
+  const playersName = {};
   let playersIsHuman = {};
   let AISkillLevel = {};
   let game = null;
@@ -1267,11 +1262,11 @@ const displayController = (function () {
     "#input-gameboard-extended-mode"
   );
 
-  let playerNamesFontSize = getComputedStyle(
+  const playerNamesFontSize = getComputedStyle(
     document.documentElement,
     null
   ).getPropertyValue("--player-info-name-fontsize");
-  let roundOutcomeFontSize = getComputedStyle(
+  const roundOutcomeFontSize = getComputedStyle(
     document.documentElement,
     null
   ).getPropertyValue("--round-outcome-text-fontsize");
@@ -1331,10 +1326,10 @@ const displayController = (function () {
     // Add the cells
     for (let r = 0; r < gameboardSize; r++) {
       for (let c = 0; c < gameboardSize; c++) {
-        let cellClickableArea = document.createElement("div");
+        const cellClickableArea = document.createElement("div");
         cellClickableArea.classList.add("cell-clickable-area");
 
-        let cell = document.createElement("div");
+        const cell = document.createElement("div");
         cell.classList.add("cell");
         cell.classList.add("icon-mask");
 
@@ -1431,8 +1426,8 @@ const displayController = (function () {
   };
 
   const setPlayerInfoScore = function (player) {
-    let playerValue = player.getPlayerValue();
-    let playerScore = player.getPlayerScore();
+    const playerValue = player.getPlayerValue();
+    const playerScore = player.getPlayerScore();
     playerInfoScore[playerValue].textContent = playerScore;
   };
 
@@ -1443,9 +1438,9 @@ const displayController = (function () {
   };
 
   const setPlayerInfoCurrentPlayer = function () {
-    let currentPlayerValue = game.getCurrentPlayer().getPlayerValue();
+    const currentPlayerValue = game.getCurrentPlayer().getPlayerValue();
     game.getPlayers().forEach((player) => {
-      let playerValue = player.getPlayerValue();
+      const playerValue = player.getPlayerValue();
       playerInfoDiv[playerValue].classList.toggle(
         "current-player",
         playerValue === currentPlayerValue
@@ -1455,7 +1450,7 @@ const displayController = (function () {
 
   const resetPlayerInfoCurrentPlayer = function () {
     game.getPlayers().forEach((player) => {
-      let playerValue = player.getPlayerValue();
+      const playerValue = player.getPlayerValue();
       playerInfoDiv[playerValue].classList.toggle("current-player", 0);
     });
   };
@@ -1463,13 +1458,13 @@ const displayController = (function () {
   /* tie / win handler */
   const roundWinHandler = function () {
     // Get the winner info
-    let winner = game.getRoundWinnerPlayer();
+    const winner = game.getRoundWinnerPlayer();
 
-    let winnerPlayer = winner.getPlayer();
-    let winnerPlayerName = winnerPlayer.getPlayerName();
-    let winnerPlayerValue = winnerPlayer.getPlayerValue();
-    let assignedPoints = winner.getAssignedPoints();
-    let winningCells = winner.getWinningCells();
+    const winnerPlayer = winner.getPlayer();
+    const winnerPlayerName = winnerPlayer.getPlayerName();
+    const winnerPlayerValue = winnerPlayer.getPlayerValue();
+    const assignedPoints = winner.getAssignedPoints();
+    const winningCells = winner.getWinningCells();
 
     // Highlight winning cells
     highlightWinningCells(winningCells);
@@ -1595,17 +1590,17 @@ const displayController = (function () {
     }
 
     // Get the cell row and column
-    let row = elem.varRow;
-    let column = elem.varColumn;
+    const row = elem.varRow;
+    const column = elem.varColumn;
 
     // Get the current player
-    let currentPlayerValue = game.getCurrentPlayer().getPlayerValue();
+    const currentPlayerValue = game.getCurrentPlayer().getPlayerValue();
 
     // Try to do the move
-    let moveOutcome = game.playMove(row, column);
+    const moveOutcome = game.playMove(row, column);
 
     // Unmark a cell (this depends on the modality of the game: this happens in extended mode)
-    let cellToUnmark = game.getCellToUnmark();
+    const cellToUnmark = game.getCellToUnmark();
     if (cellToUnmark) {
       removeClassFromCellDOM(cellToUnmark, currentPlayerValue);
     }
@@ -1626,8 +1621,8 @@ const displayController = (function () {
 
   /* Start / end game -- toggling between settings and playing view */
   const getPlayersNamesFromSettings = function () {
-    for (sym in playerNameInput) {
-      let playerValue = playerNameInput[sym].value;
+    for (const sym in playerNameInput) {
+      const playerValue = playerNameInput[sym].value;
       playersName[sym] =
         playerValue.length > 0 ? playerValue : playerNameInput[sym].placeholder;
       playerInfoName[sym].textContent = playersName[sym];
@@ -1645,30 +1640,30 @@ const displayController = (function () {
   ];
   const setAIplayerName = function () {
     // Check whether player O is human or AI
-    let numOfPlayers =
+    const numOfPlayers =
       DOMUtilities.getCheckedRadioValueAmongDescendants(numOfPlayersInput);
-    let oIsAiPlayer = numOfPlayers == 1;
-    let AISkillLevel = parseInt(AISkillLevelInput.value);
+    const oIsAiPlayer = numOfPlayers == 1;
+    const AISkillLevel = parseInt(AISkillLevelInput.value);
     playerNameInput.o.disabled = oIsAiPlayer;
     AISkillLevelInput.disabled = !oIsAiPlayer;
     playerNameInput.o.value = oIsAiPlayer ? AIplayerNames[AISkillLevel] : "";
   };
   const getHumanPlayersFromSettings = function () {
     // Check whether player O is human or AI
-    let numOfPlayers =
+    const numOfPlayers =
       DOMUtilities.getCheckedRadioValueAmongDescendants(numOfPlayersInput);
     if (numOfPlayers == 1) {
       playersIsHuman = { x: true, o: false };
     } else {
       playersIsHuman = { x: true, o: true };
     }
-    for (sym in playerInfoDiv) {
+    for (const sym in playerInfoDiv) {
       playerInfoDiv[sym].classList.toggle("ai", !playersIsHuman[sym]);
     }
   };
   const getAISkillLevelFromSettings = function () {
     // Check whether player O is human or AI
-    let numOfPlayers =
+    const numOfPlayers =
       DOMUtilities.getCheckedRadioValueAmongDescendants(numOfPlayersInput);
     if (numOfPlayers == 1) {
       AISkillLevel = { x: null, o: parseInt(AISkillLevelInput.value) };
@@ -1751,7 +1746,7 @@ const displayController = (function () {
   function setGameboardSizeDOM(entry) {
     // Resize observer callback: there is only one entry here
     //let sizes = gameboardCntDiv.getBoundingClientRect();
-    let sizes = entry[0].contentRect;
+    const sizes = entry[0].contentRect;
     gameboardDiv.classList.toggle(
       "larger-width-than-height",
       sizes.width >= sizes.height
@@ -1760,7 +1755,7 @@ const displayController = (function () {
   }
 
   // Initailize a new game immediately
-  const init = (function () {
+  (function init() {
     // Resize observer, to adapt the gameboard size
     // see https://web.dev/articles/resize-observer
     gameboardResizeObserver.observe(gameboardCntDiv);
